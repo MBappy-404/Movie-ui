@@ -22,12 +22,16 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-       <link
+      <head>
+        <link
           href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Open+Sans:wght@300;400;600&display=swap"
           rel="stylesheet"
         />
+      </head>
       <body
         className={`${geistSans.variable}  ${geistMono.variable} antialiased`}
+        data-new-gr-c-s-check-loaded="14.1233.0"
+        data-gr-ext-installed=""
       >
         {children}
       </body>
