@@ -1,15 +1,18 @@
-const layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
+import Sidebar from '@/components/sidebar/sidebar';
+
+const Layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   return (
-    <div className="bg-gray-100 min-h-screen flex   justify-center">
-      <div className="w-[20%]">
-        <h2>This is Sidebar</h2>
-      </div>
-      <div className="w-[75%] bg-white p-4 shadow-md rounded-lg">
-        <h2>This is Header</h2>
-        {children}
+    <div className="min-h-screen bg-gray-100">
+      <div className="flex h-screen overflow-hidden">
+        <Sidebar />
+        <main className="flex-1 overflow-y-auto">
+          <div className="p-4 sm:p-6 lg:p-8">
+            {children}
+          </div>
+        </main>
       </div>
     </div>
   );
 };
 
-export default layout;
+export default Layout;
