@@ -54,7 +54,7 @@ export const AllMovies = () => {
   const [selectedYear, setSelectedYear] = useState<string>('All');
   const [sortBy, setSortBy] = useState<string>('Latest');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  
+
   const [genres, setGenres] = useState<GenreFilter[]>([
     { name: 'All', active: true },
     { name: 'Action', active: false },
@@ -149,7 +149,7 @@ export const AllMovies = () => {
           filtered = filtered.filter(movie => movie.platform.platformName.toLowerCase().includes(query));
           break;
         default:
-          filtered = filtered.filter(movie => 
+          filtered = filtered.filter(movie =>
             movie.title.toLowerCase().includes(query) ||
             movie.genre.genreName.toLowerCase().includes(query) ||
             movie.director.toLowerCase().includes(query) ||
@@ -199,14 +199,14 @@ export const AllMovies = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F0F1E] text-white">
+    <div className="min-h-screen bg-[#0F0F1E] text-white pt-14">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-10">
         {/* Mobile Sidebar Toggle */}
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           className="lg:hidden mb-4 text-gray-400 hover:text-white transition-colors"
         >
-          {isSidebarOpen ? 'Hide Filters' : 'Show Filters'}
+          {isSidebarOpen ? 'Filter' : 'Filter'}
         </button>
 
         {/* Breadcrumb */}
@@ -218,14 +218,15 @@ export const AllMovies = () => {
           {/* Left Sidebar */}
           <div className={`
             lg:w-64 space-y-8 
-            ${isSidebarOpen ? 'block' : 'hidden'} 
-            lg:block
             fixed lg:relative 
             inset-0 
             bg-[#0F0F1E] lg:bg-transparent 
             z-50 lg:z-auto 
             p-4 lg:p-0
             overflow-y-auto
+            transform transition-transform duration-300 ease-in-out
+            ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+            lg:translate-x-0
           `}>
             {/* Close button for mobile */}
             <button
@@ -235,6 +236,7 @@ export const AllMovies = () => {
               Close
             </button>
 
+            {/* Rest of the sidebar content remains the same */}
             {/* Genres */}
             <div>
               <h2 className="text-xl lg:text-2xl font-bold mb-4 lg:mb-6">Genres</h2>
@@ -243,9 +245,8 @@ export const AllMovies = () => {
                   <div
                     key={genre.name}
                     onClick={() => handleGenreClick(genre.name)}
-                    className={`cursor-pointer ${
-                      genre.active ? 'text-purple-500' : 'text-gray-400'
-                    } hover:text-purple-500 transition-colors`}
+                    className={`cursor-pointer ${genre.active ? 'text-purple-500' : 'text-gray-400'
+                      } hover:text-purple-500 transition-colors`}
                   >
                     {genre.name}
                   </div>
@@ -261,11 +262,10 @@ export const AllMovies = () => {
                   <div
                     key={year}
                     onClick={() => setSelectedYear(year)}
-                    className={`px-2 sm:px-3 py-1 border ${
-                      selectedYear === year 
-                        ? 'border-purple-500 text-purple-500' 
-                        : 'border-gray-700 text-gray-400'
-                    } rounded text-center text-sm cursor-pointer hover:border-purple-500 hover:text-purple-500 transition-colors`}
+                    className={`px-2 sm:px-3 py-1 border ${selectedYear === year
+                      ? 'border-purple-500 text-purple-500'
+                      : 'border-gray-700 text-gray-400'
+                      } rounded text-center text-sm cursor-pointer hover:border-purple-500 hover:text-purple-500 transition-colors`}
                   >
                     {year}
                   </div>
@@ -278,8 +278,8 @@ export const AllMovies = () => {
               <h2 className="text-xl lg:text-2xl font-bold mb-4 lg:mb-6">Top 5 Movies</h2>
               <div className="space-y-4">
                 {filteredMovies.slice(0, 5).map((movie) => (
-                  <div 
-                    key={movie.id} 
+                  <div
+                    key={movie.id}
                     className="flex items-center space-x-3 cursor-pointer hover:bg-white/5 rounded-lg p-2 transition-colors"
                     onClick={() => handleMovieClick(movie.id)}
                   >
@@ -313,7 +313,7 @@ export const AllMovies = () => {
                 {/* Left side filters */}
                 <div className="flex gap-2 sm:w-[340px]">
                   <div className="relative flex-1 min-w-[100px]">
-                    <select 
+                    <select
                       className="w-full bg-[#1C1C3A] text-white text-sm border border-gray-700 rounded-lg px-3 py-2 pr-8 appearance-none focus:outline-none focus:ring-1 focus:ring-purple-500"
                       value={selectedGenre}
                       onChange={(e) => handleGenreClick(e.target.value)}
@@ -325,7 +325,7 @@ export const AllMovies = () => {
                     <FaChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs" />
                   </div>
                   <div className="relative flex-1 min-w-[100px]">
-                    <select 
+                    <select
                       className="w-full bg-[#1C1C3A] text-white text-sm border border-gray-700 rounded-lg px-3 py-2 pr-8 appearance-none focus:outline-none focus:ring-1 focus:ring-purple-500"
                       value={selectedYear}
                       onChange={(e) => setSelectedYear(e.target.value)}
@@ -337,7 +337,7 @@ export const AllMovies = () => {
                     <FaChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs" />
                   </div>
                   <div className="relative flex-1 min-w-[100px]">
-                    <select 
+                    <select
                       className="w-full bg-[#1C1C3A] text-white text-sm border border-gray-700 rounded-lg px-3 py-2 pr-8 appearance-none focus:outline-none focus:ring-1 focus:ring-purple-500"
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
@@ -389,8 +389,8 @@ export const AllMovies = () => {
             {/* Movie Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
               {filteredMovies.map((movie) => (
-                <div 
-                  key={movie.id} 
+                <div
+                  key={movie.id}
                   onClick={() => handleMovieClick(movie.id)}
                   className="group cursor-pointer transform hover:scale-105 transition-all duration-300"
                 >
@@ -427,8 +427,8 @@ export const AllMovies = () => {
               <h2 className="text-2xl font-bold mb-6">Top 5 Movies</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {filteredMovies.slice(0, 5).map((movie) => (
-                  <div 
-                    key={movie.id} 
+                  <div
+                    key={movie.id}
                     onClick={() => handleMovieClick(movie.id)}
                     className="flex items-center gap-4 p-3 cursor-pointer hover:bg-white/5 rounded-lg transition-colors"
                   >

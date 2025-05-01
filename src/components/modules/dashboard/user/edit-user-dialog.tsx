@@ -30,7 +30,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { type User } from "./user-table"
 
 const userFormSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -43,7 +42,7 @@ const userFormSchema = z.object({
 type UserFormValues = z.infer<typeof userFormSchema>
 
 interface EditUserDialogProps {
-  user: User | null
+  user: any
   open: boolean
   onOpenChange: (open: boolean) => void
   onUserUpdated?: () => void
