@@ -38,11 +38,9 @@ const HeroSection = () => {
         <div className="absolute top-0 left-0 w-full h-[20%] bg-gradient-to-b from-[#00031b] to-transparent" />
         <div className="absolute bottom-0 left-0 w-full h-[20%] bg-gradient-to-t from-[#00031b] to-transparent" />
 
-        
         <div className="absolute top-0 left-0 h-full w-[80%] md:w-[80%] bg-gradient-to-r from-[#000317] to-transparent" />
       </div>
 
-      {/* Content Container */}
       <div className="relative z-10 flex items-center pl-10 mt-5 justify-start h-full">
         <motion.div
           className="text-left px-4 max-w-4xl"
@@ -50,7 +48,6 @@ const HeroSection = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.5 }}
         >
-          {/* Main Headline */}
           <motion.h1
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -60,7 +57,6 @@ const HeroSection = () => {
             Welcome to CineVerse
           </motion.h1>
 
-          {/* Subheadline */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -70,7 +66,6 @@ const HeroSection = () => {
             Dive into a world of movies, reviews, and trailers
           </motion.p>
 
-          {/* Additional Info */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -82,7 +77,6 @@ const HeroSection = () => {
             for your next watch, CineVerse brings entertainment closer to you.
           </motion.p>
 
-          {/* CTA Button */}
           <button className="px-6 py-3 cursor-pointer flex gap-2 items-center rounded-xl font-bold text-white bg-gradient-to-r from-blue-500 to-purple-500 shadow-md hover:opacity-90 transition">
             Explore Now <ArrowRightIcon className="w-5 h-5 font-bold" />
           </button>
