@@ -21,40 +21,47 @@ const NewReleases = () => {
     {
       title: "Cyber Nexus",
       rating: 9.2,
-      description: "In a dystopian future, a rogue AI threatens humanity's last hope. A team of enhanced hackers must breach the neural network to save mankind.",
-      imageUrl: "https://streamvid.jwsuperthemes.com/wp-content/uploads/2024/12/7I6VUdPj6tQECNHdviJkUHD2u89-scaled-630x400.jpg",
+      description:
+        "In a dystopian future, a rogue AI threatens humanity's last hope. A team of enhanced hackers must breach the neural network to save mankind.",
+      imageUrl:
+        "https://streamvid.jwsuperthemes.com/wp-content/uploads/2024/12/7I6VUdPj6tQECNHdviJkUHD2u89-scaled-630x400.jpg",
       genre: "Cyberpunk/Thriller",
       year: 2024,
-      duration: "2h 12m"
+      duration: "2h 12m",
     },
     {
       title: "Eclipse of Titans",
       rating: 8.9,
-      description: "Ancient gods return to reclaim Earth in this epic fantasy adventure. Humanity's last stand begins at the celestial alignment.",
-      imageUrl: "https://streamvid.jwsuperthemes.com/wp-content/uploads/2024/12/7I6VUdPj6tQECNHdviJkUHD2u89-scaled-630x400.jpg",
+      description:
+        "Ancient gods return to reclaim Earth in this epic fantasy adventure. Humanity's last stand begins at the celestial alignment.",
+      imageUrl:
+        "https://streamvid.jwsuperthemes.com/wp-content/uploads/2024/12/7I6VUdPj6tQECNHdviJkUHD2u89-scaled-630x400.jpg",
       genre: "Fantasy/Adventure",
       year: 2024,
-      duration: "2h 45m"
+      duration: "2h 45m",
     },
     {
       title: "Cyber Nexus",
       rating: 9.2,
-      description: "In a dystopian future, a rogue AI threatens humanity's last hope. A team of enhanced hackers must breach the neural network to save mankind.",
-      imageUrl: "https://streamvid.jwsuperthemes.com/wp-content/uploads/2024/12/7I6VUdPj6tQECNHdviJkUHD2u89-scaled-630x400.jpg",
+      description:
+        "In a dystopian future, a rogue AI threatens humanity's last hope. A team of enhanced hackers must breach the neural network to save mankind.",
+      imageUrl:
+        "https://streamvid.jwsuperthemes.com/wp-content/uploads/2024/12/7I6VUdPj6tQECNHdviJkUHD2u89-scaled-630x400.jpg",
       genre: "Cyberpunk/Thriller",
       year: 2024,
-      duration: "2h 12m"
+      duration: "2h 12m",
     },
     {
       title: "Eclipse of Titans",
       rating: 8.9,
-      description: "Ancient gods return to reclaim Earth in this epic fantasy adventure. Humanity's last stand begins at the celestial alignment.",
-      imageUrl: "https://streamvid.jwsuperthemes.com/wp-content/uploads/2024/12/7I6VUdPj6tQECNHdviJkUHD2u89-scaled-630x400.jpg",
+      description:
+        "Ancient gods return to reclaim Earth in this epic fantasy adventure. Humanity's last stand begins at the celestial alignment.",
+      imageUrl:
+        "https://streamvid.jwsuperthemes.com/wp-content/uploads/2024/12/7I6VUdPj6tQECNHdviJkUHD2u89-scaled-630x400.jpg",
       genre: "Fantasy/Adventure",
       year: 2024,
-      duration: "2h 45m"
+      duration: "2h 45m",
     },
-     
   ];
 
   const cardVariants = {
@@ -62,14 +69,14 @@ const NewReleases = () => {
     visible: (i: number) => ({
       opacity: 1,
       y: 0,
-      transition: { delay: i * 0.2, duration: 0.6, ease: "easeOut" }
-    })
+      transition: { delay: i * 0.2, duration: 0.6, ease: "easeOut" },
+    }),
   };
 
   const hoverVariants = {
     rest: { scale: 1 },
     hover: { scale: 1.05 },
-    tap: { scale: 0.95 }
+    tap: { scale: 0.95 },
   };
 
   return (
@@ -100,7 +107,7 @@ const NewReleases = () => {
               initial="hidden"
               animate={isInView ? "visible" : "hidden"}
               custom={index}
-            //   whileHover="hover"
+              //   whileHover="hover"
               whileTap="tap"
             >
               <motion.div
@@ -116,7 +123,6 @@ const NewReleases = () => {
                 {/* Gradient Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent" />
 
-                {/* Floating Info */}
                 <div className="absolute top-4 left-4 flex items-center gap-2">
                   <span className="rounded-full bg-blue-600 px-3 py-1 text-xs font-bold text-white">
                     NEW
@@ -127,14 +133,13 @@ const NewReleases = () => {
                   </span>
                 </div>
 
-                {/* Play Button */}
                 <motion.div
                   className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{
                     scale: 1,
                     opacity: 1,
-                    transition: { delay: 0.3 + index * 0.1 }
+                    transition: { delay: 0.3 + index * 0.1 },
                   }}
                 >
                   <div className="rounded-full bg-white/10 p-4 backdrop-blur-md transition-all group-hover:bg-blue-600/90 group-hover:scale-110">
@@ -142,17 +147,18 @@ const NewReleases = () => {
                   </div>
                 </motion.div>
 
-                {/* Bottom Info */}
                 <div className="absolute bottom-0 left-0 right-0 space-y-4 p-6">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{
                       opacity: 1,
                       y: 0,
-                      transition: { delay: 0.4 + index * 0.1 }
+                      transition: { delay: 0.4 + index * 0.1 },
                     }}
                   >
-                    <h3 className="text-2xl font-bold text-white">{movie.title}</h3>
+                    <h3 className="text-2xl font-bold text-white">
+                      {movie.title}
+                    </h3>
                     <div className="flex items-center gap-4 text-sm text-gray-300">
                       <span>{movie.year}</span>
                       <span className="h-1 w-1 rounded-full bg-gray-400" />
@@ -166,7 +172,7 @@ const NewReleases = () => {
                     initial={{ opacity: 0 }}
                     animate={{
                       opacity: 1,
-                      transition: { delay: 0.5 + index * 0.1 }
+                      transition: { delay: 0.5 + index * 0.1 },
                     }}
                   >
                     <div className="relative h-3 w-full rounded-full bg-white/10">
@@ -180,14 +186,13 @@ const NewReleases = () => {
                     </span>
                   </motion.div>
 
-                  {/* Description */}
                   <motion.p
                     className="text-sm text-gray-300 line-clamp-2"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{
                       opacity: 1,
                       y: 0,
-                      transition: { delay: 0.6 + index * 0.1 }
+                      transition: { delay: 0.6 + index * 0.1 },
                     }}
                   >
                     {movie.description}

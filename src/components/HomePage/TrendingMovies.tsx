@@ -12,6 +12,7 @@ interface MovieCardProps {
   duration: string;
 }
 
+
 const TrendingMovies = () => {
   const movies: MovieCardProps[] = [
     {
@@ -50,7 +51,7 @@ const TrendingMovies = () => {
       year: 2024,
       duration: "2h 32m"
     },
-    // Add more movies here
+    
   ];
 
   return (
@@ -70,7 +71,7 @@ const TrendingMovies = () => {
               className="w-full h-96 object-cover rounded-xl shadow-2xl"
             />
             
-            {/* Overlay */}
+            
             <motion.div
               className="absolute inset-0 rounded-xl overflow-hidden"
               variants={{
@@ -81,7 +82,7 @@ const TrendingMovies = () => {
             >
               <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
               
-              {/* Play Button */}
+               
               <motion.div
                 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
                 variants={{
@@ -93,7 +94,7 @@ const TrendingMovies = () => {
                 <PlayIcon className="w-16 h-16 text-white/90 -translate-y-10 hover:text-white transition-colors" />
               </motion.div>
 
-              {/* Bottom Info Panel */}
+              
               <motion.div
                 className="absolute bottom-0 left-0 right-0 p-3"
                 variants={{
