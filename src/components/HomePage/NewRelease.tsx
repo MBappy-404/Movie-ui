@@ -102,16 +102,16 @@ const NewReleases = () => {
           transition={{ duration: 0.8 }}
           className="mb-12 flex items-end justify-between"
         >
-          <h2 className="text-4xl font-bold text-white">
+          <h2 className="text-3xl md:text-4xl font-bold text-white">
             New Releases
             <span className="ml-4 text-blue-500">
               {new Date().getFullYear()}
             </span>
           </h2>
-          <button className="flex items-center gap-2 rounded-lg  cursor-pointer  px-6 py-3 text-sm font-semibold text-white  bg-gradient-to-r from-blue-500 to-purple-500 transition-colors">
+          {/* <button className="flex items-center   gap-2 rounded-lg  cursor-pointer  px-6 py-3 text-sm font-semibold text-white  bg-gradient-to-r from-blue-500 to-purple-500 transition-colors">
             <TicketIcon className="h-5 w-5" />
             View All
-          </button>
+          </button> */}
         </motion.div>
 
         <div className=" pb-8 ">
