@@ -65,22 +65,8 @@ const Navbar = () => {
 
   return (
     <nav
- 
-      className={`fixed w-full z-50 
-      bg-gray-900 md:bg-none  
- 
-      className={`fixed w-full z-[990]
-      bg-gray-900 bg-none  
- 
-      transition-all duration-500
-      ${
-        isScrolled
-          ? "md:backdrop-blur-md md:bg-gray-900/90"
- 
-          : "md:bg-transparent"
- 
-          : "bg-transparent"
- 
+      className={`fixed w-full z-50 bg-gray-900 md:bg-none transition-all duration-500 ${
+        isScrolled ? "md:backdrop-blur-md md:bg-gray-900/90" : "md:bg-transparent"
       }`}
     >
       <div className="container mx-auto px-4 xl:px-12">
@@ -89,10 +75,8 @@ const Navbar = () => {
           <motion.a
             href="/"
             className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent"
- 
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 300 }}
- 
           >
             CineVerse
           </motion.a>
@@ -102,10 +86,9 @@ const Navbar = () => {
             {navLinks.map(({ name, path, icon: Icon }) => (
               <Link key={name} href={path}>
                 <motion.a
-                  className="flex items-center gap-2   text-gray-300 hover:text-indigo-400 group"
+                  className="flex items-center gap-2 text-gray-300 hover:text-indigo-400 group"
                   variants={navItemVariants}
                   whileHover="hover"
-                  
                 >
                   <Icon className="w-5 h-5 transition-colors" />
                   <span className="font-bold text-lg">{name}</span>
@@ -117,7 +100,6 @@ const Navbar = () => {
 
           {/* Right Section */}
           <div className="flex items-center gap-6">
- 
             <button
               onClick={() => setDarkMode(!darkMode)}
               className="p-2 text-gray-300 hover:text-indigo-400 transition-colors"
@@ -130,11 +112,6 @@ const Navbar = () => {
             </button>
 
             {user ? (
- 
-             
-
-            {isLoggedIn ? (
- 
               <div
                 className="relative"
                 onMouseEnter={() => setDropdownOpen(true)}
@@ -154,7 +131,7 @@ const Navbar = () => {
                     >
                       <div className="px-4 py-2 border-b border-gray-700">
                         <p className="text-sm font-medium text-gray-200">
-                          john@example.com
+                          {user.email}
                         </p>
                       </div>
                       <a
@@ -176,7 +153,7 @@ const Navbar = () => {
                 </AnimatePresence>
               </div>
             ) : (
-              <Link href={"/login"}>
+              <Link href="/login">
                 <motion.button
                   className="px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-shadow"
                   whileHover={{ scale: 1.05 }}
@@ -246,11 +223,7 @@ const Navbar = () => {
                         onClick={() => setIsOpen(false)}
                         initial={{ x: 20 }}
                         animate={{ x: 0 }}
- 
                         transition={{ type: "spring" }}
- 
-                        transition={{ type: "spring"  } }
- 
                       >
                         <Icon className="w-6 h-6 text-indigo-400" />
                         <span className="text-gray-200 font-medium">
@@ -262,7 +235,6 @@ const Navbar = () => {
 
                   <div className="mt-8 pt-6 border-t border-gray-800">
                     <div className="flex flex-col gap-4">
- 
                       <button
                         onClick={() => setDarkMode(!darkMode)}
                         className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800"
@@ -274,7 +246,6 @@ const Navbar = () => {
                         )}
                         <span className="text-gray-200">Theme</span>
                       </button>
- 
                       <a
                         href="/support"
                         className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800"
