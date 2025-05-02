@@ -100,16 +100,7 @@ const Navbar = () => {
 
           {/* Right Section */}
           <div className="flex items-center gap-6">
-            <button
-              onClick={() => setDarkMode(!darkMode)}
-              className="p-2 text-gray-300 hover:text-indigo-400 transition-colors"
-            >
-              {darkMode ? (
-                <SunIcon className="w-6 h-6" />
-              ) : (
-                <MoonIcon className="w-6 h-6" />
-              )}
-            </button>
+            
 
             {user && (
               <div
@@ -134,13 +125,13 @@ const Navbar = () => {
                           {user.email}
                         </p>
                       </div>
-                      <a
+                      <Link
                         href="/profile"
                         className="flex items-center gap-2 px-4 py-2 text-gray-300 hover:bg-gray-700"
                       >
                         <UserCircleIcon className="w-5 h-5" />
                         Profile
-                      </a>
+                      </Link>
                       <button
                         onClick={handleLogout}
                         className="flex items-center gap-2 w-full px-4 py-2 text-gray-300 hover:bg-gray-700"
