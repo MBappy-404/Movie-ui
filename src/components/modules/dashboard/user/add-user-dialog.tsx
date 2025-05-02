@@ -61,18 +61,9 @@ export function AddUserDialog({ onUserAdded }: AddUserDialogProps) {
   const [open, setOpen] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
 
-  const form = useForm<UserFormValues>({
-    resolver: zodResolver(userFormSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      role: "USER",
-      contactNumber: "",
-      password: "",
-    },
-  })
+  const form = useForm()
 
-  async function onSubmit(data: UserFormValues) {
+  async function onSubmit(data: FormData) {
     setLoading(true)
     try {
       // TODO: Implement user creation logic
