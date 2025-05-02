@@ -82,7 +82,7 @@ const UserProfile = ({userData}: any) => {
                 <div className="mt-6 grid grid-cols-3 gap-4 max-w-md">
                   <div className="bg-white/5 p-4 rounded-xl border border-white/10">
                     <div className="text-2xl font-bold text-blue-400">{user.stats.watched}</div>
-                    <div className="text-sm text-gray-400">Movies Watched</div>
+                    <div className="text-sm text-gray-400">Movies Watched!</div>
                   </div>
                   <div className="bg-white/5 p-4 rounded-xl border border-white/10">
                     <div className="text-2xl font-bold text-purple-400">{user.stats.watching}</div>
