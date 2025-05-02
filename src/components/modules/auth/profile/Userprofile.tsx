@@ -24,6 +24,8 @@ interface WatchlistItem {
 }
 
 const UserProfile = ({userData}: any) => {
+  console.log(userData);
+  
   const [activeTab, setActiveTab] = useState<'profile' | 'watchlist'>('profile');
   const [isEditing, setIsEditing] = useState(false);
   const [user, setUser] = useState<UserData>({
