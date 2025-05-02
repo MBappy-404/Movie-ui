@@ -18,11 +18,18 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const RegisterForm = () => {
   const form = useForm({
     resolver: zodResolver(registerValidation),
   });
+
+
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirectPath");
+  const router = useRouter();
+
   const [preview, setPreview] = useState<string | null>(null);
   const {
     formState: { isSubmitting },
@@ -42,9 +49,13 @@ const RegisterForm = () => {
       }
 
       const result = await registerUser(formData);
-      console.log(result);
       if (result?.success) {
         toast.success(result.message);
+        if (redirect) {
+          router.push('/login');
+        } else {
+          router.push("/");
+        }
       } else {
         toast.error(result?.message);
       }
