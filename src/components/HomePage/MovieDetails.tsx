@@ -201,7 +201,7 @@ const MovieDetails = () => {
                         <button
                             type="submit"
                             disabled={!isChecked}
-                            className="mt-4 px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl hover:-translate-y-1 hover:shadow-blue-500/40 transition-all duration-300"
+                            className="mt-4 px-10 py-3  cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-lg shadow-lg  hover:-translate-y-1 hover:shadow-blue-500/40 transition-all duration-300"
                         >
                             Submit
                         </button>

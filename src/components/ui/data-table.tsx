@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   ColumnDef,
   flexRender,
@@ -12,7 +12,7 @@ import {
   Header,
   Row,
   Cell,
-} from "@tanstack/react-table"
+} from "@tanstack/react-table";
 
 import {
   Table,
@@ -21,24 +21,24 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { ChevronDown, ChevronUp, ChevronsUpDown } from "lucide-react"
+} from "@/components/ui/select";
+import { ChevronDown, ChevronUp, ChevronsUpDown } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
-  searchKey?: string
-  pageSize?: number
-  onRowClick?: (row: TData) => void
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+  searchKey?: string;
+  pageSize?: number;
+  onRowClick?: (row: TData) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -48,8 +48,8 @@ export function DataTable<TData, TValue>({
   pageSize = 10,
   onRowClick,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [globalFilter, setGlobalFilter] = React.useState("")
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [globalFilter, setGlobalFilter] = React.useState("");
 
   const table = useReactTable({
     data,
@@ -68,7 +68,7 @@ export function DataTable<TData, TValue>({
         pageSize,
       },
     },
-  })
+  });
 
   return (
     <div className="space-y-4">
@@ -87,7 +87,7 @@ export function DataTable<TData, TValue>({
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header: Header<TData, TValue>) => {
+                {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id}>
                       {header.isPlaceholder ? null : (
@@ -106,15 +106,14 @@ export function DataTable<TData, TValue>({
                           {{
                             asc: <ChevronUp className="h-4 w-4" />,
                             desc: <ChevronDown className="h-4 w-4" />,
-                          }[header.column.getIsSorted() as string] ?? (
-                            header.column.getCanSort() ? (
+                          }[header.column.getIsSorted() as string] ??
+                            (header.column.getCanSort() ? (
                               <ChevronsUpDown className="h-4 w-4" />
-                            ) : null
-                          )}
+                            ) : null)}
                         </div>
                       )}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -160,7 +159,7 @@ export function DataTable<TData, TValue>({
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(value) => {
-              table.setPageSize(Number(value))
+              table.setPageSize(Number(value));
             }}
           >
             <SelectTrigger className="h-8 w-[70px]">
@@ -195,5 +194,5 @@ export function DataTable<TData, TValue>({
         </div>
       </div>
     </div>
-  )
-} 
+  );
+}

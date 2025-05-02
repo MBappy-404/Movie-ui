@@ -52,6 +52,7 @@ const slides: Slide[] = [
 
 const HomeBanner = () => {
   const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   return (
     <div
@@ -86,11 +87,15 @@ const HomeBanner = () => {
         {/* Main Swiper */}
         <div className="relative w-full max-w-full h-full mx-auto">
           <Swiper
+            loop={true}
+            speed={600} 
             modules={[Thumbs, Navigation]}
-            navigation
+            navigation={{
+              prevEl: ".prev",
+              nextEl: ".next",
+            }}
             thumbs={{ swiper: thumbsSwiper }}
             className="w-full h-full overflow-hidden"
-            loop
           >
             {slides.map((slide, idx) => (
               <SwiperSlide key={idx}>
@@ -111,25 +116,49 @@ const HomeBanner = () => {
               </SwiperSlide>
             ))}
           </Swiper>
+
           {/* Overlayed thumbnails: horizontal on mobile, vertical on desktop */}
           <div
             className="
-            absolute left-1/2 -translate-x-1/2 bottom-[-80px] w-full h-[70px] flex items-center
-            md:top-1/2 md:right-[-10%] md:left-auto md:bottom-auto md:-translate-y-1/2 md:w-[120px] md:h-[320px] md:flex-col
-            z-20
-          "
+    absolute left-1/2 -translate-x-1/2 bottom-[-80px] w-full h-[70px] flex items-center
+    md:top-1/2 md:right-[-10%] md:left-auto md:bottom-auto md:-translate-y-1/2 md:w-[120px] md:h-[360px] md:flex-col
+    z-20
+  "
           >
+            {/* Top Navigation */}
+            <div className="hidden md:flex justify-center mb-3">
+              <div className="prev  hover:bg-gradient-to-r translate-y-2 transition-all duration-300 bg-black/30 backdrop:blur-md   from-blue-500 to-purple-500 w-28 h-8 rounded-lg z-30 flex items-center justify-center cursor-pointer rotate-180">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-4 fill-white"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M11.99997 18.1669a2.38 2.38 0 0 1-1.68266-.69733l-9.52-9.52a2.38 2.38 0 1 1 3.36532-3.36532l7.83734 7.83734 7.83734-7.83734a2.38 2.38 0 1 1 3.36532 3.36532l-9.52 9.52a2.38 2.38 0 0 1-1.68266.69734z" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Thumbnail Swiper */}
             <Swiper
+              onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
               onSwiper={setThumbsSwiper}
-              direction={"horizontal"}
+              direction={"horizontal"} // default for mobile
               slidesPerView={4}
-              spaceBetween={10}
-              className="w-full h-full md:w-full md:h-full"
+              spaceBetween={16}
+              speed={600} 
+              loop={true}
               breakpoints={{
                 768: {
-                  direction: "vertical",
+                  direction: "vertical", // switch to vertical on larger screens
                   slidesPerView: 3,
+                  spaceBetween: 20,
                 },
+              }}
+              className="w-full h-full md:w-full md:h-full"
+              modules={[Navigation]}
+              navigation={{
+                prevEl: ".prev",
+                nextEl: ".next",
               }}
             >
               {slides.map((slide, idx) => (
@@ -137,14 +166,31 @@ const HomeBanner = () => {
                   <img
                     src={slide.image}
                     alt={slide.title}
-                    className="
-                      w-[70px] h-[70px] md:w-full md:h-[100px] object-cover rounded-lg opacity-70 cursor-pointer border-2 border-transparent transition-all duration-200
-                      swiper-slide-thumb-active:border-indigo-500 swiper-slide-thumb-active:opacity-100
-                    "
+                    className={`
+          w-[70px] h-[70px] md:w-full md:h-[90px] object-cover rounded-lg cursor-pointer transition-all duration-300
+          ${
+            activeIndex === idx
+              ? "border-4 border-blue-700 opacity-100"
+              : "border border-blue-300 opacity-70"
+          }
+        `}
                   />
                 </SwiperSlide>
               ))}
             </Swiper>
+
+            {/* Bottom Navigation */}
+            <div className="hidden md:flex justify-center mt-3">
+              <div className="next -translate-y-2 transition-all duration-300 bg-black/30 backdrop:blur-md  hover:bg-gradient-to-r from-blue-500 to-purple-500 w-28 h-8 rounded-lg z-30 flex items-center justify-center cursor-pointer">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-4 fill-white rotate-0"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M11.99997 18.1669a2.38 2.38 0 0 1-1.68266-.69733l-9.52-9.52a2.38 2.38 0 1 1 3.36532-3.36532l7.83734 7.83734 7.83734-7.83734a2.38 2.38 0 1 1 3.36532 3.36532l-9.52 9.52a2.38 2.38 0 0 1-1.68266.69734z" />
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
       </div>
