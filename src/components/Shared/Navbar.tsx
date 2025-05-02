@@ -14,6 +14,10 @@ import {
   MoonIcon,
   QuestionMarkCircleIcon,
 } from "@heroicons/react/24/outline";
+ 
+import { useUser } from "../context/UserContext";
+import { logout } from "@/services/AuthServices";
+ 
 import Link from "next/link";
 
 const Navbar = () => {
@@ -22,6 +26,7 @@ const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
+  const { user, setIsLoading } = useUser();
 
   const navLinks = [
     { name: "Home", path: "/", icon: HomeModernIcon },
@@ -29,6 +34,11 @@ const Navbar = () => {
     { name: "Series", path: "/series", icon: TvIcon },
     { name: "Watchlist", path: "/list", icon: BookmarkIcon },
   ];
+
+  const handleLogout = () => {
+    logout();
+    setIsLoading(true);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -55,13 +65,22 @@ const Navbar = () => {
 
   return (
     <nav
+ 
+      className={`fixed w-full z-50 
+      bg-gray-900 md:bg-none  
+ 
       className={`fixed w-full z-[990]
       bg-gray-900 bg-none  
+ 
       transition-all duration-500
       ${
         isScrolled
           ? "md:backdrop-blur-md md:bg-gray-900/90"
+ 
+          : "md:bg-transparent"
+ 
           : "bg-transparent"
+ 
       }`}
     >
       <div className="container mx-auto px-4 xl:px-12">
@@ -70,7 +89,10 @@ const Navbar = () => {
           <motion.a
             href="/"
             className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent"
-             
+ 
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 300 }}
+ 
           >
             CineVerse
           </motion.a>
@@ -95,9 +117,24 @@ const Navbar = () => {
 
           {/* Right Section */}
           <div className="flex items-center gap-6">
+ 
+            <button
+              onClick={() => setDarkMode(!darkMode)}
+              className="p-2 text-gray-300 hover:text-indigo-400 transition-colors"
+            >
+              {darkMode ? (
+                <SunIcon className="w-6 h-6" />
+              ) : (
+                <MoonIcon className="w-6 h-6" />
+              )}
+            </button>
+
+            {user ? (
+ 
              
 
             {isLoggedIn ? (
+ 
               <div
                 className="relative"
                 onMouseEnter={() => setDropdownOpen(true)}
@@ -127,7 +164,10 @@ const Navbar = () => {
                         <UserCircleIcon className="w-5 h-5" />
                         Profile
                       </a>
-                      <button className="flex items-center gap-2 w-full px-4 py-2 text-gray-300 hover:bg-gray-700">
+                      <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-2 w-full px-4 py-2 text-gray-300 hover:bg-gray-700"
+                      >
                         <ArrowRightEndOnRectangleIcon className="w-5 h-5" />
                         Logout
                       </button>
@@ -136,13 +176,15 @@ const Navbar = () => {
                 </AnimatePresence>
               </div>
             ) : (
-              <motion.button
-                className="px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-shadow"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Sign In
-              </motion.button>
+              <Link href={"/login"}>
+                <motion.button
+                  className="px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-shadow"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Sign In
+                </motion.button>
+              </Link>
             )}
 
             {/* Mobile Menu Button */}
@@ -204,7 +246,11 @@ const Navbar = () => {
                         onClick={() => setIsOpen(false)}
                         initial={{ x: 20 }}
                         animate={{ x: 0 }}
+ 
+                        transition={{ type: "spring" }}
+ 
                         transition={{ type: "spring"  } }
+ 
                       >
                         <Icon className="w-6 h-6 text-indigo-400" />
                         <span className="text-gray-200 font-medium">
@@ -216,7 +262,19 @@ const Navbar = () => {
 
                   <div className="mt-8 pt-6 border-t border-gray-800">
                     <div className="flex flex-col gap-4">
-                       
+ 
+                      <button
+                        onClick={() => setDarkMode(!darkMode)}
+                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800"
+                      >
+                        {darkMode ? (
+                          <SunIcon className="w-6 h-6 text-indigo-400" />
+                        ) : (
+                          <MoonIcon className="w-6 h-6 text-indigo-400" />
+                        )}
+                        <span className="text-gray-200">Theme</span>
+                      </button>
+ 
                       <a
                         href="/support"
                         className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800"
