@@ -26,7 +26,7 @@ export const movies: MovieCardProps[] = [
       imageUrl: "https://streamvid.jwsuperthemes.com/wp-content/uploads/2024/12/7I6VUdPj6tQECNHdviJkUHD2u89-scaled-630x400.jpg",
       genre: "Fantasy/Adventure",
       year: 2024,
-      duration: "2h 45m"
+      duration: "2h 50m"
     },
     {
       title: "Cyber Nexus",
