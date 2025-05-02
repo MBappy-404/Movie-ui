@@ -55,13 +55,13 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed w-full z-50 
-      bg-gray-900 md:bg-none  
+      className={`fixed w-full z-[990]
+      bg-gray-900 bg-none  
       transition-all duration-500
       ${
         isScrolled
           ? "md:backdrop-blur-md md:bg-gray-900/90"
-          : "md:bg-transparent"
+          : "bg-transparent"
       }`}
     >
       <div className="container mx-auto px-4 xl:px-12">
@@ -70,8 +70,7 @@ const Navbar = () => {
           <motion.a
             href="/"
             className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent"
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 300 }}
+             
           >
             CineVerse
           </motion.a>
@@ -84,7 +83,7 @@ const Navbar = () => {
                   className="flex items-center gap-2   text-gray-300 hover:text-indigo-400 group"
                   variants={navItemVariants}
                   whileHover="hover"
-                  whileTap="tap"
+                  
                 >
                   <Icon className="w-5 h-5 transition-colors" />
                   <span className="font-bold text-lg">{name}</span>
@@ -96,16 +95,7 @@ const Navbar = () => {
 
           {/* Right Section */}
           <div className="flex items-center gap-6">
-            <button
-              onClick={() => setDarkMode(!darkMode)}
-              className="p-2 text-gray-300 hover:text-indigo-400 transition-colors"
-            >
-              {darkMode ? (
-                <SunIcon className="w-6 h-6" />
-              ) : (
-                <MoonIcon className="w-6 h-6" />
-              )}
-            </button>
+             
 
             {isLoggedIn ? (
               <div
@@ -214,7 +204,7 @@ const Navbar = () => {
                         onClick={() => setIsOpen(false)}
                         initial={{ x: 20 }}
                         animate={{ x: 0 }}
-                        transition={{ type: "spring" }}
+                        transition={{ type: "spring"  } }
                       >
                         <Icon className="w-6 h-6 text-indigo-400" />
                         <span className="text-gray-200 font-medium">
@@ -226,17 +216,7 @@ const Navbar = () => {
 
                   <div className="mt-8 pt-6 border-t border-gray-800">
                     <div className="flex flex-col gap-4">
-                      <button
-                        onClick={() => setDarkMode(!darkMode)}
-                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800"
-                      >
-                        {darkMode ? (
-                          <SunIcon className="w-6 h-6 text-indigo-400" />
-                        ) : (
-                          <MoonIcon className="w-6 h-6 text-indigo-400" />
-                        )}
-                        <span className="text-gray-200">Theme</span>
-                      </button>
+                       
                       <a
                         href="/support"
                         className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800"
