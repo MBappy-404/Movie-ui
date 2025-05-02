@@ -62,19 +62,43 @@ const artistsSlides: TArtistSlide[] = [
 
 const TopArtists = () => {
   return (
-    <div className="px-20 py-20">
+    <div className="md:w-[90%] w-[95%] mx-auto py-20">
       <h1 className="text-4xl font-bold text-white">Top Artists</h1>
       <Swiper
         navigation={true}
         modules={[Navigation]}
         className="mySwiper"
-        spaceBetween={20}
-        slidesPerView={7}
+        breakpoints={{
+          320: {
+            slidesPerView: 1,
+            spaceBetween: 8,
+          },
+          480: {
+            slidesPerView: 2,
+            spaceBetween: 8,
+          },
+          640: {
+            slidesPerView: 3,
+            spaceBetween: 10,
+          },
+          768: {
+            slidesPerView: 4,
+            spaceBetween: 10,
+          },
+          1024: {
+            slidesPerView: 5,
+            spaceBetween: 12,
+          },
+          1400: {
+            slidesPerView: 7,
+            spaceBetween: 14,
+          },
+        }}
         style={{ padding: "40px 0" }}
       >
         {artistsSlides.map((artist) => (
           <SwiperSlide key={artist.id}>
-            <div className="flex flex-col items-center justify-center transition-transform duration-300 hover:-translate-y-5">
+            <div className="flex flex-col  items-center justify-center cursor-pointer transition-transform duration-300 hover:-translate-y-5">
               <Image
                 src={artist.image}
                 alt={artist.artistName}
