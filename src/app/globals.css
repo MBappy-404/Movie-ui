@@ -129,3 +129,13 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Swiper navigation arrows customization */
+.swiper-button-next,
+.swiper-button-prev {
+  @apply text-white bg-violet-500 rounded-full w-10 h-10 flex items-center justify-center shadow-lg shadow-violet-400/30 transition-colors duration-200;
+}
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  @apply bg-violet-700;
+}
