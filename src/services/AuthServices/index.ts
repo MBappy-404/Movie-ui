@@ -4,16 +4,13 @@ import { cookies } from "next/headers";
 import { FieldValues } from "react-hook-form";
 import { jwtDecode } from "jwt-decode";
 
-export const registerUser = async (data: FieldValues) => {
+export const registerUser = async (data: FormData) => {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_API}/user/register`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+        body: data,
       }
     );
     const result = await res.json();
@@ -35,7 +32,7 @@ export const loginUser = async (data: FieldValues) => {
     const result = await res.json();
 
     if (result?.success) {
-      (await cookies()).set("token", result?.data?.accessToken);
+      (await cookies()).set("accessToken", result?.data?.accessToken);
       (await cookies()).set("refreshToken", result?.data?.refreshToken);
     }
     return result;
@@ -45,20 +42,19 @@ export const loginUser = async (data: FieldValues) => {
 };
 
 export const getCurrentUser = async () => {
-  const token = (await cookies()).get("token")?.value;
-
+  const accessToken = (await cookies()).get("accessToken")?.value;
   let decodedData = null;
-  if (token) {
-    decodedData = await jwtDecode(token);
 
+  if (accessToken) {
+    decodedData = await jwtDecode(accessToken);
     return decodedData;
   } else {
-    return decodedData;
+    return null;
   }
 };
 
 export const logout = async () => {
-  (await cookies()).delete("token");
+  (await cookies()).delete("accessToken");
 };
 
 export const getNewToken = async () => {

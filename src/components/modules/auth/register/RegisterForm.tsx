@@ -27,17 +27,28 @@ const RegisterForm = () => {
   } = form;
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    console.log(data);
     try {
-      const result = await registerUser(data);
+      const formData = new FormData();
+      
+      // Append text data
+      const { profilePhoto, ...otherData } = data;
+      formData.append("data", JSON.stringify(otherData));
+      
+      // Append file if exists
+      if (profilePhoto instanceof File) {
+        formData.append("file", profilePhoto);
+      }
+
+      const result = await registerUser(formData);
+      console.log(result)
       if (result?.success) {
         toast.success(result.message);
-        console.log(result);
       } else {
         toast.error(result?.message);
       }
       return result;
     } catch (error: any) {
+      toast.error(error.message || "Registration failed");
       return Error(error);
     }
   };
@@ -132,6 +143,31 @@ const RegisterForm = () => {
                       {...field}
                       value={field.value || ""}
                       className="bg-gray-800 text-white"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-400" />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="profilePhoto"
+              render={({ field }) => (
+                <FormItem className="mt-4">
+                  <Label className="text-white">Profile Photo</Label>
+                  <FormControl>
+                    <Input
+                      id="picture"
+                      type="file"
+                      accept="image/*"
+                      className="bg-gray-800 text-white"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          field.onChange(file);
+                        }
+                      }}
                     />
                   </FormControl>
                   <FormMessage className="text-red-400" />
