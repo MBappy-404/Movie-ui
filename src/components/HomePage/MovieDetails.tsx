@@ -1,47 +1,112 @@
 'use client';
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from "framer-motion";
 import Image from "next/image";
 import moviePoster from "@/assets/images/movieposter.jpg"
 import manvector from "@/assets/images/manvector.png"
-
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
 import ReactPlayer from 'react-player';
 import { Rating } from "@smastrom/react-rating";
 import '@smastrom/react-rating/style.css'
-import { movies } from '../Shared/movieDemo';
-const MovieDetails = () => {
+import { useParams } from 'next/navigation';
+import { useGetAllContentQuery, useGetContentQuery } from '../redux/features/content/contentApi';
+import MovieDetailsSkeleton from '../Movies/MovieDetailsSkeleton';
+import { useGetUserQuery } from '../redux/features/user/userApi';
+import { useCreateReviewMutation, useGetAllReviewQuery } from '../redux/features/review/reviewApi';
+import { toast } from "sonner";
+
+interface Movie {
+    id: string;
+    title: string;
+    thumbnail: string;
+    genre: {
+        genreName: string;
+    };
+    releaseYear: string;
+    duration: string;
+}
+
+interface ReviewFormData {
+    rating: number;
+    reviewText: string;
+    tags: string
+}
+
+const MovieDetails = ({ currentUser }: any) => {
+    const router = useRouter();
+    const { id } = useParams();
+    const { data: mobileDetails, isLoading } = useGetContentQuery({ id })
+    const { data: allMovies } = useGetAllContentQuery({ undefined })
+    const [recommendedMovies, setRecommendedMovies] = useState<Movie[]>([]);
+    const { data: SingleUser } = useGetUserQuery(currentUser?.id)
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<ReviewFormData>();
+    const [addReview] = useCreateReviewMutation();
+    const { data: allReviewsdata } = useGetAllReviewQuery({ undefined })
+
+    console.log(allReviewsdata)
+
+
+
+    useEffect(() => {
+        if (allMovies?.data && mobileDetails?.data) {
+            const currentGenre = mobileDetails.data.genre?.genreName;
+            if (currentGenre) {
+                const filteredMovies = allMovies.data.filter((movie: Movie) =>
+                    movie.genre?.genreName === currentGenre && movie.id !== mobileDetails.data.id
+                );
+                setRecommendedMovies(filteredMovies);
+            }
+        }
+    }, [allMovies, mobileDetails]);
 
     const [rating, setRating] = useState(0);
-    const [review, setReview] = useState('');
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
     const [isChecked, setIsChecked] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const videoUrl =
         "https://customer-342mt1gy0ibqe0dl.cloudflarestream.com/e5fe3013604cf504ace84b84d91b1f5a/downloads/default.mp4"
 
 
-    const handleSubmit = (e: any) => {
-        e.preventDefault();
+    if (isLoading) {
+        return <MovieDetailsSkeleton />;
+    }
 
-        if (!name || !email || !review || rating === 0) {
-            alert('Please fill in all the fields.');
+
+
+    const onSubmit = async (data: ReviewFormData) => {
+        const toastId = toast.loading("Creating Review...");
+        if (!SingleUser?.data?.id) {
+            alert('User information not available. Please try again later.');
             return;
         }
 
-        const reviewData = { name, email, rating, review, isChecked }
-
+        const reviewData = {
+            rating: rating,
+            reviewText: data.reviewText,
+            contentId: mobileDetails.data.id,
+            userId: SingleUser.data.id,
+            tags: data.tags
+        }
         console.log(reviewData)
+        try {
+            const res = await addReview(reviewData);
+            if (res?.data?.success) {
+                toast.success(res?.data?.message, { id: toastId });
+            }
 
-        // Clear the form after submission
-        setName('');
-        setEmail('');
-        setReview('');
+        } catch (error: any) {
+            console.log(error);
+            toast.error("Something went wrong", { id: toastId });
+        }
+        // Here you would typically make an API call to submit the review
+        reset();
         setRating(0);
         setIsChecked(false);
         setSubmitted(true);
     };
+
+
 
     return (
         <div className="min-h-screen container mx-auto text-white p-6 pt-24">
@@ -67,16 +132,31 @@ const MovieDetails = () => {
                     animate={{ opacity: 1, x: 0 }}
                 >
                     <Image
-                        src={moviePoster} // Replace with actual image path
+                        src={mobileDetails?.data?.thumbnail} // Replace with actual image path
                         alt="Spider Man Memo Poster"
                         width={600}
                         height={400}
                         className="rounded-xl"
                     />
                     <div className="flex justify-between mt-4">
-                        <button className="text-sm text-gray-400 hover:text-white">👍 0 likes</button>
-                        <button className="text-sm text-gray-400 hover:text-white">🔗 Share</button>
-                        <button className="text-sm text-gray-400 hover:text-white">⭐ Watchlist</button>
+                        <button
+                            onClick={() => { }}
+                            className="text-sm text-gray-400 hover:text-white cursor-pointer"
+                        >
+                            👍 0 likes
+                        </button>
+                        <button
+                            onClick={() => { }}
+                            className="text-sm text-gray-400 hover:text-white cursor-pointer"
+                        >
+                            🔗 Share
+                        </button>
+                        <button
+                            onClick={() => { }}
+                            className="text-sm text-gray-400 hover:text-white cursor-pointer"
+                        >
+                            ⭐ Watchlist
+                        </button>
                     </div>
                 </motion.div>
 
@@ -85,49 +165,52 @@ const MovieDetails = () => {
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
                 >
-                    <h1 className="text-4xl font-bold mb-2">Spider Man Memo</h1>
+                    <h1 className="text-4xl font-bold mb-2">{mobileDetails?.data?.title}</h1>
                     <p className="text-sm text-gray-400 mb-2 flex gap-1 items-center">
                         <Rating
                             style={{ maxWidth: 80 }}
                             value={3}
                             onChange={setRating}
                             readOnly
-                        /> 8.5 | 👁️ 2684 Views | 📅 2022 | ⏱️ 1hr 25 min | 🧑‍💼 TV-MA
+                        /> 8.5 | 👁️ 2684 Views | 📅 {mobileDetails?.data?.releaseYear} | ⏱️ {mobileDetails?.data?.duration} | <span><Image src={mobileDetails?.data?.platform?.platformLogo} width={20} height={20} alt='sds' /></span> {mobileDetails?.data?.platform?.platformName}
                     </p>
-                    <p className="mb-4 text-sm text-gray-300">Action • Anime</p>
+                    <p className="mb-4 text-sm text-gray-300">{mobileDetails?.data?.genre?.genreName}</p>
                     <p className="mb-4 text-sm text-gray-300">
-                        Suspendisse eu porta quam, sit amet tristique sem... [truncated for demo]
+                        {mobileDetails?.data?.synopsis}
                     </p>
                     <div className='space-y-3'>
-                        <p className="text-sm text-gray-400">Cast: <span className="text-white">Richard Cant</span></p>
+                        <div className='flex gap-2'>
+                            <p className="text-sm text-gray-400">Cast: <span className="text-white">{mobileDetails?.data?.actor},</span></p>
+                            <p className="text-sm text-gray-400"><span className="text-white">{mobileDetails?.data?.actress}</span></p>
+                            <p className="text-sm text-gray-400"><span className="text-white">Richard Cant</span></p>
+                        </div>
                         <p className="text-sm text-gray-400">Crew: <span className="text-white">Alaya Pacheco, Ricky Aleman</span></p>
-                        <p className="text-sm text-gray-400">Tags: <span className="text-white">Comic, Hero</span></p>
+                        <p className="text-sm text-gray-400">Director: <span className="text-white">{mobileDetails?.data?.director}</span></p>
+                        <p className="text-sm text-gray-400">Spoiler Warning: <span className="text-white">{mobileDetails?.data?.spoilerWarning}</span></p>
                     </div>
 
                     <h2 className="mt-8 text-xl font-semibold text-white">Recommended For You</h2>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                        {movies.map((movie, i) => (
+                        {recommendedMovies.map((movie) => (
                             <motion.div
-                                key={i}
-                                className="relative w-full h-64 bg-gray-900 rounded-lg overflow-hidden shadow-lg"
+                                key={movie.id}
+                                className="relative w-full h-64 bg-gray-900 rounded-lg overflow-hidden shadow-lg cursor-pointer"
                                 initial="rest"
                                 whileHover="hover"
                                 animate="rest"
+                                onClick={() => router.push(`/movies/${movie.id}`)}
                             >
-                                {/* Fixed-height image */}
                                 <img
-                                    src={movie.imageUrl}
+                                    src={movie.thumbnail}
                                     alt={movie.title}
                                     className="w-full h-40 object-cover"
                                 />
 
-                                {/* Title below image */}
                                 <div className="p-2 h-16 flex items-center">
                                     <h3 className="text-white text-sm font-semibold line-clamp-2">{movie.title}</h3>
                                 </div>
 
-                                {/* Hover Overlay Panel */}
                                 <motion.div
                                     variants={{
                                         rest: { x: "100%", opacity: 0 },
@@ -138,8 +221,8 @@ const MovieDetails = () => {
                                 >
                                     <div>
                                         <h3 className="text-lg font-semibold">{movie.title}</h3>
-                                        <p className="text-sm text-gray-400 mt-1">{movie.year} ・ {movie.duration}</p>
-                                        <p className="text-sm mt-2 text-gray-300">{movie.description || "No description available."}</p>
+                                        <p className="text-sm text-gray-400 mt-1">{movie.releaseYear} ・ {movie.duration}</p>
+                                        <p className="text-sm mt-2 text-gray-300">{movie.genre.genreName}</p>
                                     </div>
                                 </motion.div>
                             </motion.div>
@@ -147,7 +230,7 @@ const MovieDetails = () => {
                     </div>
 
                     <h2 className="mt-10 text-xl font-semibold">Add a review</h2>
-                    <form className="mt-4" onSubmit={handleSubmit}>
+                    <form className="mt-4" onSubmit={handleSubmit(onSubmit)}>
                         {/* Rating Component */}
                         <Rating
                             style={{ maxWidth: 180 }}
@@ -160,29 +243,22 @@ const MovieDetails = () => {
                             className="w-full mt-4 p-2 bg-gray-800 border border-gray-600 rounded"
                             rows={4}
                             placeholder="Your review *"
-                            required
-                            value={review}
-                            onChange={(e) => setReview(e.target.value)}
+                            {...register("reviewText", { required: "Review is required" })}
                         />
+                        <select
+                            className="
+                           mt-4 p-2
 
-                        {/* Name and Email Input */}
-                        <div className="mt-4 flex flex-col md:flex-row gap-4">
-                            <input
-                                className="w-full p-2 bg-gray-800 border border-gray-600 rounded"
-                                placeholder="Name *"
-                                required
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                            />
-                            <input
-                                type="email"
-                                className="w-full p-2 bg-gray-800 border border-gray-600 rounded"
-                                placeholder="Email *"
-                                required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                        </div>
+                            text-white border border-gray-500 rounded-lg shadow
+                            focus:outline-none focus:ring-2 focus:ring-blue-500
+                            transition-all duration-300
+    "
+                            {...register("tags")}
+                        >
+                            <option className="bg-slate-900 text-white" value="CLASSIC">CLASSIC</option>
+                            <option className="bg-slate-900 text-white" value="UNDERRATED">UNDERRATED</option>
+                        </select>
+                        {errors.reviewText && <p className="text-red-500 text-sm mt-1">{errors.reviewText.message}</p>}
 
                         {/* Checkbox for saving info */}
                         <div className="mt-2">
@@ -200,18 +276,11 @@ const MovieDetails = () => {
                         {/* Submit Button */}
                         <button
                             type="submit"
-                            disabled={!isChecked}
-                            className="mt-4 px-10 py-3  cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-lg shadow-lg  hover:-translate-y-1 hover:shadow-blue-500/40 transition-all duration-300"
+                            disabled={!isChecked || !SingleUser?.data?.id || rating === 0}
+                            className="mt-4 px-10 py-3 cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-lg shadow-lg hover:-translate-y-1 hover:shadow-blue-500/40 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Submit
+                            {!SingleUser?.data?.id ? 'Loading user data...' : 'Submit'}
                         </button>
-
-                        {/* Success Message */}
-                        {submitted && (
-                            <div className="mt-4 text-green-500">
-                                <h3>Thank you for your review!</h3>
-                            </div>
-                        )}
                     </form>
 
                     {/* Display Submitted Review */}
@@ -236,7 +305,7 @@ const MovieDetails = () => {
                                 <p className="mt-2 text-gray-300 text-sm">
                                     <span className="font-medium text-white">Spider-Man: Into the Spider-Verse</span> is a visually stunning,
                                     groundbreaking animated film that redefines superhero storytelling. Its unique animation style, compelling characters,
-                                    and inventive multiverse concept make it a standout. With a mix of humor, heart, and action, it’s a refreshing,
+                                    and inventive multiverse concept make it a standout. With a mix of humor, heart, and action, it's a refreshing,
                                     must-see experience for both Spider-Man fans and newcomers.
                                 </p>
                             </div>
