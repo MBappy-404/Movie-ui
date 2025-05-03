@@ -54,9 +54,10 @@ const HeroSection = () => {
             transition={{ duration: 1, delay: 1 }}
             className="text-4xl md:text-7xl font-bold text-white mb-3 md:mb-6 font-['Bebas_Neue'] tracking-wide"
           >
-            Welcome to <span className="  bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
-  CineVerse
-</span>
+            Welcome to{" "}
+            <span className="  bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+              CineVerse
+            </span>
           </motion.h1>
 
           <motion.p
