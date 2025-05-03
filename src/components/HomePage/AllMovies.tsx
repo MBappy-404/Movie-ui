@@ -4,6 +4,7 @@ import React, { useState, useMemo } from "react";
 import { FaChevronDown, FaSearch } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useGetAllContentQuery } from "../redux/features/content/contentApi";
+import Link from "next/link";
 
 interface Genre {
   id: string;
@@ -208,9 +209,7 @@ export const AllMovies = () => {
     searchType,
   ]);
 
-  const handleMovieClick = (movieId: string) => {
-    router.push(`/movies/${movieId}`);
-  };
+   
 
   return (
     <div className="min-h-screen   text-white pt-14">
@@ -296,16 +295,16 @@ export const AllMovies = () => {
             </div>
 
             {/* Top 5 Movies - Desktop Only */}
-            <div className="hidden lg:block">
+            <div className="hidden lg:block mb-5">
               <h2 className="text-xl lg:text-2xl font-bold mb-4 lg:mb-6">
                 Top 5 Movies
               </h2>
               <div className="space-y-4">
                 {filteredMovies.slice(0, 5).map((movie) => (
-                  <div
+                  <Link href={`/movies/${movie.id}`} 
                     key={movie.id}
                     className="flex items-center space-x-3 cursor-pointer hover:bg-white/5 rounded-lg p-2 transition-colors"
-                    onClick={() => handleMovieClick(movie.id)}
+                    
                   >
                     <img
                       src={movie.thumbnail}
@@ -325,7 +324,7 @@ export const AllMovies = () => {
                         />
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -450,9 +449,9 @@ export const AllMovies = () => {
                 ))}
 
               {filteredMovies.map((movie) => (
-                <div
+                <Link href={`/movies/${movie.id}`}
                   key={movie.id}
-                  onClick={() => handleMovieClick(movie.id)}
+                  
                   className="group cursor-pointer transition-all border border-gray-900 rounded-lg duration-300"
                 >
                   <div className="relative aspect-[2/3] rounded-lg overflow-hidden mb-4">
@@ -483,7 +482,7 @@ export const AllMovies = () => {
                       ${movie.price}
                     </span>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
 
@@ -518,9 +517,9 @@ export const AllMovies = () => {
                   </div>
                 )}
                 {filteredMovies.slice(0, 5).map((movie) => (
-                  <div
+                  <Link href={`/movies/${movie.id}`}
                     key={movie.id}
-                    onClick={() => handleMovieClick(movie.id)}
+                     
                     className="flex items-center gap-4 p-3 cursor-pointer hover:bg-white/5 rounded-lg transition-colors"
                   >
                     <div className="w-24 h-32 flex-shrink-0">
@@ -553,7 +552,7 @@ export const AllMovies = () => {
                         </span>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>
