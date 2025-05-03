@@ -59,6 +59,32 @@ const TopNews = () => {
         slidesPerView={3}
         loop={true}
         autoplay={{ delay: 4000 }}
+        breakpoints={{
+          320: {
+            slidesPerView: 1,
+            spaceBetween: 8,
+          },
+          480: {
+            slidesPerView: 1,
+            spaceBetween: 8,
+          },
+          640: {
+            slidesPerView: 1,
+            spaceBetween: 10,
+          },
+          768: {
+            slidesPerView: 2,
+            spaceBetween: 10,
+          },
+          1024: {
+            slidesPerView: 2,
+            spaceBetween: 12,
+          },
+          1400: {
+            slidesPerView: 3,
+            spaceBetween: 14,
+          },
+        }}
       >
         {topNews.map((item, index) => (
           <SwiperSlide key={index}>
