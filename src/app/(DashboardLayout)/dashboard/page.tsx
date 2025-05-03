@@ -1,104 +1,273 @@
-import React from "react";
+"use client";
+import { useState, useMemo } from 'react';
+import { LineChart, BarChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-const Dashboard = () => {
+interface StatCardProps {
+  title: string;
+  value: string;
+  trend: string;
+  icon: string;
+  color: string;
+}
+
+interface ChartData {
+  name: string;
+  sales: number;
+  rentals: number;
+}
+
+const OverviewStats = () => {
+  const [timeFilter, setTimeFilter] = useState<'7days' | '30days' | '90days' | '1year'>('30days');
+  const [chartType, setChartType] = useState<'sales' | 'rentals'>('sales');
+
+  // Demo statistics
+  const statsData = {
+    totalUsers: '124,856',
+    totalMovies: '35,789',
+    totalPurchases: '89,432',
+    totalEarnings: '$2,456,230'
+  };
+
+  // Dynamic data generator
+  const generateChartData = (range: typeof timeFilter): ChartData[] => {
+    const now = new Date();
+    const data: ChartData[] = [];
+
+    switch (range) {
+      case '7days':
+        return Array.from({ length: 7 }).map((_, i) => ({
+          name: new Date(now.setDate(now.getDate() - 6 + i)).toLocaleDateString('en-US', { weekday: 'short' }),
+          sales: Math.floor(Math.random() * 1000) + 500,
+          rentals: Math.floor(Math.random() * 800) + 300
+        }));
+
+      case '30days':
+        return Array.from({ length: 4 }).map((_, i) => ({
+          name: `Week ${i + 1}`,
+          sales: Math.floor(Math.random() * 3000) + 1500,
+          rentals: Math.floor(Math.random() * 2500) + 1000
+        }));
+
+      case '90days':
+        return Array.from({ length: 12 }).map((_, i) => ({
+          name: `W${i + 1}`,
+          sales: Math.floor(Math.random() * 5000) + 2000,
+          rentals: Math.floor(Math.random() * 4000) + 1500
+        }));
+
+      case '1year':
+        return Array.from({ length: 12 }).map((_, i) => ({
+          name: new Date(2023, i).toLocaleDateString('en-US', { month: 'short' }),
+          sales: Math.floor(Math.random() * 15000) + 5000,
+          rentals: Math.floor(Math.random() * 12000) + 4000
+        }));
+
+      default:
+        return [];
+    }
+  };
+
+  const chartData = useMemo(() => generateChartData(timeFilter), [timeFilter]);
+
+  // Custom Tooltip Component
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-[#00031b] p-4 rounded-lg border border-[#1a2d6d]">
+          <p className="text-purple-400 font-semibold mb-2">
+            {timeFilter === '7days' ? 'Day' : 
+             timeFilter === '30days' ? 'Week' : 
+             timeFilter === '90days' ? 'Week' : 'Month'}: {label}
+          </p>
+          <div className="space-y-1">
+            <p className="text-sm text-purple-200">
+              <span className="inline-block w-16">Sales:</span> 
+              <span className="ml-2">${payload[0].value.toLocaleString()}</span>
+            </p>
+            <p className="text-sm text-purple-200">
+              <span className="inline-block w-16">Rentals:</span> 
+              <span className="ml-2">${payload[1].value.toLocaleString()}</span>
+            </p>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  // XAxis label formatter
+  const xAxisFormatter = (value: string) => {
+    if (timeFilter === '1year') return value.slice(0, 3);
+    return value;
+  };
+
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-6">Dashboard Overview</h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-[#23234d] p-6 rounded-lg shadow">
-          <div className="text-3xl font-bold text-[#7b5cff]">1,245</div>
-          <div className="text-gray-400 mt-2">Total Users</div>
+    <div className="p-6 space-y-8">
+      {/* Statistics Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard 
+          title="Total Users" 
+          value={statsData.totalUsers}
+          trend="12.5%"
+          icon="👥"
+          color="bg-purple-500/20"
+        />
+        <StatCard 
+          title="Total Movies" 
+          value={statsData.totalMovies}
+          trend="8.2%"
+          icon="🎬"
+          color="bg-blue-500/20"
+        />
+        <StatCard 
+          title="Total Purchases" 
+          value={statsData.totalPurchases}
+          trend="18.4%"
+          icon="💰"
+          color="bg-green-500/20"
+        />
+        <StatCard 
+          title="Total Earnings" 
+          value={statsData.totalEarnings}
+          trend="22.3%"
+          icon="💸"
+          color="bg-pink-500/20"
+        />
+      </div>
+
+      {/* Analytics Section */}
+      <div className="bg-gradient-to-br from-[#000a3a] to-[#000a3a]/50 p-6 rounded-xl border border-[#00175f]/30">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+          <h3 className="text-lg font-semibold">Sales & Rental Analytics</h3>
+          <div className="flex gap-3">
+            <select 
+              value={timeFilter}
+              onChange={(e) => setTimeFilter(e.target.value as typeof timeFilter)}
+              className="bg-[#00031b] px-3 py-2 rounded-lg text-sm border border-[#00175f]/50"
+            >
+              <option value="7days">Last 7 Days</option>
+              <option value="30days">Last 30 Days</option>
+              <option value="90days">Last 90 Days</option>
+              <option value="1year">Last Year</option>
+            </select>
+            <div className="flex gap-2 bg-[#00031b] p-1 rounded-lg">
+              <button 
+                onClick={() => setChartType('sales')}
+                className={`px-3 py-1 rounded-md text-sm ${
+                  chartType === 'sales' ? 'bg-purple-500/20 text-purple-400' : 'text-gray-400'
+                }`}
+              >
+                Sales
+              </button>
+              <button 
+                onClick={() => setChartType('rentals')}
+                className={`px-3 py-1 rounded-md text-sm ${
+                  chartType === 'rentals' ? 'bg-purple-500/20 text-purple-400' : 'text-gray-400'
+                }`}
+              >
+                Rentals
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="bg-[#23234d] p-6 rounded-lg shadow">
-          <div className="text-3xl font-bold text-[#7b5cff]">320</div>
-          <div className="text-gray-400 mt-2">Movies</div>
-        </div>
-        <div className="bg-[#23234d] p-6 rounded-lg shadow">
-          <div className="text-3xl font-bold text-[#7b5cff]">2,100</div>
-          <div className="text-gray-400 mt-2">Active Subscriptions</div>
+
+        {/* Chart Container */}
+        <div className="h-96 bg-[#00031b] rounded-lg p-4">
+        <ResponsiveContainer width="100%" height="100%">
+          {chartType === 'sales' ? (
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#1a2d6d" />
+              <XAxis 
+                dataKey="name" 
+                stroke="#8b5cf6" 
+                tick={{ fill: '#8b5cf6' }}
+                tickFormatter={xAxisFormatter}
+              />
+              <YAxis 
+                stroke="#8b5cf6" 
+                tick={{ fill: '#8b5cf6' }}
+                tickFormatter={(value) => `$${value.toLocaleString()}`}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend 
+                formatter={(value) => (
+                  <span className="text-purple-400 capitalize">{value}</span>
+                )}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="sales" 
+                stroke="#8b5cf6" 
+                strokeWidth={2}
+                dot={{ fill: '#8b5cf6' }}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="rentals" 
+                stroke="#4f46e5" 
+                strokeWidth={2}
+                dot={{ fill: '#4f46e5' }}
+              />
+            </LineChart>
+          ) : (
+            <BarChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#1a2d6d" />
+              <XAxis 
+                dataKey="name" 
+                stroke="#8b5cf6" 
+                tick={{ fill: '#8b5cf6' }}
+                tickFormatter={xAxisFormatter}
+              />
+              <YAxis 
+                stroke="#8b5cf6" 
+                tick={{ fill: '#8b5cf6' }}
+                tickFormatter={(value) => `$${value.toLocaleString()}`}
+              />
+              <Tooltip 
+                content={<CustomTooltip />}
+                cursor={{ fill: 'transparent' }}
+              />
+              <Bar 
+                dataKey="sales" 
+                fill="#8b5cf6" 
+                radius={[4, 4, 0, 0]}
+                activeBar={false}
+                style={{ fillOpacity: 1 }}
+              />
+              <Bar 
+                dataKey="rentals" 
+                fill="#4f46e5" 
+                radius={[4, 4, 0, 0]}
+                activeBar={false}
+                style={{ fillOpacity: 1 }}
+              />
+            </BarChart>
+          )}
+        </ResponsiveContainer>
         </div>
       </div>
-      <div className="bg-[#23234d] p-6 rounded-lg shadow">
-        <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
-        <ul className="text-gray-300 space-y-2">
-          <li>
-            User <span className="text-[#7b5cff]">john_doe</span> added a new
-            movie.
-          </li>
-          <li>
-            Movie <span className="text-[#7b5cff]">Inception</span> was updated.
-          </li>
-          <li>
-            User <span className="text-[#7b5cff]">emma</span> subscribed to
-            premium.
-          </li>
-        </ul>
-      </div>
+
+     
     </div>
-
-    // <div>
-    //   <h1 className="text-2xl font-bold mb-6">Manage Movies</h1>
-    //   <button className="mb-4 px-4 py-2 bg-[#7b5cff] text-white rounded hover:bg-[#5a3fd7]">
-    //     Add Movie
-    //   </button>
-    //   <div className="overflow-x-auto">
-    //     <table className="min-w-full bg-[#23234d] rounded-lg">
-    //       <thead>
-    //         <tr>
-    //           <th className="px-4 py-2 text-left">Title</th>
-    //           <th className="px-4 py-2 text-left">Genre</th>
-    //           <th className="px-4 py-2 text-left">Year</th>
-    //           <th className="px-4 py-2 text-left">Actions</th>
-    //         </tr>
-    //       </thead>
-    //       <tbody>
-    //         <tr className="border-t border-[#18183a]">
-    //           <td className="px-4 py-2">Inception</td>
-    //           <td className="px-4 py-2">Sci-Fi</td>
-    //           <td className="px-4 py-2">2010</td>
-    //           <td className="px-4 py-2">
-    //             <button className="text-[#7b5cff] hover:underline mr-2">
-    //               Edit
-    //             </button>
-    //             <button className="text-red-400 hover:underline">Delete</button>
-    //           </td>
-    //         </tr>
-    //         {/* More rows... */}
-    //       </tbody>
-    //     </table>
-    //   </div>
-    // </div>
-
-    // <div>
-    //   <h1 className="text-2xl font-bold mb-6">Manage Users</h1>
-    //   <div className="overflow-x-auto">
-    //     <table className="min-w-full bg-[#23234d] rounded-lg">
-    //       <thead>
-    //         <tr>
-    //           <th className="px-4 py-2 text-left">Username</th>
-    //           <th className="px-4 py-2 text-left">Email</th>
-    //           <th className="px-4 py-2 text-left">Role</th>
-    //           <th className="px-4 py-2 text-left">Actions</th>
-    //         </tr>
-    //       </thead>
-    //       <tbody>
-    //         <tr className="border-t border-[#18183a]">
-    //           <td className="px-4 py-2">john_doe</td>
-    //           <td className="px-4 py-2">john@example.com</td>
-    //           <td className="px-4 py-2">User</td>
-    //           <td className="px-4 py-2">
-    //             <button className="text-[#7b5cff] hover:underline mr-2">
-    //               Edit
-    //             </button>
-    //             <button className="text-red-400 hover:underline">Delete</button>
-    //           </td>
-    //         </tr>
-    //         {/* More rows... */}
-    //       </tbody>
-    //     </table>
-    //   </div>
-    // </div>
   );
 };
 
-export default Dashboard;
+// StatCard Component
+const StatCard: React.FC<StatCardProps> = ({ title, value, trend, icon, color }) => (
+  <div className="bg-gradient-to-br from-[#000a3a] to-[#000a3a]/50 p-6 rounded-xl border border-[#00175f]/30">
+    <div className="flex justify-between items-start">
+      <div>
+        <h4 className="text-gray-400 text-sm mb-2">{title}</h4>
+        <p className="text-2xl font-bold">{value}</p>
+        <span className="text-green-400 text-sm mt-2 inline-flex items-center">
+          ↑ {trend} <span className="text-gray-500 ml-2">vs last month</span>
+        </span>
+      </div>
+      <div className={`${color} p-3 rounded-lg`}>
+        <span className="text-2xl">{icon}</span>
+      </div>
+    </div>
+  </div>
+);
+
+export default OverviewStats;
