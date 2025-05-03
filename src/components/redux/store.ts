@@ -9,18 +9,20 @@ import {
   PURGE,
   REGISTER,
 } from "redux-persist";
+import { baseApi } from "./api/baseApi";
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
-      wishList: wishListSlice,
+      // wishList: wishListSlice,
+      [baseApi.reducerPath]: baseApi.reducer,
     },
-    middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware({
+    middleware: (getDefaultMiddlewares) =>
+      getDefaultMiddlewares({
         serializableCheck: {
           ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
         },
-      }),
+      }).concat(baseApi.middleware),
   });
 };
 
