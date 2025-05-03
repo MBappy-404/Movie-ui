@@ -37,16 +37,17 @@ const contentApi = baseApi.injectEndpoints({
     }),
     deleteContent: builder.mutation({
       query: (params) => ({
-        url: `/content/${params?.productId}`,
+        url: `/content/${params?.id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["content"],
     }),
     getContent: builder.query({
       query: (params) => ({
-        url: `/content/${params?.productId}`,
+        url: `/content/${params?.id}`,
         method: "GET",
       }),
+      providesTags: ['content'],
     }),
     updateContent: builder.mutation({
       query: ({ productId, formData }) => ({
