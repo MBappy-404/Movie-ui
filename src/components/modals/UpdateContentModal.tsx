@@ -13,21 +13,45 @@ import {
 } from "@/components/redux/features/content/contentApi";
 import { TGenre, TGenresOptions } from "@/components/types/genre";
 import { TPlatform, TPlatformsOptions } from "@/components/types/platform";
-import { Movie } from "@/app/(DashboardLayout)/dashboard/content/page";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 
-type TUpdateContentModal = {
+export interface Content {
+  id: string;
+  title: string;
+  description: string;
+  isAvailable: boolean;
+  price: number;
+  releaseYear: string;
+  synopsis: string;
+  director: string;
+  duration: string;
+  producer: string;
+  actor: string;
+  actress: string;
+  rentprice: string;
+  contentLink: string;
+  genreId: string;
+  platformId: string;
+}
+
+interface UpdateContentModalProps {
   isUpdateModalOpen: boolean;
-  setUpdateModalOpen: Dispatch<SetStateAction<boolean>>;
-  content: any;
-};
+  setUpdateModalOpen: (isOpen: boolean) => void;
+  content: Content | null;
+}
 
 const UpdateContentModal = ({
   isUpdateModalOpen,
   setUpdateModalOpen,
   content,
-}: TUpdateContentModal) => {
-  const { register, handleSubmit, reset, setValue } = useForm<Movie>();
+}: UpdateContentModalProps) => {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { errors },
+  } = useForm<Content>();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [thumbnail, setThumbnail] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -64,11 +88,10 @@ const UpdateContentModal = ({
 
   const clearImage = () => {
     setPreviewImage(null);
-    setValue("thumbnail", "");
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const onSubmit: SubmitHandler<Movie> = async (data) => {
+  const onSubmit: SubmitHandler<Content> = async (data) => {
     console.log(data);
     const toastId = toast.loading("Updating Content....", { duration: 2000 });
 
@@ -83,6 +106,7 @@ const UpdateContentModal = ({
         ...data,
         price: data.price,
         rentprice: data.rentprice,
+        isAvailable: data.isAvailable || false,
       },
       contentLink: data.contentLink,
     };
@@ -91,7 +115,7 @@ const UpdateContentModal = ({
 
     // updating movie
     try {
-      const res = await updateContent({ formData, contentId: content.id });
+      const res = await updateContent({ formData, contentId: content?.id });
       console.log(res);
       if ("error" in res && res.error) {
         const errorMessage =
@@ -117,19 +141,20 @@ const UpdateContentModal = ({
   useEffect(() => {
     if (content) {
       reset({
-        title: content?.title || "",
-        price: Number(content?.price || ""),
-        releaseYear: content?.releaseYear || "",
-        synopsis: content?.synopsis || "",
-        director: content?.director || "",
-        duration: content?.duration || "",
-        producer: content?.producer || "",
-        actor: content?.actor || "",
-        actress: content?.actress || "",
-        rentprice: content?.rentprice || "",
-        contentLink: content?.ContentLinks?.contentLink || "",
-        genreId: content?.genre?.id || "",
-        platformId: content?.platform?.id || "",
+        title: content.title || "",
+        price: content.price || 0,
+        releaseYear: content.releaseYear || "",
+        synopsis: content.synopsis || "",
+        director: content.director || "",
+        duration: content.duration || "",
+        producer: content.producer || "",
+        actor: content.actor || "",
+        actress: content.actress || "",
+        rentprice: content.rentprice || "",
+        contentLink: content.contentLink || "",
+        genreId: content.genreId || "",
+        platformId: content.platformId || "",
+        isAvailable: content.isAvailable || false,
       });
     }
   }, [content, reset]);
@@ -201,11 +226,14 @@ const UpdateContentModal = ({
                   {/* Left Column */}
                   <div className="space-y-4">
                     <input
+                      {...register("title", { required: true })}
                       defaultValue={content?.title}
-                      {...register("title")}
                       placeholder="Title"
                       className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
                     />
+                    {errors.title && (
+                      <p className="text-red-500">Title is required!</p>
+                    )}
 
                     <input
                       {...register("director")}
@@ -312,25 +340,6 @@ const UpdateContentModal = ({
                     placeholder="Synopsis"
                     className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500 h-32"
                   />
-
-                  {/* <div className="flex gap-6">
-                      <label className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          {...register("spoilerWarning")}
-                          className="w-5 h-5 text-purple-500 rounded focus:ring-purple-500"
-                        />
-                        <span className="text-gray-400">Spoiler Warning</span>
-                      </label>
-                      <label className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          {...register("isAvailable")}
-                          className="w-5 h-5 text-purple-500 rounded focus:ring-purple-500"
-                        />
-                        <span className="text-gray-400">Available</span>
-                      </label>
-                    </div> */}
                 </div>
 
                 {/* Form Buttons */}

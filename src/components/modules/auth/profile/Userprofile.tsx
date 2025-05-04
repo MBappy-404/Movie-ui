@@ -1,6 +1,8 @@
 "use client";
-import { useGetUserQuery } from "@/components/redux/features/user/userApi";
-import { useState } from "react";
+import { useGetUserQuery, useUpdateUserMutation } from "@/components/redux/features/user/userApi";
+import { useState, useRef } from "react";
+import React from "react";
+import { toast } from "sonner";
 
 interface UserData {
   name: string;
@@ -8,6 +10,7 @@ interface UserData {
   joinDate: string;
   avatar: string;
   bio: string;
+  contactNumber?: string;
   stats: {
     watched: number;
     watching: number;
@@ -24,14 +27,30 @@ interface WatchlistItem {
   progress: number;
 }
 
+interface FormData {
+  name: string;
+  email: string;
+  contactNumber: string;
+}
+
 const UserProfile = ({ userData }: any) => {
   const userId = userData?.id;
   const { data } = useGetUserQuery(userId);
+  const [updateUser] = useUpdateUserMutation();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [activeTab, setActiveTab] = useState<"profile" | "watchlist">(
     "profile"
   );
   const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState<FormData>({
+    name: "",
+    email: "",
+    contactNumber: "",
+  });
+  const [previewImage, setPreviewImage] = useState<string>("");
+  const [thumbnail, setThumbnail] = useState<File | null>(null);
+
   const [user, setUser] = useState<UserData>({
     name: "John Doe",
     email: "john@movielovers.com",
@@ -65,9 +84,91 @@ const UserProfile = ({ userData }: any) => {
     },
   ]);
 
-  const handleSave = (e: React.FormEvent) => {
+  // Update formData when user data is loaded
+  React.useEffect(() => {
+    if (data?.data) {
+      setFormData({
+        name: data.data.name || "",
+        email: data.data.email || "",
+        contactNumber: data.data.contactNumber || "",
+      });
+      setPreviewImage(data.data.profilePhoto || "");
+    }
+  }, [data]);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (file) {
+      setThumbnail(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const clearImage = () => {
+    setPreviewImage("");
+    setThumbnail(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsEditing(false);
+    const toastId = toast.loading("Updating Profile...");
+
+    try {
+      if (!userId) {
+        throw new Error('User ID is required');
+      }
+
+      const userData = {
+        name: formData.name,
+        email: formData.email,
+        contactNumber: formData.contactNumber,
+      };
+
+      const formDataToSend = new FormData();
+      formDataToSend.append("data", JSON.stringify(userData));
+      
+      if (thumbnail) {
+        formDataToSend.append("file", thumbnail);
+      }
+
+      const response = await updateUser({
+        id: userId,
+        data: formDataToSend
+      }).unwrap();
+
+      if (response?.data) {
+        setFormData(prev => ({
+          ...prev,
+          name: response.data.name || prev.name,
+          email: response.data.email || prev.email,
+          contactNumber: response.data.contactNumber || prev.contactNumber
+        }));
+
+        if (response.data.profilePhoto) {
+          setPreviewImage(response.data.profilePhoto);
+        }
+
+        setIsEditing(false);
+        toast.success("Profile updated successfully!", { id: toastId });
+      }
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+      toast.error("Failed to update profile", { id: toastId });
+    }
   };
 
   return (
@@ -81,13 +182,41 @@ const UserProfile = ({ userData }: any) => {
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-tr from-blue-500 to-purple-500 rounded-full animate-spin-slow blur-2xl opacity-30"></div>
                 <img
-                  src={
-                    data?.data?.profilePhoto
-                      ? data?.data?.profilePhoto
-                      : user?.avatar
-                  }
-                  alt={data?.data?.name ? data?.data?.name : user?.name}
+                  src={previewImage || user?.avatar}
+                  alt={formData.name || user?.name}
                   className="w-36 h-36 rounded-full border-4 border-white/10 shadow-xl object-cover"
+                />
+                {isEditing && (
+                  <div className="absolute bottom-0 right-0 flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="bg-blue-500 p-2 rounded-full hover:bg-blue-600 transition-colors"
+                    >
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    </button>
+                    {previewImage && (
+                      <button
+                        type="button"
+                        onClick={clearImage}
+                        className="bg-red-500 p-2 rounded-full hover:bg-red-600 transition-colors"
+                      >
+                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
                 />
               </div>
               <div className="flex-1 text-center md:text-left">
@@ -198,12 +327,11 @@ const UserProfile = ({ userData }: any) => {
                     </label>
                     <input
                       type="text"
-                      value={data?.data?.name ? data?.data?.name : user.name}
-                      onChange={(e) =>
-                        setUser({ ...user, name: e.target.value })
-                      }
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
                       disabled={!isEditing}
-                      className="w-full px-4 py-3 text-white bg-white/10 border border-white/10 rounded-xl   focus:border-gray-500 outline-none transition-all disabled:opacity-50"
+                      className="w-full px-4 py-3 text-white bg-white/10 border border-white/10 rounded-xl focus:border-gray-500 outline-none transition-all disabled:opacity-50"
                     />
                   </div>
 
@@ -213,12 +341,11 @@ const UserProfile = ({ userData }: any) => {
                     </label>
                     <input
                       type="email"
-                      value={data?.data?.email ? data?.data?.email : user.email}
-                      onChange={(e) =>
-                        setUser({ ...user, email: e.target.value })
-                      }
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
                       disabled={!isEditing}
-                      className="w-full px-4 py-3 text-white bg-white/10  border border-white/10 rounded-xl  focus:ring-purple-400 focus:border-gray-500 outline-none transition-all disabled:opacity-50"
+                      className="w-full px-4 py-3 text-white bg-white/10 border border-white/10 rounded-xl focus:ring-purple-400 focus:border-gray-500 outline-none transition-all disabled:opacity-50"
                     />
                   </div>
                 </div>
@@ -229,33 +356,13 @@ const UserProfile = ({ userData }: any) => {
                     </label>
                     <input
                       type="text"
-                      value={
-                        data?.data?.contactNumber
-                          ? data?.data?.contactNumber
-                          : user.name
-                      }
-                      onChange={(e) =>
-                        setUser({ ...user, name: e.target.value })
-                      }
+                      name="contactNumber"
+                      value={formData.contactNumber}
+                      onChange={handleChange}
                       disabled={!isEditing}
-                      className="w-full px-4 py-3 text-white bg-white/10 border border-white/10 rounded-xl   focus:border-gray-500 outline-none transition-all disabled:opacity-50"
+                      className="w-full px-4 py-3 text-white bg-white/10 border border-white/10 rounded-xl focus:border-gray-500 outline-none transition-all disabled:opacity-50"
                     />
                   </div>
-
-                  {/* <div className="space-y-4">
-                    <label className="block text-sm font-medium text-gray-300">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      value={data?.data?.email ? data?.data?.email : user.email}
-                      onChange={(e) =>
-                        setUser({ ...user, email: e.target.value })
-                      }
-                      disabled={!isEditing}
-                      className="w-full px-4 py-3 text-white bg-white/10  border border-white/10 rounded-xl  focus:ring-purple-400 focus:border-gray-500 outline-none transition-all disabled:opacity-50"
-                    />
-                  </div> */}
                 </div>
 
                 <div className="flex justify-end gap-4 border-t border-white/10 pt-8">

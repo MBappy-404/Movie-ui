@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import wishListSlice from "./features/wishListSlice";
+import userReducer from "./features/user/userState";
 
 import {
   FLUSH,
@@ -14,7 +15,7 @@ import { baseApi } from "./api/baseApi";
 export const makeStore = () => {
   return configureStore({
     reducer: {
-      // wishList: wishListSlice,
+      user: userReducer,
       [baseApi.reducerPath]: baseApi.reducer,
     },
     middleware: (getDefaultMiddlewares) =>

@@ -16,8 +16,37 @@ const userApi = baseApi.injectEndpoints({
                 method: "GET",
             }),
             providesTags: ['user'],
+        }),
+        createUser: builder.mutation({
+            query: (data) => ({
+                url: "/user",
+                method: "POST",
+                body: data,
+            }),
+            invalidatesTags: ['user'],
+        }),
+        updateUser: builder.mutation({
+            query: ({ id, data }) => ({
+                url: `/user/${id}`,
+                method: 'PATCH',
+                body: data,
+            }),
+            invalidatesTags: ['user'],
+        }),
+        deleteUser: builder.mutation({
+            query: (id) => ({
+                url: `/user/${id}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: ['user'],
         })
     })
 })
 
-export const { useGetAllUserQuery, useGetUserQuery}= userApi
+export const { 
+    useGetAllUserQuery, 
+    useGetUserQuery, 
+    useCreateUserMutation,
+    useUpdateUserMutation,
+    useDeleteUserMutation 
+} = userApi

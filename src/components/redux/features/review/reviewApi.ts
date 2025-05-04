@@ -14,40 +14,57 @@ const reviewApi = baseApi.injectEndpoints({
 
         getAllReview: builder.query({
             query: () => {
-      
-              return {
-                url: "/reviews",
-                method: "GET",
-              };
+                return {
+                    url: "/reviews",
+                    method: "GET",
+                };
+            },
+            transformResponse: (response: any) => {
+                return {
+                    data: response?.data || [],
+                };
             },
             providesTags: ["review"],
-            // transformResponse: (response: any) => {
-            //     return {
-            //         data: response?.data,
-            //     }
-            // }
-          }),
-          getAllReviewByContentId: builder.query({
-            query: (contentId) => {
-      
-              return {
-                url: `/reviews/${contentId}`,
-                method: "GET",
-              };
-            },
-            providesTags: ["review"],
-            // transformResponse: (response: any) => {
-            //     return {
-            //         data: response?.data,
-            //     }
-            // }
-          }),
+        }),
 
+        getAllReviewByContentId: builder.query({
+            query: (contentId) => {
+                return {
+                    url: `/reviews/${contentId}`,
+                    method: "GET",
+                };
+            },
+            providesTags: ["review"],
+            // transformResponse: (response: any) => {
+            //     return {
+            //         data: response?.data,
+            //     }
+            // }
+        }),
+
+        updateReview: builder.mutation({
+            query: ({ id, ...data }) => ({
+                url: `/reviews/${id}`,
+                method: "PATCH",
+                body: data,
+            }),
+            invalidatesTags: ["review"],
+        }),
+
+        deleteReview: builder.mutation({
+            query: (id) => ({
+                url: `/reviews/${id}`,
+                method: "DELETE"
+            }),
+            invalidatesTags: ['review']
+        }),
     })
-})
+});
 
 export const {
     useCreateReviewMutation,
     useGetAllReviewQuery,
-    useGetAllReviewByContentIdQuery
+    useGetAllReviewByContentIdQuery,
+    useUpdateReviewMutation,
+    useDeleteReviewMutation
 } = reviewApi
