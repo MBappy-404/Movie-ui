@@ -39,8 +39,11 @@ interface ReviewFormData {
 const MovieDetails = ({ currentUser }: any) => {
     const router = useRouter();
     const { id } = useParams();
+    
 
-    const { data: movieDetails, isLoading } = useGetContentQuery(id )
+
+    const { data: movieDetails, isLoading } = useGetContentQuery(id);
+
     const { data: allMovies } = useGetAllContentQuery({ undefined })
     const { data: SingleUser } = useGetUserQuery(currentUser?.id)
     
