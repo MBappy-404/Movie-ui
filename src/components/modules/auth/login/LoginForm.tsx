@@ -19,11 +19,14 @@ import { loginUser } from "@/services/AuthServices";
 import { useUser } from "@/components/context/UserContext";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useAppDispatch } from "@/components/redux/hooks";
+import { setUser, setToken } from "@/components/redux/features/user/userState";
 
 const LoginForm = () => {
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirectPath");
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const form = useForm({
     resolver: zodResolver(loginValidation),
   });
@@ -38,6 +41,10 @@ const LoginForm = () => {
       const result = await loginUser(data);
 
       if (result?.success) {
+        // Set user data in Redux
+        dispatch(setUser(result.data.user));
+        dispatch(setToken(result.data.accessToken));
+        
         toast.success(result.message);
         if (redirect) {
           router.push(redirect);

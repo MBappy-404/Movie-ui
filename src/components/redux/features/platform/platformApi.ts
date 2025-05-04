@@ -25,13 +25,6 @@ const platformApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["platforms"],
     }),
-    getPlatform: builder.query({
-      query: (platformId) => ({
-        url: `/platform/${platformId}`,
-        method: "GET",
-      }),
-      providesTags: ["platforms"],
-    }),
     deletePlatform: builder.mutation({
       query: (platformId) => ({
         url: `/platform/${platformId}`,
@@ -45,5 +38,6 @@ const platformApi = baseApi.injectEndpoints({
 export const {
   useGetAllPlatformQuery,
   useCreatePlatformMutation,
+  useUpdatePlatformMutation,
   useDeletePlatformMutation,
 } = platformApi;
