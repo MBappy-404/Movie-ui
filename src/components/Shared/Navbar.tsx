@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Bars3Icon,
@@ -10,23 +10,20 @@ import {
   TvIcon,
   BookmarkIcon,
   ArrowRightEndOnRectangleIcon,
-  SunIcon,
-  MoonIcon,
   QuestionMarkCircleIcon,
 } from "@heroicons/react/24/outline";
-
 import { useUser } from "../context/UserContext";
 import { logout } from "@/services/AuthServices";
-
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
   const { user, setIsLoading } = useUser();
+  const pathname = usePathname();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const navLinks = [
     { name: "Home", path: "/", icon: HomeModernIcon },
@@ -38,20 +35,30 @@ const Navbar = () => {
   const handleLogout = () => {
     logout();
     setIsLoading(true);
+    setDropdownOpen(false);
   };
 
+  // Desktop scroll handler
   useEffect(() => {
     const handleScroll = () => {
-      const scroll = window.scrollY;
-      setIsScrolled(scroll > 10);
-      document.documentElement.style.setProperty(
-        "--scroll-opacity",
-        Math.min(scroll / 80, 1).toString()
-      );
+      if (window.innerWidth >= 768) { // Only for desktop
+        setIsScrolled(window.scrollY > 10);
+      }
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Mobile menu body lock
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+      document.documentElement.style.overflow = 'unset';
+    }
+  }, [isOpen]);
 
   const mobileMenuVariants = {
     open: { x: 0, transition: { type: "spring", stiffness: 300, damping: 30 } },
@@ -60,24 +67,14 @@ const Navbar = () => {
 
   const navItemVariants = {
     hover: { scale: 1.05, color: "#818cf8" },
-    tap: { scale: 0.95 },
+    rest: { scale: 1, color: "#e5e7eb" },
   };
 
   return (
-    <nav
-      className={`fixed w-full z-[990] bg-gray-900 md:bg-none transition-all duration-500 ${
-        isScrolled
-          ? "md:backdrop-blur-md md:bg-gray-900/90"
-          : "md:bg-transparent"
-      }`}
-    >
+    <nav className={`fixed w-full z-[990] ${isScrolled ? 'backdrop-blur-md bg-gray-900/90' : 'bg-gray-900 md:bg-transparent'} transition-all duration-500`}>
       <div className="container mx-auto px-4 xl:px-12">
         <div className="flex items-center justify-between h-16 xl:h-20">
-          {/* Logo */}
-          <Link
-            href="/"
-            className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent"
-          >
+          <Link href="/" className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent">
             CineVerse
           </Link>
 
@@ -86,13 +83,24 @@ const Navbar = () => {
             {navLinks.map(({ name, path, icon: Icon }) => (
               <Link key={name} href={path}>
                 <motion.div
-                  className="flex items-center gap-2 text-gray-300 hover:text-indigo-400 group"
-                  variants={navItemVariants}
+                  className="relative group"
+                  initial="rest"
                   whileHover="hover"
+                  animate="rest"
                 >
-                  <Icon className="w-5 h-5 transition-colors" />
-                  <span className="font-bold text-lg">{name}</span>
-                  <div className="absolute translate-y-1 bottom-0 left-0 w-full h-0.5 bg-indigo-400 scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                  <motion.div className="flex items-center gap-2" variants={navItemVariants}>
+                    <Icon className={`w-5 h-5 ${pathname === path ? 'text-indigo-400' : 'text-gray-200'}`} />
+                    <span className={`font-bold text-lg ${pathname === path ? 'text-indigo-400' : 'text-gray-200'}`}>
+                      {name}
+                    </span>
+                  </motion.div>
+                  <motion.div
+                    className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-400"
+                    initial={{ scaleX: pathname === path ? 1 : 0 }}
+                    animate={{ scaleX: pathname === path ? 1 : 0 }}
+                    whileHover={{ scaleX: 1 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  />
                 </motion.div>
               </Link>
             ))}
@@ -101,12 +109,11 @@ const Navbar = () => {
           {/* Right Section */}
           <div className="flex items-center gap-6">
             {user && (
-              <div
-                className="relative"
-                onMouseEnter={() => setDropdownOpen(true)}
-                onMouseLeave={() => setDropdownOpen(false)}
-              >
-                <button className="p-2 text-gray-300 hover:text-indigo-400">
+              <div ref={dropdownRef} className="relative">
+                <button
+                  className="p-2 text-gray-300 hover:text-indigo-400 transition-colors"
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                >
                   <UserCircleIcon className="w-7 h-7" />
                 </button>
 
@@ -119,20 +126,19 @@ const Navbar = () => {
                       exit={{ opacity: 0, y: 10 }}
                     >
                       <div className="px-4 py-2 border-b border-gray-700">
-                        <p className="text-sm font-medium text-gray-200">
-                          {user.email}
-                        </p>
+                        <p className="text-sm font-medium text-gray-200 truncate">{user.email}</p>
                       </div>
                       <Link
                         href="/profile"
-                        className="flex items-center gap-2 px-4 py-2 text-gray-300 hover:bg-gray-700"
+                        className="flex items-center gap-2 px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors"
+                        onClick={() => setDropdownOpen(false)}
                       >
                         <UserCircleIcon className="w-5 h-5" />
                         Profile
                       </Link>
                       <button
                         onClick={handleLogout}
-                        className="flex items-center gap-2 w-full px-4 py-2 text-gray-300 hover:bg-gray-700"
+                        className="flex items-center gap-2 w-full px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors"
                       >
                         <ArrowRightEndOnRectangleIcon className="w-5 h-5" />
                         Logout
@@ -146,7 +152,7 @@ const Navbar = () => {
             {!user && (
               <Link href="/login">
                 <motion.button
-                  className="px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-shadow"
+                  className="px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -155,27 +161,22 @@ const Navbar = () => {
               </Link>
             )}
 
-            {/* Mobile Menu Button */}
             <motion.button
-              className="md:hidden p-2 text-gray-300 hover:text-indigo-400"
+              className="md:hidden p-2 text-gray-300 hover:text-indigo-400 transition-colors"
               onClick={() => setIsOpen(!isOpen)}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
             >
-              {isOpen ? (
-                <XMarkIcon className="w-7 h-7" />
-              ) : (
-                <Bars3Icon className="w-7 h-7" />
-              )}
+              {isOpen ? <XMarkIcon className="w-7 h-7" /> : <Bars3Icon className="w-7 h-7" />}
             </motion.button>
           </div>
         </div>
 
-        {/* Mobile Sidebar */}
+        {/* Mobile Sidebar - Always has solid background */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              className="fixed inset-0 z-40"
+              className="fixed inset-0 z-[1000]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -184,9 +185,9 @@ const Navbar = () => {
                 className="absolute inset-0 bg-black/30 backdrop-blur-sm"
                 onClick={() => setIsOpen(false)}
               />
-
+              
               <motion.div
-                className="absolute right-0 top-0 h-full w-[75%] bg-gray-900 shadow-2xl border-l border-gray-800"
+                className="absolute right-0 top-0 h-full w-[75%] bg-gray-900 shadow-2xl border-l border-gray-800 overflow-y-auto"
                 variants={mobileMenuVariants}
                 initial="closed"
                 animate="open"
@@ -194,11 +195,9 @@ const Navbar = () => {
               >
                 <div className="h-full flex flex-col p-6">
                   <div className="flex justify-between items-center mb-8">
-                    <span className="text-xl font-bold text-indigo-400">
-                      CineVerse
-                    </span>
+                    <span className="text-xl font-bold text-indigo-400">CineVerse</span>
                     <button
-                      className="p-2 text-gray-400 hover:text-indigo-400"
+                      className="p-2 text-gray-400 hover:text-indigo-400 transition-colors"
                       onClick={() => setIsOpen(false)}
                     >
                       <XMarkIcon className="w-6 h-6" />
@@ -210,11 +209,11 @@ const Navbar = () => {
                       <Link
                         key={name}
                         href={path}
-                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800"
+                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors"
                         onClick={() => setIsOpen(false)}
                       >
-                        <Icon className="w-6 h-6 text-indigo-400" />
-                        <span className="text-gray-200 font-medium">
+                        <Icon className={`w-6 h-6 ${pathname === path ? 'text-indigo-400' : 'text-gray-200'}`} />
+                        <span className={`${pathname === path ? 'text-indigo-400' : 'text-gray-200'} font-medium`}>
                           {name}
                         </span>
                       </Link>
@@ -223,24 +222,13 @@ const Navbar = () => {
 
                   <div className="mt-8 pt-6 border-t border-gray-800">
                     <div className="flex flex-col gap-4">
-                      <button
-                        onClick={() => setDarkMode(!darkMode)}
-                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800"
-                      >
-                        {darkMode ? (
-                          <SunIcon className="w-6 h-6 text-indigo-400" />
-                        ) : (
-                          <MoonIcon className="w-6 h-6 text-indigo-400" />
-                        )}
-                        <span className="text-gray-200">Theme</span>
-                      </button>
-                      <a
+                      <Link
                         href="/support"
-                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800"
+                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors"
                       >
                         <QuestionMarkCircleIcon className="w-6 h-6 text-indigo-400" />
                         <span className="text-gray-200">Support</span>
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 </div>

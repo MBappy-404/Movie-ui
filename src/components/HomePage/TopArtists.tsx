@@ -115,15 +115,19 @@ const TopArtists = () => {
       variants={containerVariants}
       className="md:w-[90%] w-[95%] mx-auto pt-32 pb-20"
     >
-      <motion.h1
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-        className="text-3xl md:text-4xl font-bold text-white mb-12"
+      <motion.h2
+        className="text-3xl md:text-4xl font-bold text-white mb-8"
+        variants={{
+          hidden: { opacity: 0, x: -50 },
+          visible: {
+            opacity: 1,
+            x: 0,
+            transition: { type: "spring", stiffness: 100 },
+          },
+        }}
       >
         Top Artists
-      </motion.h1>
+      </motion.h2>
 
       <Swiper
         navigation={{
@@ -133,7 +137,6 @@ const TopArtists = () => {
         loop={true}
         speed={600}
         modules={[Navigation]}
-         
         breakpoints={{
           320: {
             slidesPerView: 1,

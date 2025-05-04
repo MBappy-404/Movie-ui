@@ -1,20 +1,28 @@
-'use client';
+"use client";
 
-import { useGetUserQuery } from '@/components/redux/features/user/userApi';
-import { Rating } from '@smastrom/react-rating';
-import Image from 'next/image';
-import React from 'react';
-import Comments from '../Comment/Comments';
+import { useGetUserQuery } from "@/components/redux/features/user/userApi";
+import { Rating } from "@smastrom/react-rating";
+import Image from "next/image";
+import React from "react";
+import Comments from "../Comment/Comments";
 
 // Separate component for individual review items
-const ReviewItem = ({ item, imageURL, UserData }: { item: any; imageURL: any; UserData: any }) => {
+const ReviewItem = ({
+  item,
+  imageURL,
+  UserData,
+}: {
+  item: any;
+  imageURL: any;
+  UserData: any;
+}) => {
   const { data: SingleUser } = useGetUserQuery(item.userId);
 
   const date = new Date(item.createdAt);
-  const formattedDate = date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+  const formattedDate = date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 
   return (
@@ -31,19 +39,13 @@ const ReviewItem = ({ item, imageURL, UserData }: { item: any; imageURL: any; Us
         </div>
         <div className="flex-grow">
           <div className="flex items-center gap-2">
-            <Rating
-              style={{ maxWidth: 80 }}
-              value={item.rating}
-              readOnly
-            />
+            <Rating style={{ maxWidth: 80 }} value={item.rating} readOnly />
             <p className="text-sm text-gray-400">{formattedDate}</p>
           </div>
           <p className="font-semibold text-white mt-1">
-            {SingleUser?.data?.name || 'Anonymous'}
+            {SingleUser?.data?.name || "Anonymous"}
           </p>
-          <p className="mt-2 text-gray-300 text-sm">
-            {item.reviewText}
-          </p>
+          <p className="mt-2 text-gray-300 text-sm">{item.reviewText}</p>
         </div>
       </div>
 
@@ -62,18 +64,30 @@ const ReviewCard = ({
   ReviewData: any;
   UserData: any;
 }) => {
+  const publishedReviews = ReviewData?.data?.filter(
+    (item: any) => item.status === "PUBLISHED"
+  );
+
+  console.log(publishedReviews);
+  
+
   return (
     <div>
-      <div className="bg-gray-900 rounded-lg p-6 shadow-md flex flex-col gap-6">
-        {ReviewData?.data?.map((item: any, index: number) => (
-          <ReviewItem 
-            key={item.id || index} 
-            item={item} 
-            imageURL={imageURL} 
-            UserData={UserData} 
-          />
-        ))}
-      </div>
+      {
+        !publishedReviews?.length && <p>No reviews found</p>
+      }
+      {publishedReviews?.length > 0 && (
+        <div className="bg-gray-900 rounded-lg p-6 shadow-md flex flex-col gap-6">
+          {publishedReviews?.map((item: any, index: number) => (
+            <ReviewItem
+              key={item.id || index}
+              item={item}
+              imageURL={imageURL}
+              UserData={UserData}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

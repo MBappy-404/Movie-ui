@@ -103,15 +103,19 @@ const TopNews = () => {
       variants={containerVariants}
       className="pb-20 lg:px-20"
     >
-      <motion.h1
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="text-4xl font-bold text-white mb-14"
+       <motion.h2
+        className="text-3xl ml-2 md:ml-0 md:text-4xl font-bold text-white mb-8"
+        variants={{
+          hidden: { opacity: 0, x: -50 },
+          visible: {
+            opacity: 1,
+            x: 0,
+            transition: { type: "spring", stiffness: 100 },
+          },
+        }}
       >
-        Top News
-      </motion.h1>
+       Top News
+      </motion.h2>
 
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}

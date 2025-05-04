@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { useEffect, useRef } from "react";
+import Link from "next/link";
 
 const HeroSection = () => {
   const videoUrl =
@@ -28,7 +29,7 @@ const HeroSection = () => {
           loop
           muted
           playsInline
-          className="absolute -top-20 md:-top-5 left-0 w-full h-full  object-cover"
+          className="absolute -top-16 md:-top-5 left-0 w-full h-full  object-cover"
         >
           <source src={videoUrl} type="video/mp4" />
           Your browser does not support the video tag.
@@ -80,9 +81,11 @@ const HeroSection = () => {
             for your next watch, CineVerse brings entertainment closer to you.
           </motion.p>
 
-          <button className="px-6 py-3 mt-5 cursor-pointer flex gap-2 items-center rounded-xl font-bold text-white bg-gradient-to-r from-blue-500 to-purple-500 shadow-md hover:opacity-90 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-500/40 text-sm md:text-lg   duration-300">
-            Explore Now <ArrowRightIcon className="w-5 h-5 font-bold" />
-          </button>
+          <Link href={"/movies"}>
+            <button className="px-6 py-3 mt-5 cursor-pointer flex gap-2 items-center rounded-xl font-bold text-white bg-gradient-to-r from-blue-500 to-purple-500 shadow-md hover:opacity-90 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-500/40 text-sm md:text-lg   duration-300">
+              Explore Now <ArrowRightIcon className="w-5 h-5 font-bold" />
+            </button>
+          </Link>
         </motion.div>
       </div>
 
