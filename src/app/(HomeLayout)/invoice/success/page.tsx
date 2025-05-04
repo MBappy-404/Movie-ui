@@ -2,6 +2,7 @@
 import { motion } from 'framer-motion';
 import { FiFilm, FiDownload } from 'react-icons/fi';
 import { useEffect, useState } from 'react';
+import { useParams, useSearchParams } from 'next/navigation';
 
 interface InvoiceItem {
   id: string;
@@ -22,6 +23,10 @@ const MovieInvoice = () => {
     dueDate: string;
     paymentStatus: 'paid' | 'pending';
   } | null>(null);
+
+  const searchParams = useSearchParams();
+  const tarnId = searchParams.get("tran_id");
+  console.log(tarnId);
 
   const generateMockData = () => ({
     invoiceNumber: `CINEFLIX-${Math.floor(1000 + Math.random() * 9000)}`,
@@ -75,6 +80,9 @@ const MovieInvoice = () => {
   const taxRate = 0.1;
   const tax = subtotal * taxRate;
   const total = subtotal + tax;
+
+  
+  
 
   return (
     <div className="min-h-screen translate-y-20 bg-[#00031b] p-6 md:p-12">
