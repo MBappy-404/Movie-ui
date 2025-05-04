@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { PlayIcon } from "@heroicons/react/24/solid";
 import { useGetAllContentQuery } from "../redux/features/content/contentApi";
+import { Movie } from "@/types";
 
 interface MovieCardProps {
   title: string;
@@ -14,55 +15,6 @@ interface MovieCardProps {
 }
 
 const TrendingMovies = () => {
-  const movies: MovieCardProps[] = [
-    {
-      title: "Inception",
-      rating: 8.8,
-      description:
-        "A thief who steals corporate secrets through dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.",
-      imageUrl:
-        "https://streamvid.jwsuperthemes.com/wp-content/uploads/2024/12/7I6VUdPj6tQECNHdviJkUHD2u89-scaled-630x400.jpg",
-      genre: "Sci-Fi/Action",
-      year: 2024,
-      duration: "2h 28m",
-    },
-    {
-      title: "The Dark Knight",
-      rating: 9.0,
-      description:
-        "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.",
-      imageUrl:
-        "https://streamvid.jwsuperthemes.com/wp-content/uploads/2024/12/7I6VUdPj6tQECNHdviJkUHD2u89-scaled-630x400.jpg",
-      genre: "Action/Drama",
-      year: 2024,
-      duration: "2h 32m",
-    },
-    {
-      title: "The Dark Knight",
-      rating: 9.0,
-      description:
-        "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.",
-      imageUrl:
-        "https://streamvid.jwsuperthemes.com/wp-content/uploads/2024/12/7I6VUdPj6tQECNHdviJkUHD2u89-scaled-630x400.jpg",
-      genre: "Action/Drama",
-      year: 2024,
-      duration: "2h 32m",
-    },
-    {
-      title: "The Dark Knight",
-      rating: 9.0,
-      description:
-        "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.",
-      imageUrl:
-        "https://streamvid.jwsuperthemes.com/wp-content/uploads/2024/12/7I6VUdPj6tQECNHdviJkUHD2u89-scaled-630x400.jpg",
-      genre: "Action/Drama",
-      year: 2024,
-      duration: "2h 32m",
-    },
-  ];
-
-  // const lastTrending = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
-
   const { data } = useGetAllContentQuery([
     { name: "sortBy", value: "reviews" },
     { name: "sortOrder", value: "desc" },
@@ -72,7 +24,7 @@ const TrendingMovies = () => {
     },
   ]);
    
-
+ 
   const moviesData = data?.data?.slice(0, 4)
 
   const sectionVariants = {
@@ -138,7 +90,7 @@ const TrendingMovies = () => {
       </motion.h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-        {moviesData?.map((movie: any) => (
+        {moviesData?.map((movie: Movie) => (
           <motion.div
             key={movie?.id}
             className="relative group cursor-pointer"
@@ -176,14 +128,14 @@ const TrendingMovies = () => {
                     </h3>
                     <div className="flex items-center bg-white/10 px-3 py-1 rounded-full">
                       <span className="text-yellow-400 text-sm">
-                        {movie.rating}/10
+                        {movie?.averageRating}/10
                       </span>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-4 mb-4">
-                    <span className="text-blue-400 text-sm">{movie.year}</span>
-                    <span className="text-gray-300 text-sm">{movie.genre}</span>
+                    <span className="text-blue-400 text-sm">{movie?.releaseYear}</span>
+                    <span className="text-gray-300 text-sm">{movie?.genre?.genreName}</span>
                     <span className="text-gray-300 text-sm">
                       {movie.duration}
                     </span>

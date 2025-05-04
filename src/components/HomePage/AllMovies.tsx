@@ -5,48 +5,9 @@ import { FaChevronDown, FaSearch } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useGetAllContentQuery } from "../redux/features/content/contentApi";
 import Link from "next/link";
+import { GenreFilter, Movie } from "@/types";
 
-interface Genre {
-  id: string;
-  genreName: string;
-  createdAt: string;
-  updatedAt: string;
-}
 
-interface Platform {
-  id: string;
-  platformName: string;
-  platformLogo: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Movie {
-  id: string;
-  title: string;
-  releaseYear: string;
-  duration: string;
-  thumbnail: string;
-  price: number;
-  director: string;
-  producer: string;
-  actor: string;
-  actress: string;
-  spoilerWarning: string;
-  synopsis: string;
-  isAvailable: boolean;
-  platformId: string;
-  genreId: string;
-  createdAt: string;
-  updatedAt: string;
-  genre: Genre;
-  platform: Platform;
-}
-
-interface GenreFilter {
-  name: string;
-  active: boolean;
-}
 
 export const AllMovies = () => {
   const router = useRouter();
@@ -96,7 +57,7 @@ export const AllMovies = () => {
   ];
 
    
-  const { data, isLoading } = useGetAllContentQuery({ undefined });
+  const { data, isLoading } = useGetAllContentQuery([{}]);
   const demoMovies: Movie[] = data?.data || [];
 
   const handleGenreClick = (genreName: string) => {
