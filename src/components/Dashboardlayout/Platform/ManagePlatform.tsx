@@ -34,6 +34,8 @@ const ManagePlatform = () => {
     useState(false);
   const [platform, setPlatform] = useState<{} | null>(null);
   const [thumbnail, setThumbnail] = useState<File | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [platformToDelete, setPlatformToDelete] = useState<Platform | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { data: platforms, isLoading } = useGetAllPlatformQuery(undefined);
   const [addPlatform, { data, error }] = useCreatePlatformMutation();
@@ -117,6 +119,8 @@ const ManagePlatform = () => {
       } else {
         toast.success(res?.data?.message, { id: toastId });
       }
+      setIsDeleteModalOpen(false);
+      setPlatformToDelete(null);
     } catch (error: any) {
       toast.error(error.data.message, { id: toastId, duration: 2000 });
     }
@@ -174,10 +178,14 @@ const ManagePlatform = () => {
                       </td>
                       <td className="px-6 py-4 text-2xl flex gap-3">
                         <MdDeleteOutline
-                          onClick={() => handlePlatformDelete(platform.id)}
+                          onClick={() => {
+                            setPlatformToDelete(platform);
+                            setIsDeleteModalOpen(true);
+                          }}
+                          className="cursor-pointer hover:text-red-500 transition-colors"
                         />
                         <FaPen
-                          className="text-xl"
+                          className="text-xl cursor-pointer hover:text-blue-500 transition-colors"
                           onClick={() => {
                             setUpdatePlatformModalOpen(true);
                             setPlatform(platform);
@@ -302,6 +310,48 @@ const ManagePlatform = () => {
           isUpdatePlatformModalOpen={isUpdatePlatformModalOpen}
           setUpdatePlatformModalOpen={setUpdatePlatformModalOpen}
         />
+
+        {/* Delete Confirmation Modal */}
+        <AnimatePresence>
+          {isDeleteModalOpen && platformToDelete && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-lg z-50"
+            >
+              <motion.div
+                initial={{ scale: 0.95, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-[#000a3a] border border-[#1a2d6d] rounded-xl overflow-hidden p-6"
+              >
+                <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+                  Delete Platform
+                </h2>
+                <p className="text-gray-300 mb-6">
+                  Are you sure you want to delete the platform "{platformToDelete.platformName}"? This action cannot be undone.
+                </p>
+                <div className="flex justify-end gap-4">
+                  <button
+                    onClick={() => {
+                      setIsDeleteModalOpen(false);
+                      setPlatformToDelete(null);
+                    }}
+                    className="px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => handlePlatformDelete(platformToDelete.id)}
+                    className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg transition-colors"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
