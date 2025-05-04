@@ -40,29 +40,41 @@ const MovieDetails = ({ currentUser }: any) => {
     const router = useRouter();
     const { id } = useParams();
     
-
-
     const { data: movieDetails, isLoading } = useGetContentQuery(id);
-
-    const { data: allMovies } = useGetAllContentQuery({ undefined })
-    const { data: SingleUser } = useGetUserQuery(currentUser?.id)
+    const { data: allMovies, isLoading: isMoviesLoading } = useGetAllContentQuery(undefined);
+    const { data: SingleUser } = useGetUserQuery(currentUser?.id);
     
     const [recommendedMovies, setRecommendedMovies] = useState<Movie[]>([]);
     const { register, handleSubmit, formState: { errors }, reset } = useForm<ReviewFormData>();
     const [addReview] = useCreateReviewMutation();
-    const contentId = movieDetails?.data.id
+    const contentId = movieDetails?.data.id;
 
-    const {data: allReview } = useGetAllReviewByContentIdQuery(contentId)
+    const {data: allReview } = useGetAllReviewByContentIdQuery(contentId);
 
     useEffect(() => {
+
         if (allMovies?.data && movieDetails?.data) {
             const currentGenre = movieDetails.data.genre?.genreName;
+            console.log('Current Genre:', currentGenre);
+
             if (currentGenre) {
-                const filteredMovies = allMovies.data.filter((movie: Movie) =>
-                    movie.genre?.genreName === currentGenre && movie.id !== movieDetails.data.id
-                );
+                const filteredMovies = allMovies.data
+                    .filter((movie: Movie) => {
+                        console.log('Checking movie:', movie.title, 'Genre:', movie.genre?.genreName);
+                        return movie.genre?.genreName === currentGenre && 
+                               movie.id !== movieDetails.data.id;
+                    })
+                    .slice(0, 4);
+                
+                console.log('Filtered Movies:', filteredMovies);
                 setRecommendedMovies(filteredMovies);
+            } else {
+                console.log('No current genre found');
+                setRecommendedMovies([]);
             }
+        } else {
+            console.log('No movies data available');
+            setRecommendedMovies([]);
         }
     }, [allMovies, movieDetails]);
 
@@ -186,45 +198,57 @@ const MovieDetails = ({ currentUser }: any) => {
                     </div>
 
                     <h2 className="mt-8 text-xl font-semibold text-white">Recommended For You</h2>
+                    {isMoviesLoading ? (
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                            {[...Array(4)].map((_, index) => (
+                                <div key={index} className="h-64 bg-gray-900 rounded-lg animate-pulse" />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                            {recommendedMovies.length > 0 ? (
+                                recommendedMovies.map((movie) => (
+                                    <Link key={movie.id} href={`/movies/${movie.id}`}>
+                                        <motion.div 
+                                            className="relative w-full h-64 bg-gray-900 rounded-lg overflow-hidden shadow-lg cursor-pointer"
+                                            initial="rest"
+                                            whileHover="hover"
+                                            animate="rest"
+                                        >
+                                            <img
+                                                src={movie.thumbnail}
+                                                alt={movie.title}
+                                                className="w-full h-40 object-cover"
+                                            />
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                        {recommendedMovies.map((movie) => (
-                            <Link key={movie.id} href={`/movies/${movie.id}` }>
-                            <motion.div 
-                                key={movie.id}
-                                className="relative w-full h-64 bg-gray-900 rounded-lg overflow-hidden shadow-lg cursor-pointer"
-                                initial="rest"
-                                whileHover="hover"
-                                animate="rest"
-                            >
-                                <img
-                                    src={movie.thumbnail}
-                                    alt={movie.title}
-                                    className="w-full h-40 object-cover"
-                                />
+                                            <div className="p-2 h-16 flex items-center">
+                                                <h3 className="text-white text-sm font-semibold line-clamp-2">{movie.title}</h3>
+                                            </div>
 
-                                <div className="p-2 h-16 flex items-center">
-                                    <h3 className="text-white text-sm font-semibold line-clamp-2">{movie.title}</h3>
+                                            <motion.div
+                                                variants={{
+                                                    rest: { x: "100%", opacity: 0 },
+                                                    hover: { x: "0%", opacity: 1 },
+                                                }}
+                                                transition={{ duration: 0.4 }}
+                                                className="absolute inset-0 bg-[#0f172a] text-white p-4 flex flex-col justify-center pointer-events-none"
+                                            >
+                                                <div>
+                                                    <h3 className="text-lg font-semibold">{movie.title}</h3>
+                                                    <p className="text-sm text-gray-400 mt-1">{movie.releaseYear} ・ {movie.duration}</p>
+                                                    <p className="text-sm mt-2 text-gray-300">{movie.genre?.genreName}</p>
+                                                </div>
+                                            </motion.div>
+                                        </motion.div>
+                                    </Link>
+                                ))
+                            ) : (
+                                <div className="col-span-4 text-center py-8">
+                                    <p className="text-gray-400">No recommended movies found</p>
                                 </div>
-
-                                <motion.div
-                                    variants={{
-                                        rest: { x: "100%", opacity: 0 },
-                                        hover: { x: "0%", opacity: 1 },
-                                    }}
-                                    transition={{ duration: 0.4 }}
-                                    className="absolute inset-0 bg-[#0f172a] text-white p-4 flex flex-col justify-center pointer-events-none"
-                                >
-                                    <div>
-                                        <h3 className="text-lg font-semibold">{movie.title}</h3>
-                                        <p className="text-sm text-gray-400 mt-1">{movie.releaseYear} ・ {movie.duration}</p>
-                                        <p className="text-sm mt-2 text-gray-300">{movie.genre.genreName}</p>
-                                    </div>
-                                </motion.div>
-                            </motion.div>
-                            </Link>
-                        ))}
-                    </div>
+                            )}
+                        </div>
+                    )}
 
                     <h2 className="mt-10 text-xl font-semibold">Add a review</h2>
                     <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
@@ -277,7 +301,7 @@ const MovieDetails = ({ currentUser }: any) => {
                     {/* Display Submitted Review */}
                     <div className="mt-10">
                         <h2 className="text-xl font-semibold mb-4">User Reviews</h2>
-                        <ReviewCard imageURL={manvector} ReviewData={allReview} UserData={SingleUser?.data}/>
+                        <ReviewCard ReviewData={allReview} UserData={SingleUser?.data}/>
                     </div>
                 </motion.div>
             </div>
