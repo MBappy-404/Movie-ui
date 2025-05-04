@@ -17,6 +17,14 @@ const genreApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["genres"],
     }),
+    updateGenre: builder.mutation({
+      query: ({ genreIdId, data }) => ({
+        url: `/genre/${genreIdId}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["genres"],
+    }),
     deleteGenre: builder.mutation({
       query: (genreId) => ({
         url: `/genre/${genreId}`,
@@ -31,4 +39,5 @@ export const {
   useGetAllGenresQuery,
   useCreateGenreMutation,
   useDeleteGenreMutation,
+  useUpdateGenreMutation,
 } = genreApi;

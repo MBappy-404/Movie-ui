@@ -4,16 +4,10 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { useGetAllGenresQuery } from "@/components/redux/features/genre/genreApi";
 import { useGetAllPlatformQuery } from "@/components/redux/features/platform/platformApi";
 import { toast } from "sonner";
-import {
-  useCreateContentMutation,
-  useDeleteContentMutation,
-  useGetAllContentQuery,
-  useGetContentQuery,
-  useUpdateContentMutation,
-} from "@/components/redux/features/content/contentApi";
+import { useUpdateContentMutation } from "@/components/redux/features/content/contentApi";
 import { TGenre, TGenresOptions } from "@/components/types/genre";
 import { TPlatform, TPlatformsOptions } from "@/components/types/platform";
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export interface Content {
   id: string;
@@ -32,6 +26,7 @@ export interface Content {
   contentLink: string;
   genreId: string;
   platformId: string;
+  contentBanner: string;
 }
 
 interface UpdateContentModalProps {
@@ -151,10 +146,11 @@ const UpdateContentModal = ({
         actor: content.actor || "",
         actress: content.actress || "",
         rentprice: content.rentprice || "",
-        contentLink: content.contentLink || "",
+        contentLink: content.id || "",
         genreId: content.genreId || "",
         platformId: content.platformId || "",
         isAvailable: content.isAvailable || false,
+        contentBanner: content.contentBanner || "",
       });
     }
   }, [content, reset]);
@@ -262,6 +258,12 @@ const UpdateContentModal = ({
                     <input
                       {...register("contentLink")}
                       placeholder="contentLink"
+                      className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
+                    />
+
+                    <input
+                      {...register("contentBanner")}
+                      placeholder="contentBanner"
                       className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
                     />
                   </div>

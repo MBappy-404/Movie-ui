@@ -12,8 +12,9 @@ import {
 } from "@/components/redux/features/genre/genreApi";
 import { TGenre } from "@/components/types/genre";
 import LoadingSpinner from "@/components/ui/loading-spinner";
+import UpdateGenreModal from "@/components/modals/UpdateGenreModal";
 
-interface GenreName {
+export interface GenreName {
   id: string;
   genreName: string;
 }
@@ -21,6 +22,10 @@ interface GenreName {
 const ManageGenre = () => {
   const { register, handleSubmit, reset } = useForm<GenreName>();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [genreToDelete, setGenreToDelete] = useState<GenreName | null>(null);
+  const [isUpdateGenreModalOpen, setUpdateGenreModalOpen] = useState(false);
+  const [genre, setGenre] = useState<{} | null>(null);
   const { data: genres, isLoading } = useGetAllGenresQuery(undefined);
   const [addGenres, { data, error }] = useCreateGenreMutation();
   const [deleteGenre] = useDeleteGenreMutation();
@@ -68,6 +73,8 @@ const ManageGenre = () => {
       } else {
         toast.success(res?.data?.message, { id: toastId });
       }
+      setIsDeleteModalOpen(false);
+      setGenreToDelete(null);
     } catch (error: any) {
       toast.error(error.data.message, { id: toastId, duration: 2000 });
     }
@@ -92,8 +99,8 @@ const ManageGenre = () => {
         {/* Movie Table */}
         {isLoading ? (
           <p className="text-white text-5xl font-bold text-center">
-          <LoadingSpinner/>
-        </p>
+            <LoadingSpinner />
+          </p>
         ) : (
           <div className="rounded-xl border border-[#1a2d6d] overflow-hidden">
             <div className="overflow-x-auto">
@@ -115,9 +122,18 @@ const ManageGenre = () => {
                       <td className="px-6 py-4">{genre.genreName}</td>
                       <td className="px-6 py-4 text-2xl flex gap-3">
                         <MdDeleteOutline
-                          onClick={() => handleGenreDelete(genre.id)}
+                          onClick={() => {
+                            setGenreToDelete(genre);
+                            setIsDeleteModalOpen(true);
+                          }}
                         />
-                        <FaPen className="text-xl" />
+                        <FaPen
+                          className="text-xl"
+                          onClick={() => {
+                            setUpdateGenreModalOpen(true);
+                            setGenre(genre);
+                          }}
+                        />
                       </td>
                     </motion.tr>
                   ))}
@@ -127,7 +143,7 @@ const ManageGenre = () => {
           </div>
         )}
 
-        {/* Add Movie Modal */}
+        {/* Add Genre Modal */}
         <AnimatePresence>
           {isModalOpen && (
             <motion.div
@@ -181,6 +197,56 @@ const ManageGenre = () => {
                     </button>
                   </div>
                 </form>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Update Genre Modal */}
+        <UpdateGenreModal
+          isUpdateGenreModalOpen={isUpdateGenreModalOpen}
+          setUpdateGenreModalOpen={setUpdateGenreModalOpen}
+          genre={genre}
+        />
+
+        {/* Delete Genre Modal */}
+        <AnimatePresence>
+          {isDeleteModalOpen && genreToDelete && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-lg z-50"
+            >
+              <motion.div
+                initial={{ scale: 0.95, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-[#000a3a] border border-[#1a2d6d] rounded-xl overflow-hidden p-6"
+              >
+                <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+                  Delete Genre
+                </h2>
+                <p className="text-gray-300 mb-6">
+                  Are you sure you want to delete the genre "
+                  {genreToDelete.genreName}"? This action cannot be undone.
+                </p>
+                <div className="flex justify-end gap-4">
+                  <button
+                    onClick={() => {
+                      setIsDeleteModalOpen(false);
+                      setGenreToDelete(null);
+                    }}
+                    className="px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => handleGenreDelete(genreToDelete.id)}
+                    className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg transition-colors"
+                  >
+                    Delete
+                  </button>
+                </div>
               </motion.div>
             </motion.div>
           )}
