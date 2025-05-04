@@ -62,7 +62,7 @@ const ReviewCard = ({
     (item: any) => item.status === "PUBLISHED"
   );
 
-  console.log(publishedReviews);
+ 
 
   return (
     <div>

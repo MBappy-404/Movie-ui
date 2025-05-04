@@ -35,7 +35,9 @@ const ManagePlatform = () => {
   const [platform, setPlatform] = useState<{} | null>(null);
   const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [platformToDelete, setPlatformToDelete] = useState<Platform | null>(null);
+  const [platformToDelete, setPlatformToDelete] = useState<Platform | null>(
+    null
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { data: platforms, isLoading } = useGetAllPlatformQuery(undefined);
   const [addPlatform, { data, error }] = useCreatePlatformMutation();
@@ -84,7 +86,7 @@ const ManagePlatform = () => {
     // uploading platform
     try {
       const res = await addPlatform(formData);
-      console.log(res);
+      //console.log(res);
       if ("error" in res && res.error) {
         const errorMessage =
           (res.error as any)?.data?.message || "An error occurred";
@@ -111,7 +113,7 @@ const ManagePlatform = () => {
 
     try {
       const res = await deletePlatform(platformId);
-      console.log(res);
+      //console.log(res);
       if ("error" in res && res.error) {
         const errorMessage =
           (res.error as any)?.data?.message || "An error occurred";
@@ -127,7 +129,7 @@ const ManagePlatform = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#00031b] p-2">
+    <div className="bg-[#00031b] p-2">
       <div className="max-w-full mx-auto">
         {/* Header Section */}
         <div className="flex justify-between items-center mb-8">
@@ -145,7 +147,7 @@ const ManagePlatform = () => {
         {/* Movie Table */}
         {isLoading ? (
           <p className="text-white text-5xl font-bold text-center">
-            <LoadingSpinner/>
+            <LoadingSpinner />
           </p>
         ) : (
           <div className="rounded-xl border border-[#1a2d6d] overflow-hidden">
@@ -329,7 +331,9 @@ const ManagePlatform = () => {
                   Delete Platform
                 </h2>
                 <p className="text-gray-300 mb-6">
-                  Are you sure you want to delete the platform "{platformToDelete.platformName}"? This action cannot be undone.
+                  Are you sure you want to delete the platform "
+                  {platformToDelete.platformName}"? This action cannot be
+                  undone.
                 </p>
                 <div className="flex justify-end gap-4">
                   <button

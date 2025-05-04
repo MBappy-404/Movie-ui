@@ -44,46 +44,58 @@ interface ReviewFormData {
 }
 
 const MovieDetails = ({ currentUser }: any) => {
-    const router = useRouter();
-    const { id } = useParams();
-    
-    const { data: movieDetails, isLoading } = useGetContentQuery(id);
-    const { data: allMovies, isLoading: isMoviesLoading } = useGetAllContentQuery(undefined);
-    const { data: SingleUser } = useGetUserQuery(currentUser?.id);
-    
-    const [recommendedMovies, setRecommendedMovies] = useState<Movie[]>([]);
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<ReviewFormData>();
-    const [addReview] = useCreateReviewMutation();
-    const contentId = movieDetails?.data.id;
+  const router = useRouter();
+  const { id } = useParams();
 
-    const {data: allReview } = useGetAllReviewByContentIdQuery(contentId);
+  const { data: movieDetails, isLoading } = useGetContentQuery(id);
+  const { data: allMovies, isLoading: isMoviesLoading } =
+    useGetAllContentQuery(undefined);
+  const { data: SingleUser } = useGetUserQuery(currentUser?.id);
 
-    useEffect(() => {
+  const [recommendedMovies, setRecommendedMovies] = useState<Movie[]>([]);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<ReviewFormData>();
+  const [addReview] = useCreateReviewMutation();
+  const contentId = movieDetails?.data.id;
 
-        if (allMovies?.data && movieDetails?.data) {
-            const currentGenre = movieDetails.data.genre?.genreName;
-            console.log('Current Genre:', currentGenre);
+  const { data: allReview } = useGetAllReviewByContentIdQuery(contentId);
 
-            if (currentGenre) {
-                const filteredMovies = allMovies.data
-                    .filter((movie: Movie) => {
-                        console.log('Checking movie:', movie.title, 'Genre:', movie.genre?.genreName);
-                        return movie.genre?.genreName === currentGenre && 
-                               movie.id !== movieDetails.data.id;
-                    })
-                    .slice(0, 4);
-                
-                console.log('Filtered Movies:', filteredMovies);
-                setRecommendedMovies(filteredMovies);
-            } else {
-                console.log('No current genre found');
-                setRecommendedMovies([]);
-            }
-        } else {
-            console.log('No movies data available');
-            setRecommendedMovies([]);
-        }
-    }, [allMovies, movieDetails]);
+  useEffect(() => {
+    if (allMovies?.data && movieDetails?.data) {
+      const currentGenre = movieDetails.data.genre?.genreName;
+      console.log("Current Genre:", currentGenre);
+
+      if (currentGenre) {
+        const filteredMovies = allMovies.data
+          .filter((movie: Movie) => {
+            console.log(
+              "Checking movie:",
+              movie.title,
+              "Genre:",
+              movie.genre?.genreName
+            );
+            return (
+              movie.genre?.genreName === currentGenre &&
+              movie.id !== movieDetails.data.id
+            );
+          })
+          .slice(0, 4);
+
+        console.log("Filtered Movies:", filteredMovies);
+        setRecommendedMovies(filteredMovies);
+      } else {
+        console.log("No current genre found");
+        setRecommendedMovies([]);
+      }
+    } else {
+      console.log("No movies data available");
+      setRecommendedMovies([]);
+    }
+  }, [allMovies, movieDetails]);
 
   const [rating, setRating] = useState(0);
   const [isChecked, setIsChecked] = useState(false);
@@ -190,7 +202,8 @@ const MovieDetails = ({ currentUser }: any) => {
               onChange={movieDetails?.data?.averageRating}
               readOnly
             />{" "}
-            {movieDetails?.data?.averageRating}  | 📅 {movieDetails?.data?.releaseYear} | ⏱️{" "}
+            {movieDetails?.data?.averageRating} | 📅{" "}
+            {movieDetails?.data?.releaseYear} | ⏱️{" "}
             {movieDetails?.data?.duration} |{" "}
             <span>
               <Image
@@ -219,11 +232,13 @@ const MovieDetails = ({ currentUser }: any) => {
                   {movieDetails?.data?.actress}
                 </span>
               </p>
-              
             </div>
             <p className="text-sm md:text-lg text-gray-400">
-            Producer:{" "}
-              <span className="text-white">   {movieDetails?.data?.producer}</span>
+              Producer:{" "}
+              <span className="text-white">
+                {" "}
+                {movieDetails?.data?.producer}
+              </span>
             </p>
             <p className="text-sm md:text-lg text-gray-400">
               Director:{" "}
@@ -239,7 +254,10 @@ const MovieDetails = ({ currentUser }: any) => {
             )}
             <p className="text-sm md:text-lg font-semibold text-gray-400">
               One Time Purchase :
-              <span className="text-white text-xl"> ${movieDetails?.data?.price}</span>
+              <span className="text-white text-xl">
+                {" "}
+                ${movieDetails?.data?.price}
+              </span>
             </p>
             <p className="text-sm md:text-lg font-semibold text-gray-400">
               Rental Price:
@@ -248,6 +266,12 @@ const MovieDetails = ({ currentUser }: any) => {
                 ${movieDetails?.data?.rentprice}
               </span>
             </p>
+          </div>
+
+          <div className="py-5">
+            <button className="px-6 py-3 mt-5 cursor-pointer flex gap-2 items-center rounded-xl font-bold text-white bg-gradient-to-r from-blue-500 to-purple-500 shadow-md hover:opacity-90 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-500/40 text-sm md:text-lg   duration-300">
+              Purchase Movie
+            </button>
           </div>
 
           <h2 className="mt-8 text-xl font-semibold text-white">
@@ -306,7 +330,6 @@ const MovieDetails = ({ currentUser }: any) => {
               style={{ maxWidth: 180 }}
               value={rating}
               onChange={setRating}
-
             />
 
             {/* Review Textarea */}
@@ -351,7 +374,7 @@ const MovieDetails = ({ currentUser }: any) => {
             <br />
             <button
               type="submit"
-              disabled={ !SingleUser?.data?.id || rating === 0}
+              disabled={!SingleUser?.data?.id || rating === 0}
               className="mt-4 px-10 py-3 cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-lg shadow-lg hover:-translate-y-1 hover:shadow-blue-500/40 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {!SingleUser?.data?.id ? "Loading user data..." : "Submit"}
@@ -361,10 +384,7 @@ const MovieDetails = ({ currentUser }: any) => {
           {/* Display Submitted Review */}
           <div className="mt-10">
             <h2 className="text-xl font-semibold mb-4">User Reviews</h2>
-            <ReviewCard
-              ReviewData={allReview}
-              UserData={SingleUser?.data}
-            />
+            <ReviewCard ReviewData={allReview} UserData={SingleUser?.data} />
           </div>
         </motion.div>
       </div>
