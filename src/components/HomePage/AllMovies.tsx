@@ -384,27 +384,27 @@ export const AllMovies = () => {
                 [1, 2, 3, 4, 5, 6, 7, 8].map((index) => (
                   <div
                     key={index + 1}
-                    className="group cursor-pointer transition-all border border-gray-900 rounded-lg duration-300"
+                    className="group cursor-pointer transition-all border border-gray-700 rounded-lg duration-300"
                   >
-                    <div className="relative aspect-[2/3] rounded-lg overflow-hidden mb-4 bg-[#00031b]/80 animate-pulse">
-                      <div className="w-full h-full bg-gradient-to-br from-[#00052a] via-[#000a3a] to-[#00031b] animate-pulse"></div>
+                    <div className="relative aspect-[2/3] rounded-lg overflow-hidden mb-4 bg-gray-700 animate-pulse">
+                      <div className="w-full h-full   animate-pulse"></div>
 
-                      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#00031b]/90 to-transparent">
+                      <div className="absolute bottom-0  left-0 right-0 p-4  ">
                         <div className="flex items-center space-x-2">
-                          <div className="h-6 w-6 rounded-full bg-[#000a3a] animate-pulse"></div>
+                          <div className="h-6 w-6 rounded-full bg-gray-600 animate-pulse"></div>
 
-                          <div className="h-4 w-16 bg-[#000a3a] rounded-md animate-pulse"></div>
+                          <div className="h-4 w-16 bg-gray-600 rounded-md animate-pulse"></div>
                         </div>
                       </div>
                     </div>
 
                     <div className="px-3 mb-2">
-                      <div className="h-5 w-3/4 bg-[#000a3a] rounded-md animate-pulse"></div>
+                      <div className="h-5 w-3/4 bg-gray-600 rounded-md animate-pulse"></div>
                     </div>
 
-                    <div className="flex items-center justify-between p-3">
-                      <div className="h-4 w-12 bg-[#000a3a] rounded-md animate-pulse"></div>
-                      <div className="h-4 w-10 bg-[#000a3a] rounded-md animate-pulse"></div>
+                    <div className="flex  items-center justify-between p-3">
+                      <div className="h-4 w-12 bg-gray-600 rounded-md animate-pulse"></div>
+                      <div className="h-4 w-10 bg-gray-600 rounded-md animate-pulse"></div>
                     </div>
                   </div>
                 ))}

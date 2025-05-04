@@ -77,7 +77,7 @@ const MovieDetails = ({ currentUser }: any) => {
     }
 
     const onSubmit = async (data: ReviewFormData) => {
-        const toastId = toast.loading("Creating Review...");
+        const toastId = toast.loading("Adding Review...");
         if (!SingleUser?.data?.id) {
             toast.error("User information not available. Please try again later.", { id: toastId });
             return;
@@ -95,7 +95,7 @@ const MovieDetails = ({ currentUser }: any) => {
             const res = await addReview(reviewData).unwrap();
             
             if (res?.success) {
-                toast.success(res?.message || "Review added successfully", { id: toastId });
+                toast.success(res?.message || "Your review is Pending", { id: toastId });
                 reset();
                 setRating(0);
                 setIsChecked(false);

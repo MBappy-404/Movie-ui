@@ -8,14 +8,13 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { useGetAllContentQuery } from "../redux/features/content/contentApi";
 import { Movie } from "@/types";
- 
+import Link from "next/link";
 
 const NewReleases = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
- 
-  const { data } = useGetAllContentQuery([
+  const { data, isLoading } = useGetAllContentQuery([
     { name: "sortBy", value: "rating" },
     {
       name: "createdAt",
@@ -23,9 +22,7 @@ const NewReleases = () => {
     },
   ]);
 
-  const moviesData : Movie[] = data?.data?.slice(0, 4);
- 
-  
+  const moviesData: Movie[] = data?.data?.slice(0, 4);
 
   const cardVariants = {
     hidden: { opacity: 0, y: 50 },
@@ -89,105 +86,120 @@ const NewReleases = () => {
               nextEl: ".next",
             }}
           >
+            {isLoading &&
+              [...Array(4)].map((_, index) => (
+                <SwiperSlide key={index}>
+                  <div
+                    key={index}
+                    className="w-full h-[500px]  bg-gray-700 animate-pulse rounded-xl"
+                  ></div>
+                </SwiperSlide>
+              ))}
             {moviesData?.map((movie: Movie, index: number) => (
               <SwiperSlide key={movie.id}>
-                <motion.div
-                  className="group relative cursor-pointer"
-                  variants={cardVariants}
-                  initial="hidden"
-                  animate={isInView ? "visible" : "hidden"}
-                  custom={index}
-                >
+                <Link href={`/movies/${movie.id}`}>
                   <motion.div
-                    variants={hoverVariants}
-                    className="relative h-[500px] overflow-hidden rounded-3xl shadow-2xl"
+                    className="group relative cursor-pointer"
+                    variants={cardVariants}
+                    initial="hidden"
+                    animate={isInView ? "visible" : "hidden"}
+                    custom={index}
                   >
-                    <img
-                      src={movie.thumbnail}
-                      alt={movie.title}
-                      className="h-full w-full object-cover object-center"
-                    />
-
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent" />
-
-                    <div className="absolute top-4 left-4 flex items-center gap-2">
-                      <span className="rounded-full bg-gradient-to-r from-blue-500 to-purple-500 px-3 py-1 text-xs font-bold text-white">
-                        NEW
-                      </span>
-                      <span className="flex items-center gap-1 rounded-full bg-black/20 px-3 py-1 text-xs text-white backdrop-blur-sm">
-                        <ClockIcon className="h-4 w-4" />
-                        {movie.duration}
-                      </span>
-                    </div>
-
                     <motion.div
-                      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{
-                        scale: 1,
-                        opacity: 1,
-                        transition: { delay: 0.3 + index * 0.1 },
-                      }}
+                      variants={hoverVariants}
+                      className="relative h-[500px] overflow-hidden rounded-3xl shadow-2xl"
                     >
-                      <div className="rounded-full bg-white/10 p-4 backdrop-blur-md transition-all group-hover:bg-gradient-to-r from-blue-500 to-purple-500 group-hover:scale-110">
-                        <PlayIcon className="h-10 w-10 text-white/90" />
+                      <img
+                        src={movie.thumbnail}
+                        alt={movie.title}
+                        className="h-full w-full object-cover object-center"
+                      />
+
+                      {/* Gradient Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent" />
+
+                      <div className="absolute top-4 left-4 flex items-center gap-2">
+                        <span className="rounded-full bg-gradient-to-r from-blue-500 to-purple-500 px-3 py-1 text-xs font-bold text-white">
+                          NEW
+                        </span>
+                        <span className="flex items-center gap-1 rounded-full bg-black/20 px-3 py-1 text-xs text-white backdrop-blur-sm">
+                          <ClockIcon className="h-4 w-4" />
+                          {movie.duration}
+                        </span>
+                      </div>
+
+                      <motion.div
+                        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{
+                          scale: 1,
+                          opacity: 1,
+                          transition: { delay: 0.3 + index * 0.1 },
+                        }}
+                      >
+                        <div className="rounded-full bg-white/10 p-4 backdrop-blur-md transition-all group-hover:bg-gradient-to-r from-blue-500 to-purple-500 group-hover:scale-110">
+                          <PlayIcon className="h-10 w-10 text-white/90" />
+                        </div>
+                      </motion.div>
+
+                      <div className="absolute bottom-0 left-0 right-0 space-y-4 p-6">
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{
+                            opacity: 1,
+                            y: 0,
+                            transition: { delay: 0.4 + index * 0.1 },
+                          }}
+                        >
+                          <h3 className="text-2xl font-bold text-white">
+                            {movie.title}
+                          </h3>
+                          <div className="flex items-center gap-4 text-sm text-gray-300">
+                            <span>{movie?.releaseYear}</span>
+                            <span className="h-1 w-1 rounded-full bg-gray-400" />
+                            <span>{movie?.genre?.genreName}</span>
+                          </div>
+                        </motion.div>
+
+                        {/* Rating Progress */}
+                        <motion.div
+                          className="flex items-center gap-3"
+                          initial={{ opacity: 0 }}
+                          animate={{
+                            opacity: 1,
+                            transition: { delay: 0.5 + index * 0.1 },
+                          }}
+                        >
+                          <div className="relative h-2 w-full rounded-full bg-white/10">
+                            <div
+                              className="absolute left-0 top-0 h-full rounded-full bg-gradient-to-r from-blue-500 to-purple-500"
+                              style={{
+                                width: `${
+                                  (movie?.averageRating as number) * 10
+                                }%`,
+                              }}
+                            />
+                          </div>
+                          <span className="text-sm font-semibold text-yellow-500">
+                            {movie?.averageRating}/10
+                          </span>
+                        </motion.div>
+
+                        <motion.p
+                          className="text-sm text-gray-300 line-clamp-2"
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{
+                            opacity: 1,
+                            y: 0,
+                            transition: { delay: 0.6 + index * 0.1 },
+                          }}
+                        >
+                          {movie.synopsis}
+                        </motion.p>
                       </div>
                     </motion.div>
-
-                    <div className="absolute bottom-0 left-0 right-0 space-y-4 p-6">
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{
-                          opacity: 1,
-                          y: 0,
-                          transition: { delay: 0.4 + index * 0.1 },
-                        }}
-                      >
-                        <h3 className="text-2xl font-bold text-white">
-                          {movie.title}
-                        </h3>
-                        <div className="flex items-center gap-4 text-sm text-gray-300">
-                          <span>{movie?.releaseYear}</span>
-                          <span className="h-1 w-1 rounded-full bg-gray-400" />
-                          <span>{movie?.genre?.genreName}</span>
-                        </div>
-                      </motion.div>
-
-                      {/* Rating Progress */}
-                      <motion.div
-                        className="flex items-center gap-3"
-                        initial={{ opacity: 0 }}
-                        animate={{
-                          opacity: 1,
-                          transition: { delay: 0.5 + index * 0.1 },
-                        }}
-                      >
-                        <div className="relative h-2 w-full rounded-full bg-white/10">
-                          <div
-                            className="absolute left-0 top-0 h-full rounded-full bg-gradient-to-r from-blue-500 to-purple-500"
-                            style={{ width: `${movie?.averageRating as number * 10}%` }}
-                          />
-                        </div>
-                        <span className="text-sm font-semibold text-yellow-500">
-                          {movie?.averageRating}/10
-                        </span>
-                      </motion.div>
-
-                      <motion.p
-                        className="text-sm text-gray-300 line-clamp-2"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{
-                          opacity: 1,
-                          y: 0,
-                          transition: { delay: 0.6 + index * 0.1 },
-                        }}
-                      >
-                        {movie.synopsis}
-                      </motion.p>
-                    </div>
                   </motion.div>
-                </motion.div>
+                </Link>
               </SwiperSlide>
             ))}
           </Swiper>
