@@ -6,16 +6,17 @@ type Role = keyof typeof roleBasedPrivateRoutes;
 const authRoutes = ["/login", "/register"];
 
 const roleBasedPrivateRoutes = {
-  USER: [/^\/profile/],
+ 
+  USER: [/^\/user/, /^\/profile/],
   ADMIN: [/^\/dashboard/, /^\/profile/],
 };
-
 
 export const middleware = async (request: NextRequest) => {
   const { pathname } = request.nextUrl;
 
   const userInfo = await getCurrentUser();
 
+ 
   if (!userInfo) {
     if (authRoutes.includes(pathname)) {
       return NextResponse.next();

@@ -36,23 +36,25 @@ const contentApi = baseApi.injectEndpoints({
       // },
     }),
     deleteContent: builder.mutation({
-      query: (params) => ({
-        url: `/content/${params?.id}`,
+ 
+      query: (contentId) => ({
+        url: `/content/${contentId}`,
         method: "DELETE",
       }),
       invalidatesTags: ["content"],
     }),
     getContent: builder.query({
-      query: (params) => ({
-        url: `/content/${params?.id}`,
+ 
+      query: (contentId) => ({
+        url: `/content/${contentId}`,
         method: "GET",
       }),
       providesTags: ['content'],
     }),
     updateContent: builder.mutation({
-      query: ({ productId, formData }) => ({
-        url: `/content/${productId}`,
-        method: "PUT",
+      query: ({ contentId, formData }) => ({
+        url: `/content/${contentId}`,
+        method: "PATCH",
         body: formData,
       }),
       invalidatesTags: ["content"],
@@ -61,9 +63,9 @@ const contentApi = baseApi.injectEndpoints({
 });
 
 export const {
-    useCreateContentMutation,
-    useGetAllContentQuery,
-    useDeleteContentMutation,
-    useGetContentQuery,
-    useUpdateContentMutation,
+  useCreateContentMutation,
+  useGetAllContentQuery,
+  useDeleteContentMutation,
+  useGetContentQuery,
+  useUpdateContentMutation,
 } = contentApi;

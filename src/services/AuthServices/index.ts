@@ -22,6 +22,7 @@ export const registerUser = async (data: FormData) => {
 
 export const loginUser = async (data: FieldValues) => {
   try {
+
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/api/auth/login`, {
       method: "POST",
       headers: {
@@ -29,6 +30,7 @@ export const loginUser = async (data: FieldValues) => {
       },
       body: JSON.stringify(data),
     });
+ 
     const result = await res.json();
 
     if (result?.success) {

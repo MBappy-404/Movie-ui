@@ -2,38 +2,82 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { useGetAllGenresQuery } from "@/components/redux/features/genre/genreApi";
+import { useGetAllPlatformQuery } from "@/components/redux/features/platform/platformApi";
+import { toast } from "sonner";
+import {
+  useCreateContentMutation,
+  useDeleteContentMutation,
+  useGetAllContentQuery,
+} from "@/components/redux/features/content/contentApi";
+import { MdDeleteOutline } from "react-icons/md";
+import { FaPen } from "react-icons/fa6";
+import { TGenre, TGenresOptions } from "@/components/types/genre";
+import { TPlatform, TPlatformsOptions } from "@/components/types/platform";
+import UpdateModal from "@/components/modals/UpdateContentModal";
 
-interface Movie {
+export interface Movie {
+  id: string;
   title: string;
   releaseYear: string;
   duration: string;
   thumbnail: string;
   price: number;
+  rentprice: number;
   director: string;
   producer: string;
   actor: string;
   actress: string;
   spoilerWarning: boolean;
   synopsis: string;
-  genre: string;
-  platform: string;
+  genreId: string;
+  platformId: string;
   isAvailable: boolean;
+  contentLink: string;
 }
 
 const MovieCMS = () => {
-  const { register, handleSubmit, reset, setValue } = useForm<Movie>();
-  const [movies, setMovies] = useState<Movie[]>([]);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { errors },
+  } = useForm<Movie>();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [content, setContent] = useState<{} | null>(null);
+  const [thumbnail, setThumbnail] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { data: genres } = useGetAllGenresQuery(undefined);
+  const { data: platforms } = useGetAllPlatformQuery(undefined);
+  const { data: contents, isLoading } = useGetAllContentQuery(undefined);
+  const [addContent, { data, error }] = useCreateContentMutation();
+  const [deleteContent] = useDeleteContentMutation();
+
+  const movies = contents?.data;
+
+  const genresOptions = genres?.data?.map((item: TGenre) => ({
+    genreId: item.id,
+    label: item.genreName,
+  }));
+
+  const platformsOptions = platforms?.data?.map((item: TPlatform) => ({
+    platformId: item.id,
+    label: item.platformName,
+    platformLogo: item.platformLogo,
+  }));
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+
     if (file) {
+      setThumbnail(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewImage(reader.result as string);
-        setValue("thumbnail", reader.result as string);
+        // setValue("thumbnail", reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -45,15 +89,70 @@ const MovieCMS = () => {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const onSubmit: SubmitHandler<Movie> = (data) => {
+  const onSubmit: SubmitHandler<Movie> = async (data) => {
+    const toastId = toast.loading("Adding Content....", { duration: 2000 });
+
+    if (!thumbnail) {
+      toast.error("Please provide a picture", {
+        id: toastId,
+      });
+      return;
+    }
+
     const newMovie = {
-      ...data,
-      price: Number(data.price),
+      content: {
+        ...data,
+        price: data.price,
+        rentprice: data.rentprice,
+      },
+      contentLink: data.contentLink,
     };
-    setMovies([...movies, newMovie]);
-    setIsModalOpen(false);
-    reset();
-    clearImage();
+
+    const formData = new FormData();
+    formData.append("data", JSON.stringify(newMovie));
+    formData.append("file", thumbnail);
+
+    // uploading movie
+    try {
+      const res = await addContent(formData);
+      console.log(res);
+      if ("error" in res && res.error) {
+        const errorMessage =
+          (res.error as any)?.data?.message || "An error occurred";
+        toast.error(errorMessage, { id: toastId });
+        setIsModalOpen(false);
+        reset();
+        clearImage();
+      } else {
+        toast.success(res?.data?.message, { id: toastId });
+        setIsModalOpen(false);
+        reset();
+        clearImage();
+      }
+    } catch (error: any) {
+      toast.error(error.data.message, { id: toastId, duration: 2000 });
+      setIsModalOpen(false);
+      reset();
+      clearImage();
+    }
+  };
+
+  const handleContentDelete = async (contentId: string) => {
+    const toastId = toast.loading("Deleting Content...", { duration: 2000 });
+
+    try {
+      const res = await deleteContent(contentId);
+      console.log(res);
+      if ("error" in res && res.error) {
+        const errorMessage =
+          (res.error as any)?.data?.message || "An error occurred";
+        toast.error(errorMessage, { id: toastId });
+      } else {
+        toast.success(res?.data?.message, { id: toastId });
+      }
+    } catch (error: any) {
+      toast.error(error.data.message, { id: toastId, duration: 2000 });
+    }
   };
 
   return (
@@ -73,47 +172,66 @@ const MovieCMS = () => {
         </div>
 
         {/* Movie Table */}
-        <div className="rounded-xl border border-[#1a2d6d] overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-[#000a3a]">
-                <tr>
-                  <th className="px-6 py-4 text-left">Title</th>
-                  <th className="px-6 py-4 text-left">Director</th>
-                  <th className="px-6 py-4 text-left">Year</th>
-                  <th className="px-6 py-4 text-left">Price</th>
-                  <th className="px-6 py-4 text-left">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {movies.map((movie, index) => (
-                  <motion.tr
-                    key={index + 1}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="border-t border-[#1a2d6d] hover:bg-[#000a3a]/50 transition-colors"
-                  >
-                    <td className="px-6 py-4">{movie.title}</td>
-                    <td className="px-6 py-4">{movie.director}</td>
-                    <td className="px-6 py-4">{movie.releaseYear}</td>
-                    <td className="px-6 py-4">${movie.price}</td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`px-2 py-1 rounded-full text-sm ${
-                          movie.isAvailable
-                            ? "bg-green-500/20 text-green-400"
-                            : "bg-red-500/20 text-red-400"
-                        }`}
-                      >
-                        {movie.isAvailable ? "Available" : "Unavailable"}
-                      </span>
-                    </td>
-                  </motion.tr>
-                ))}
-              </tbody>
-            </table>
+        {isLoading ? (
+          <p className="text-white text-5xl font-bold text-center">
+            Loading.....
+          </p>
+        ) : (
+          <div className="rounded-xl border border-[#1a2d6d] overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-[#000a3a]">
+                  <tr>
+                    <th className="px-6 py-4 text-left">Title</th>
+                    <th className="px-6 py-4 text-left">Director</th>
+                    <th className="px-6 py-4 text-left">Year</th>
+                    <th className="px-6 py-4 text-left">Price</th>
+                    <th className="px-6 py-4 text-left">Status</th>
+                    <th className="px-6 py-4 text-left">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {movies?.map((movie: Movie, index: number) => (
+                    <motion.tr
+                      key={index + 1}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="border-t border-[#1a2d6d] hover:bg-[#000a3a]/50 transition-colors"
+                    >
+                      <td className="px-6 py-4">{movie.title}</td>
+                      <td className="px-6 py-4">{movie.director}</td>
+                      <td className="px-6 py-4">{movie.releaseYear}</td>
+                      <td className="px-6 py-4">${movie.price}</td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`px-2 py-1 rounded-full text-sm ${
+                            movie.isAvailable
+                              ? "bg-green-500/20 text-green-400"
+                              : "bg-red-500/20 text-red-400"
+                          }`}
+                        >
+                          {movie.isAvailable ? "Available" : "Unavailable"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-2xl flex gap-3">
+                        <MdDeleteOutline
+                          onClick={() => handleContentDelete(movie.id)}
+                        />
+                        <FaPen
+                          className="text-xl"
+                          onClick={() => {
+                            setUpdateModalOpen(true);
+                            setContent(movie);
+                          }}
+                        />
+                      </td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Add Movie Modal */}
         <AnimatePresence>
@@ -185,26 +303,54 @@ const MovieCMS = () => {
                         placeholder="Title"
                         className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
                       />
+                      {errors.title && (
+                        <p className="text-red-500">Title is required!</p>
+                      )}
+
                       <input
                         {...register("director", { required: true })}
                         placeholder="Director"
                         className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
                       />
+                      {errors.director && (
+                        <p className="text-red-500">Director is required!</p>
+                      )}
+
                       <input
                         {...register("producer", { required: true })}
                         placeholder="Producer"
                         className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
                       />
+                      {errors.producer && (
+                        <p className="text-red-500">Producer is required!</p>
+                      )}
+
                       <input
                         {...register("actor", { required: true })}
                         placeholder="Actor"
                         className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
                       />
+                      {errors.actor && (
+                        <p className="text-red-500">Actor is required!</p>
+                      )}
+
                       <input
                         {...register("actress", { required: true })}
                         placeholder="Actress"
                         className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
                       />
+                      {errors.actress && (
+                        <p className="text-red-500">Actress is required!</p>
+                      )}
+
+                      <input
+                        {...register("contentLink", { required: true })}
+                        placeholder="contentLink"
+                        className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
+                      />
+                      {errors.contentLink && (
+                        <p className="text-red-500">ContentLink is required!</p>
+                      )}
                     </div>
 
                     {/* Right Column */}
@@ -214,13 +360,22 @@ const MovieCMS = () => {
                         placeholder="Release Year"
                         className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
                       />
+                      {errors.releaseYear && (
+                        <p className="text-red-500">ReleaseYear is required!</p>
+                      )}
+
                       <input
                         {...register("duration", { required: true })}
                         placeholder="Duration"
                         className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
                       />
+                      {errors.duration && (
+                        <p className="text-red-500">Duration is required!</p>
+                      )}
+
                       <input
                         type="number"
+                        step="any"
                         {...register("price", {
                           required: true,
                           valueAsNumber: true,
@@ -228,24 +383,62 @@ const MovieCMS = () => {
                         placeholder="Price"
                         className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
                       />
+                      {errors.price && (
+                        <p className="text-red-500">Price is required!</p>
+                      )}
+
+                      <input
+                        type="number"
+                        step="any"
+                        {...register("rentprice", {
+                          required: true,
+                          valueAsNumber: true,
+                        })}
+                        placeholder="Rent Price"
+                        className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
+                      />
+                      {errors.rentprice && (
+                        <p className="text-red-500">Rent price is required!</p>
+                      )}
+
+                      {/* Genre select input */}
                       <select
-                        {...register("genre", { required: true })}
+                        id="genreId"
+                        {...register("genreId", { required: true })}
                         className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
                       >
                         <option value="">Select Genre</option>
-                        <option value="Action">Action</option>
-                        <option value="Drama">Drama</option>
-                        <option value="Comedy">Comedy</option>
+                        {genresOptions?.map((genre: TGenresOptions) => (
+                          <option key={genre.genreId} value={genre.genreId}>
+                            {genre.label}
+                          </option>
+                        ))}
                       </select>
+                      {errors.genreId && (
+                        <p className="text-red-500">Genre is required!</p>
+                      )}
+
+                      {/* Platform select input */}
                       <select
-                        {...register("platform", { required: true })}
+                        id="platformId"
+                        {...register("platformId", { required: true })}
                         className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
                       >
                         <option value="">Select Platform</option>
-                        <option value="Netflix">Netflix</option>
-                        <option value="Amazon Prime">Amazon Prime</option>
-                        <option value="Disney+">Disney+</option>
+                        {platformsOptions?.map(
+                          (platform: TPlatformsOptions) => (
+                            <option
+                              key={platform.platformId}
+                              value={platform.platformId}
+                            >
+                              {platform.label}
+                            </option>
+                          )
+                        )}
                       </select>
+                      {errors.platformId && (
+                        <p className="text-red-500">Platform is required!</p>
+                      )}
                     </div>
                   </div>
 
@@ -256,7 +449,11 @@ const MovieCMS = () => {
                       placeholder="Synopsis"
                       className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500 h-32"
                     />
-                    <div className="flex gap-6">
+                    {errors.synopsis && (
+                      <p className="text-red-500">Synopsis is required!</p>
+                    )}
+
+                    {/* <div className="flex gap-6">
                       <label className="flex items-center gap-2">
                         <input
                           type="checkbox"
@@ -273,7 +470,7 @@ const MovieCMS = () => {
                         />
                         <span className="text-gray-400">Available</span>
                       </label>
-                    </div>
+                    </div> */}
                   </div>
 
                   {/* Form Buttons */}
@@ -301,6 +498,13 @@ const MovieCMS = () => {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Update Movie Modal */}
+        <UpdateModal
+          isUpdateModalOpen={isUpdateModalOpen}
+          setUpdateModalOpen={setUpdateModalOpen}
+          content={content}
+        />
       </div>
     </div>
   );
