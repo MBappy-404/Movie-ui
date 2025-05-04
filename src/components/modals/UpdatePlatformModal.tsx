@@ -1,17 +1,9 @@
 "use client";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useForm, SubmitHandler } from "react-hook-form";
-import {
-  useCreatePlatformMutation,
-  useDeletePlatformMutation,
-  useGetAllPlatformQuery,
-  useUpdatePlatformMutation,
-} from "@/components/redux/features/platform/platformApi";
+import { useUpdatePlatformMutation } from "@/components/redux/features/platform/platformApi";
 import { toast } from "sonner";
-import { MdDeleteOutline } from "react-icons/md";
-import { FaPen } from "react-icons/fa6";
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 
 interface Platform {
   id: string;
@@ -39,7 +31,6 @@ const UpdatePlatformModal = ({
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [thumbnail, setThumbnail] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
   const [updatePlatform] = useUpdatePlatformMutation();
 
   useEffect(() => {
@@ -89,14 +80,16 @@ const UpdatePlatformModal = ({
     try {
       const res = await updatePlatform({
         platformId: platform.id,
-        formData
+        formData,
       }).unwrap();
       toast.success("Platform updated successfully!", { id: toastId });
       setUpdatePlatformModalOpen(false);
       reset();
       clearImage();
     } catch (error: any) {
-      toast.error(error.message || "Failed to update platform", { id: toastId });
+      toast.error(error.message || "Failed to update platform", {
+        id: toastId,
+      });
     }
   };
 
@@ -114,7 +107,10 @@ const UpdatePlatformModal = ({
         animate={{ scale: 1, y: 0 }}
         className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl bg-[#000a3a] border border-[#1a2d6d] rounded-xl overflow-hidden"
       >
-        <form onSubmit={handleSubmit(onSubmit)} className="p-8 max-h-[90vh] overflow-y-auto">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="p-8 max-h-[90vh] overflow-y-auto"
+        >
           <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
             Update Platform
           </h2>
