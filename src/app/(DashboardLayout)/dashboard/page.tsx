@@ -1,4 +1,7 @@
 "use client";
+import { useGetAllContentQuery } from '@/components/redux/features/content/contentApi';
+import {  useGetAllPaymentsQuery } from '@/components/redux/features/payment/paymentApi';
+import { useGetAllUserQuery } from '@/components/redux/features/user/userApi';
 import { useState, useMemo } from 'react';
 import { LineChart, BarChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
@@ -27,6 +30,18 @@ const OverviewStats = () => {
     totalPurchases: '89,432',
     totalEarnings: '$2,456,230'
   };
+
+  const { data: users, isLoading } = useGetAllUserQuery(undefined);
+  const { data: movie } = useGetAllContentQuery([{}]);
+  const {data: payments} = useGetAllPaymentsQuery({});
+  console.log(payments);
+
+  const earnings = payments?.data?.reduce((acc: number, payment: any) => {
+    const amount = payment.amount || 0;
+    return acc + amount;
+  }, 0);  
+ 
+  
 
   // Dynamic data generator
   const generateChartData = (range: typeof timeFilter): ChartData[] => {
@@ -107,28 +122,28 @@ const OverviewStats = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard 
           title="Total Users" 
-          value={statsData.totalUsers}
+          value={users?.data?.length || '0'}
           trend="12.5%"
           icon="👥"
           color="bg-purple-500/20"
         />
         <StatCard 
           title="Total Movies" 
-          value={statsData.totalMovies}
+          value={movie?.data?.length || '0'}
           trend="8.2%"
           icon="🎬"
           color="bg-blue-500/20"
         />
         <StatCard 
           title="Total Purchases" 
-          value={statsData.totalPurchases}
+          value={payments?.data?.length || '0'}
           trend="18.4%"
           icon="💰"
           color="bg-green-500/20"
         />
         <StatCard 
           title="Total Earnings" 
-          value={statsData.totalEarnings}
+          value={earnings || '0'}
           trend="22.3%"
           icon="💸"
           color="bg-pink-500/20"

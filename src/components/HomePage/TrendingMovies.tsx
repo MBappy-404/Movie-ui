@@ -21,7 +21,7 @@ const TrendingMovies = () => {
     { name: "sortOrder", value: "desc" },
     {
       name: "createdAt",
-      value: "desc",
+      value: "asc",
     },
   ]);
 
@@ -137,7 +137,7 @@ const TrendingMovies = () => {
                       </h3>
                       <div className="flex items-center bg-white/10 px-3 py-1 rounded-full">
                         <span className="text-yellow-400 text-sm">
-                          {movie?.averageRating}/10
+                          {movie?.averageRating}/5
                         </span>
                       </div>
                     </div>

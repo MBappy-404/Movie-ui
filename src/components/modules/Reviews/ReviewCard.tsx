@@ -9,11 +9,9 @@ import Comments from "../Comment/Comments";
 // Separate component for individual review items
 const ReviewItem = ({
   item,
-  imageURL,
   UserData,
 }: {
   item: any;
-  imageURL: any;
   UserData: any;
 }) => {
   const { data: SingleUser } = useGetUserQuery(item.userId);
@@ -30,7 +28,7 @@ const ReviewItem = ({
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex-shrink-0">
           <Image
-            src={imageURL}
+            src={item?.user?.profilePhoto}
             alt="Reviewer Avatar"
             width={60}
             height={60}
@@ -56,11 +54,9 @@ const ReviewItem = ({
 };
 
 const ReviewCard = ({
-  imageURL,
   ReviewData,
   UserData,
 }: {
-  imageURL: any;
   ReviewData: any;
   UserData: any;
 }) => {
@@ -69,20 +65,16 @@ const ReviewCard = ({
   );
 
   console.log(publishedReviews);
-  
 
   return (
     <div>
-      {
-        !publishedReviews?.length && <p>No reviews found</p>
-      }
+      {!publishedReviews?.length && <p>No reviews found</p>}
       {publishedReviews?.length > 0 && (
         <div className="bg-gray-900 rounded-lg p-6 shadow-md flex flex-col gap-6">
           {publishedReviews?.map((item: any, index: number) => (
             <ReviewItem
               key={item.id || index}
               item={item}
-              imageURL={imageURL}
               UserData={UserData}
             />
           ))}

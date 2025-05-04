@@ -15,14 +15,14 @@ const NewReleases = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   const { data, isLoading } = useGetAllContentQuery([
-    { name: "sortBy", value: "rating" },
+    // { name: "sortBy", value: "rating" },
     {
       name: "createdAt",
-      value: "desc",
+      value: "asc",
     },
   ]);
 
-  const moviesData: Movie[] = data?.data?.slice(0, 4);
+  const moviesData: Movie[] = data?.data?.slice(0, 6);
 
   const cardVariants = {
     hidden: { opacity: 0, y: 50 },
@@ -175,13 +175,13 @@ const NewReleases = () => {
                               className="absolute left-0 top-0 h-full rounded-full bg-gradient-to-r from-blue-500 to-purple-500"
                               style={{
                                 width: `${
-                                  (movie?.averageRating as number) * 10
+                                  (movie?.averageRating as number) * 5
                                 }%`,
                               }}
                             />
                           </div>
                           <span className="text-sm font-semibold text-yellow-500">
-                            {movie?.averageRating}/10
+                            {movie?.averageRating}/5
                           </span>
                         </motion.div>
 
