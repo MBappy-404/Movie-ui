@@ -11,14 +11,14 @@ const paymentApi = baseApi.injectEndpoints({
           }),
           providesTags: ["payment"],
         }),
-        // createGenre: builder.mutation({
-        //   query: (data) => ({
-        //     url: "/genre",
-        //     method: "POST",
-        //     body: data,
-        //   }),
-        //   invalidatesTags: ["genres"],
-        // }),
+        createPayment: builder.mutation({
+          query: (data) => ({
+            url: "/payment/init-payment",
+            method: "POST",
+            body: data,
+          }),
+          invalidatesTags: ["payment"],
+        }),
         // deleteGenre: builder.mutation({
         //   query: (genreId) => ({
         //     url: `/genre/${genreId}`,
@@ -31,5 +31,6 @@ const paymentApi = baseApi.injectEndpoints({
 });
 
 export const {
-   useGetAllPaymentsQuery
+   useGetAllPaymentsQuery,
+   useCreatePaymentMutation
 } = paymentApi;

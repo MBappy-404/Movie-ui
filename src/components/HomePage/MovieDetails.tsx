@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import moviePoster from "@/assets/images/movieposter.jpg";
 import manvector from "@/assets/images/manvector.png";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import ReactPlayer from "react-player";
 import { Rating } from "@smastrom/react-rating";
@@ -26,9 +26,15 @@ import { toast } from "sonner";
 import Link from "next/link";
 import ReviewCard from "../modules/Reviews/ReviewCard";
  
+import { getCurrentUser } from "@/services/AuthServices";
+import { useUser } from "../context/UserContext";
+import { useCreatePaymentMutation } from "../redux/features/payment/paymentApi";
+ 
+ 
 import { useAppDispatch } from "../redux/hooks";
 import { addToWatchList } from "../redux/features/watchListSlice";
 import { Movie } from "@/types";
+ 
 
  
 interface Movie {
@@ -50,11 +56,16 @@ interface ReviewFormData {
 }
 
 const MovieDetails = ({ currentUser }: any) => {
+ 
+    const [createPayment] = useCreatePaymentMutation();
+ 
 
   const dispatch = useAppDispatch();
 
+ 
   const router = useRouter();
   const { id } = useParams();
+  const { user } = useUser();
 
   const { data: movieDetails, isLoading } = useGetContentQuery(id);
  
@@ -154,6 +165,28 @@ const MovieDetails = ({ currentUser }: any) => {
       toast.error(error?.data?.message || "Something went wrong", {
         id: toastId,
       });
+    }
+  };
+
+
+ 
+
+  const handlePurchase = async(data: any) => {
+    if (!user) {
+      router.push("/login"); // redirect to login page
+    } else {
+        // console.log(data)
+        const paymentData = {
+            contentId: data?.id,
+            status: "BOUGHT" 
+        }
+       
+        const payment = await createPayment(paymentData)
+        // console.log(payment?.data?.paymentUrl);
+        
+        window.open(payment?.data?.data?.paymentUrl)
+        
+        
     }
   };
 
@@ -296,7 +329,10 @@ const MovieDetails = ({ currentUser }: any) => {
           </div>
  
           <div className="py-5">
-            <button className="px-6 py-3 mt-5 cursor-pointer flex gap-2 items-center rounded-xl font-bold text-white bg-gradient-to-r from-blue-500 to-purple-500 shadow-md hover:opacity-90 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-500/40 text-sm md:text-lg   duration-300">
+            <button
+              onClick={()=>handlePurchase(movieDetails?.data)}
+              className="px-6 py-3 mt-5 cursor-pointer flex gap-2 items-center rounded-xl font-medium text-white bg-gradient-to-r from-blue-500 to-purple-500 shadow-md hover:opacity-90 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-500/40 text-sm md:text-lg   duration-300"
+            >
               Purchase Movie
             </button>
           </div>
@@ -410,7 +446,8 @@ const MovieDetails = ({ currentUser }: any) => {
             <br />
             <button
               type="submit"
-              disabled={!SingleUser?.data?.id || rating === 0}
+ 
+              disabled={!user?.id || !SingleUser?.data?.id || rating === 0}
  
               className="mt-4 px-10 py-3 cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-lg shadow-lg hover:-translate-y-1 hover:shadow-blue-500/40 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
