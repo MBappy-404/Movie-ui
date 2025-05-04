@@ -7,86 +7,24 @@ import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import { useGetAllContentQuery } from "../redux/features/content/contentApi";
-interface MovieCardProps {
-  title: string;
-  rating: number;
-  description: string;
-  imageUrl: string;
-  genre: string;
-  year: number;
-  duration: string;
-}
+import { Movie } from "@/types";
+ 
 
 const NewReleases = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  const movies: MovieCardProps[] = [
-    {
-      title: "Cyber Nexus",
-      rating: 9.2,
-      description:
-        "In a dystopian future, a rogue AI threatens humanity's last hope. A team of enhanced hackers must breach the neural network to save mankind.",
-      imageUrl:
-        "https://streamvid.jwsuperthemes.com/wp-content/uploads/2024/12/7I6VUdPj6tQECNHdviJkUHD2u89-scaled-630x400.jpg",
-      genre: "Cyberpunk/Thriller",
-      year: 2024,
-      duration: "2h 12m",
-    },
-    {
-      title: "Eclipse of Titans",
-      rating: 8.9,
-      description:
-        "Ancient gods return to reclaim Earth in this epic fantasy adventure. Humanity's last stand begins at the celestial alignment.",
-      imageUrl:
-        "https://streamvid.jwsuperthemes.com/wp-content/uploads/2024/12/7I6VUdPj6tQECNHdviJkUHD2u89-scaled-630x400.jpg",
-      genre: "Fantasy/Adventure",
-      year: 2024,
-      duration: "2h 45m",
-    },
-    {
-      title: "Cyber Nexus",
-      rating: 9.2,
-      description:
-        "In a dystopian future, a rogue AI threatens humanity's last hope. A team of enhanced hackers must breach the neural network to save mankind.",
-      imageUrl:
-        "https://streamvid.jwsuperthemes.com/wp-content/uploads/2024/12/7I6VUdPj6tQECNHdviJkUHD2u89-scaled-630x400.jpg",
-      genre: "Cyberpunk/Thriller",
-      year: 2024,
-      duration: "2h 12m",
-    },
-    {
-      title: "Eclipse of Titans",
-      rating: 8.9,
-      description:
-        "Ancient gods return to reclaim Earth in this epic fantasy adventure. Humanity's last stand begins at the celestial alignment.",
-      imageUrl:
-        "https://streamvid.jwsuperthemes.com/wp-content/uploads/2024/12/7I6VUdPj6tQECNHdviJkUHD2u89-scaled-630x400.jpg",
-      genre: "Fantasy/Adventure",
-      year: 2024,
-      duration: "2h 45m",
-    },
-    {
-      title: "Eclipse of Titans",
-      rating: 8.9,
-      description:
-        "Ancient gods return to reclaim Earth in this epic fantasy adventure. Humanity's last stand begins at the celestial alignment.",
-      imageUrl:
-        "https://streamvid.jwsuperthemes.com/wp-content/uploads/2024/12/7I6VUdPj6tQECNHdviJkUHD2u89-scaled-630x400.jpg",
-      genre: "Fantasy/Adventure",
-      year: 2024,
-      duration: "2h 45m",
-    },
-  ];
-
+ 
   const { data } = useGetAllContentQuery([
+    { name: "sortBy", value: "rating" },
     {
       name: "createdAt",
-      value: "asc",
+      value: "desc",
     },
   ]);
 
-  console.log(data?.data);
+  const moviesData : Movie[] = data?.data?.slice(0, 4);
+ 
   
 
   const cardVariants = {
@@ -151,8 +89,8 @@ const NewReleases = () => {
               nextEl: ".next",
             }}
           >
-            {movies.map((movie, index) => (
-              <SwiperSlide key={index}>
+            {moviesData?.map((movie: Movie, index: number) => (
+              <SwiperSlide key={movie.id}>
                 <motion.div
                   className="group relative cursor-pointer"
                   variants={cardVariants}
@@ -165,7 +103,7 @@ const NewReleases = () => {
                     className="relative h-[500px] overflow-hidden rounded-3xl shadow-2xl"
                   >
                     <img
-                      src={movie.imageUrl}
+                      src={movie.thumbnail}
                       alt={movie.title}
                       className="h-full w-full object-cover object-center"
                     />
@@ -210,9 +148,9 @@ const NewReleases = () => {
                           {movie.title}
                         </h3>
                         <div className="flex items-center gap-4 text-sm text-gray-300">
-                          <span>{movie.year}</span>
+                          <span>{movie?.releaseYear}</span>
                           <span className="h-1 w-1 rounded-full bg-gray-400" />
-                          <span>{movie.genre}</span>
+                          <span>{movie?.genre?.genreName}</span>
                         </div>
                       </motion.div>
 
@@ -225,14 +163,14 @@ const NewReleases = () => {
                           transition: { delay: 0.5 + index * 0.1 },
                         }}
                       >
-                        <div className="relative h-3 w-full rounded-full bg-white/10">
+                        <div className="relative h-2 w-full rounded-full bg-white/10">
                           <div
                             className="absolute left-0 top-0 h-full rounded-full bg-gradient-to-r from-blue-500 to-purple-500"
-                            style={{ width: `${movie.rating * 10}%` }}
+                            style={{ width: `${movie?.averageRating as number * 10}%` }}
                           />
                         </div>
-                        <span className="text-sm font-bold text-blue-500">
-                          {movie.rating}/10
+                        <span className="text-sm font-semibold text-yellow-500">
+                          {movie?.averageRating}/10
                         </span>
                       </motion.div>
 
@@ -245,7 +183,7 @@ const NewReleases = () => {
                           transition: { delay: 0.6 + index * 0.1 },
                         }}
                       >
-                        {movie.description}
+                        {movie.synopsis}
                       </motion.p>
                     </div>
                   </motion.div>
