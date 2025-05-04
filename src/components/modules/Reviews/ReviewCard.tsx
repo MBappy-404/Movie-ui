@@ -9,15 +9,11 @@ import Comments from "../Comment/Comments";
 // Separate component for individual review items
 const ReviewItem = ({
   item,
-  imageURL,
   UserData,
 }: {
   item: any;
-  imageURL: any;
   UserData: any;
 }) => {
-  const { data: SingleUser } = useGetUserQuery(item.userId);
-
   const date = new Date(item.createdAt);
   const formattedDate = date.toLocaleDateString("en-US", {
     year: "numeric",
@@ -30,7 +26,7 @@ const ReviewItem = ({
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex-shrink-0">
           <Image
-            src={imageURL}
+            src={item?.user?.profilePhoto}
             alt="Reviewer Avatar"
             width={60}
             height={60}
@@ -43,7 +39,7 @@ const ReviewItem = ({
             <p className="text-sm text-gray-400">{formattedDate}</p>
           </div>
           <p className="font-semibold text-white mt-1">
-            {SingleUser?.data?.name || "Anonymous"}
+            {item.user?.name || "Anonymous"}
           </p>
           <p className="mt-2 text-gray-300 text-sm">{item.reviewText}</p>
         </div>
@@ -56,11 +52,9 @@ const ReviewItem = ({
 };
 
 const ReviewCard = ({
-  imageURL,
   ReviewData,
   UserData,
 }: {
-  imageURL: any;
   ReviewData: any;
   UserData: any;
 }) => {
@@ -68,7 +62,7 @@ const ReviewCard = ({
     (item: any) => item.status === "PUBLISHED"
   );
 
-  //console.log(publishedReviews);
+ 
 
   return (
     <div>
@@ -79,7 +73,6 @@ const ReviewCard = ({
             <ReviewItem
               key={item.id || index}
               item={item}
-              imageURL={imageURL}
               UserData={UserData}
             />
           ))}
