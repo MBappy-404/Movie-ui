@@ -40,7 +40,7 @@ const MovieDetails = ({ currentUser }: any) => {
     const router = useRouter();
     const { id } = useParams();
 
-    const { data: movieDetails, isLoading } = useGetContentQuery({ id })
+    const { data: movieDetails, isLoading } = useGetContentQuery(id )
     const { data: allMovies } = useGetAllContentQuery({ undefined })
     const { data: SingleUser } = useGetUserQuery(currentUser?.id)
     
@@ -76,32 +76,34 @@ const MovieDetails = ({ currentUser }: any) => {
     const onSubmit = async (data: ReviewFormData) => {
         const toastId = toast.loading("Creating Review...");
         if (!SingleUser?.data?.id) {
-            alert('User information not available. Please try again later.');
+            toast.error("User information not available. Please try again later.", { id: toastId });
             return;
         }
 
-        const reviewData = {
-            rating: rating,
-            reviewText: data.reviewText,
-            contentId: movieDetails.data.id,
-            userId: SingleUser.data.id,
-            tags: data.tags
-        }
         try {
-            const res = await addReview(reviewData);
-            if (res?.data?.success) {
-                toast.success(res?.data?.message, { id: toastId });
-            }
+            const reviewData = {
+                rating: rating,
+                reviewText: data.reviewText,
+                contentId: movieDetails.data.id,
+                userId: SingleUser.data.id,
+                tags: data.tags || "CLASSIC" // Provide a default value if tags is undefined
+            };
 
+            const res = await addReview(reviewData).unwrap();
+            
+            if (res?.success) {
+                toast.success(res?.message || "Review added successfully", { id: toastId });
+                reset();
+                setRating(0);
+                setIsChecked(false);
+                setSubmitted(true);
+            } else {
+                toast.error(res?.message || "Failed to add review", { id: toastId });
+            }
         } catch (error: any) {
-            console.log(error);
-            toast.error("Something went wrong", { id: toastId });
+            console.error("Review submission error:", error);
+            toast.error(error?.data?.message || "Something went wrong", { id: toastId });
         }
-        // Here you would typically make an API call to submit the review
-        reset();
-        setRating(0);
-        setIsChecked(false);
-        setSubmitted(true);
     };
 
     return (

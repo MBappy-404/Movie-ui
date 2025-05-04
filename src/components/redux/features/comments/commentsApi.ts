@@ -25,11 +25,21 @@ const commentApi = baseApi.injectEndpoints({
             //         data: response?.data,
             //     };
             // }
-          })
+          }),
+        GetCommentsByParentId: builder.query({
+            query: ({ parentId, page, limit }) => {
+              return {
+                url: `/comment/parent/${parentId}?page=${page}&limit=${limit}`,
+                method: 'GET',
+              };
+            },
+            providesTags: ['comment']
+        })
     })
 })
 
 export const {
     useCreateCommentMutation,
-    useGetCommentsQuery
+    useGetCommentsQuery,
+    useGetCommentsByParentIdQuery
 } = commentApi
