@@ -4,22 +4,16 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { useGetAllGenresQuery } from "@/components/redux/features/genre/genreApi";
 import { useGetAllPlatformQuery } from "@/components/redux/features/platform/platformApi";
 import { toast } from "sonner";
-import {
-  useCreateContentMutation,
-  useDeleteContentMutation,
-  useGetAllContentQuery,
-  useGetContentQuery,
-  useUpdateContentMutation,
-} from "@/components/redux/features/content/contentApi";
+import { useUpdateContentMutation } from "@/components/redux/features/content/contentApi";
 import { TGenre, TGenresOptions } from "@/components/types/genre";
 import { TPlatform, TPlatformsOptions } from "@/components/types/platform";
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export interface Content {
   id: string;
   title: string;
   description: string;
-  isAvailable: boolean;
+  isAvailable: string;
   price: number;
   releaseYear: string;
   synopsis: string;
@@ -32,6 +26,7 @@ export interface Content {
   contentLink: string;
   genreId: string;
   platformId: string;
+  contentBanner: string;
 }
 
 interface UpdateContentModalProps {
@@ -66,6 +61,11 @@ const UpdateContentModal = ({
     label: item.genreName,
   }));
 
+  const setAvailabilityOptions = [
+    { id: 1, value: true, label: "Available" },
+    { id: 2, value: false, label: "Not Available" },
+  ];
+
   const platformsOptions = platforms?.data?.map((item: TPlatform) => ({
     platformId: item.id,
     label: item.platformName,
@@ -92,7 +92,7 @@ const UpdateContentModal = ({
   };
 
   const onSubmit: SubmitHandler<Content> = async (data) => {
-    console.log(data);
+    //console.log(data);
     const toastId = toast.loading("Updating Content....", { duration: 2000 });
 
     const formData = new FormData();
@@ -106,17 +106,19 @@ const UpdateContentModal = ({
         ...data,
         price: data.price,
         rentprice: data.rentprice,
-        isAvailable: data.isAvailable || false,
+        isAvailable: data.isAvailable === "true" ? true : false,
       },
       contentLink: data.contentLink,
     };
+
+    //console.log(updateMovie);
 
     formData.append("data", JSON.stringify(updateMovie));
 
     // updating movie
     try {
       const res = await updateContent({ formData, contentId: content?.id });
-      console.log(res);
+      //console.log(res);
       if ("error" in res && res.error) {
         const errorMessage =
           (res.error as any)?.data?.message || "An error occurred";
@@ -151,10 +153,11 @@ const UpdateContentModal = ({
         actor: content.actor || "",
         actress: content.actress || "",
         rentprice: content.rentprice || "",
-        contentLink: content.contentLink || "",
         genreId: content.genreId || "",
         platformId: content.platformId || "",
-        isAvailable: content.isAvailable || false,
+        isAvailable: content.isAvailable,
+        contentBanner: content.contentBanner || "",
+        contentLink: content.id || "",
       });
     }
   }, [content, reset]);
@@ -264,6 +267,12 @@ const UpdateContentModal = ({
                       placeholder="contentLink"
                       className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
                     />
+
+                    <input
+                      {...register("contentBanner")}
+                      placeholder="contentBanner"
+                      className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
+                    />
                   </div>
 
                   {/* Right Column */}
@@ -327,6 +336,20 @@ const UpdateContentModal = ({
                           value={platform.platformId}
                         >
                           {platform.label}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* set content availability */}
+                    <select
+                      id="isAvailable"
+                      {...register("isAvailable", {})}
+                      className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
+                    >
+                      <option value="">Set Availability</option>
+                      {setAvailabilityOptions?.map((available: any) => (
+                        <option key={available.id} value={available.value}>
+                          {available.label}
                         </option>
                       ))}
                     </select>

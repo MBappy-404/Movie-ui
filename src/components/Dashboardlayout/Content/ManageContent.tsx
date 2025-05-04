@@ -35,6 +35,7 @@ export interface Movie {
   platformId: string;
   isAvailable: boolean;
   contentLink: string;
+  contentBanner: string;
 }
 
 const ManageContent = () => {
@@ -50,6 +51,8 @@ const ManageContent = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [content, setContent] = useState<{} | null>(null);
   const [thumbnail, setThumbnail] = useState<File | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [contentToDelete, setContentToDelete] = useState<Movie | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { data: genres } = useGetAllGenresQuery(undefined);
   const { data: platforms } = useGetAllPlatformQuery(undefined);
@@ -91,6 +94,7 @@ const ManageContent = () => {
   };
 
   const onSubmit: SubmitHandler<Movie> = async (data) => {
+    //console.log(data);
     const toastId = toast.loading("Adding Content....", { duration: 2000 });
 
     if (!thumbnail) {
@@ -117,7 +121,7 @@ const ManageContent = () => {
     // uploading movie
     try {
       const res = await addContent(formData);
-      console.log(res);
+      //console.log(res);
       if ("error" in res && res.error) {
         const errorMessage =
           (res.error as any)?.data?.message || "An error occurred";
@@ -144,7 +148,7 @@ const ManageContent = () => {
 
     try {
       const res = await deleteContent(contentId);
-      console.log(res);
+      //console.log(res);
       if ("error" in res && res.error) {
         const errorMessage =
           (res.error as any)?.data?.message || "An error occurred";
@@ -152,6 +156,8 @@ const ManageContent = () => {
       } else {
         toast.success(res?.data?.message, { id: toastId });
       }
+      setIsDeleteModalOpen(false);
+      setContentToDelete(null);
     } catch (error: any) {
       toast.error(error.data.message, { id: toastId, duration: 2000 });
     }
@@ -206,17 +212,21 @@ const ManageContent = () => {
                       <td className="px-6 py-4">${movie.price}</td>
                       <td className="px-6 py-4">
                         <span
-                          className={`px-2 py-1 rounded-full text-sm ${movie.isAvailable
-                            ? "bg-green-500/20 text-green-400"
-                            : "bg-red-500/20 text-red-400"
-                            }`}
+                          className={`px-2 py-1 rounded-full text-sm ${
+                            movie.isAvailable
+                              ? "bg-green-500/20 text-green-400"
+                              : "bg-red-500/20 text-red-400"
+                          }`}
                         >
                           {movie.isAvailable ? "Available" : "Unavailable"}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-2xl flex gap-3">
                         <MdDeleteOutline
-                          onClick={() => handleContentDelete(movie.id)}
+                          onClick={() => {
+                            setContentToDelete(movie);
+                            setIsDeleteModalOpen(true);
+                          }}
                         />
                         <FaPen
                           className="text-xl"
@@ -351,6 +361,16 @@ const ManageContent = () => {
                       />
                       {errors.contentLink && (
                         <p className="text-red-500">ContentLink is required!</p>
+                      )}
+                      <input
+                        {...register("contentBanner", { required: true })}
+                        placeholder="contentBanner"
+                        className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
+                      />
+                      {errors.contentLink && (
+                        <p className="text-red-500">
+                          Content Banner is required!
+                        </p>
                       )}
                     </div>
 
@@ -487,6 +507,49 @@ const ManageContent = () => {
           setUpdateModalOpen={setUpdateModalOpen}
           content={content as Content | null}
         />
+
+        {/* Delete Content Modal */}
+        <AnimatePresence>
+          {isDeleteModalOpen && contentToDelete && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-lg z-50"
+            >
+              <motion.div
+                initial={{ scale: 0.95, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-[#000a3a] border border-[#1a2d6d] rounded-xl overflow-hidden p-6"
+              >
+                <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+                  Delete Content
+                </h2>
+                <p className="text-gray-300 mb-6">
+                  Are you sure you want to delete the content "
+                  {contentToDelete.title}"? This action cannot be undone.
+                </p>
+                <div className="flex justify-end gap-4">
+                  <button
+                    onClick={() => {
+                      setIsDeleteModalOpen(false);
+                      setContentToDelete(null);
+                    }}
+                    className="px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => handleContentDelete(contentToDelete.id)}
+                    className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg transition-colors"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
