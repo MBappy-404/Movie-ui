@@ -15,11 +15,11 @@ const contentApi = baseApi.injectEndpoints({
       query: (args) => {
         const params = new URLSearchParams();
 
-        // if (args) {
-        //   args.forEach((item: any) => {
-        //     params.append(item?.name, item?.value as string);
-        //   });
-        // }
+        if (args) {
+          args.forEach((item: any) => {
+            params.append(item?.name, item?.value as string);
+          });
+        }
 
         return {
           url: "/content",

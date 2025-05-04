@@ -6,6 +6,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
+import { useGetAllContentQuery } from "../redux/features/content/contentApi";
 interface MovieCardProps {
   title: string;
   rating: number;
@@ -78,6 +79,16 @@ const NewReleases = () => {
     },
   ];
 
+  const { data } = useGetAllContentQuery([
+    {
+      name: "createdAt",
+      value: "asc",
+    },
+  ]);
+
+  console.log(data?.data);
+  
+
   const cardVariants = {
     hidden: { opacity: 0, y: 50 },
     visible: (i: number) => ({
@@ -117,12 +128,6 @@ const NewReleases = () => {
         <div className=" pb-8 ">
           <Swiper
             loop={true}
-            speed={600}
-            autoplay={{
-              delay: 3000,
-              disableOnInteraction: false,  
-              pauseOnMouseEnter: true,  
-            }}
             spaceBetween={20}
             slidesPerView={1}
             breakpoints={{
@@ -135,7 +140,7 @@ const NewReleases = () => {
                 spaceBetween: 25,
               },
               1024: {
-                slidesPerView: 4,  
+                slidesPerView: 4,
                 spaceBetween: 20,
               },
             }}
@@ -154,7 +159,6 @@ const NewReleases = () => {
                   initial="hidden"
                   animate={isInView ? "visible" : "hidden"}
                   custom={index}
-                   
                 >
                   <motion.div
                     variants={hoverVariants}

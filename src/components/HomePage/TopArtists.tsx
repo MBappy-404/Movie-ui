@@ -1,5 +1,5 @@
 "use client";
-
+import { motion } from "framer-motion";
 import Image from "next/image";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -60,14 +60,80 @@ const artistsSlides: TArtistSlide[] = [
   },
 ];
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      when: "beforeChildren",
+    },
+  },
+};
+
+const slideVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut",
+    },
+  },
+};
+
+const imageVariants = {
+  hover: {
+    scale: 1.05,
+    transition: {
+      duration: 0.3,
+      ease: "easeOut",
+    },
+  },
+};
+
+const textVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      delay: 0.2,
+      ease: "easeOut",
+    },
+  },
+};
+
 const TopArtists = () => {
   return (
-    <div className="md:w-[90%] w-[95%] mx-auto py-20">
-      <h1 className="text-4xl font-bold text-white">Top Artists</h1>
+    <motion.div
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "0px 0px -100px 0px" }}
+      variants={containerVariants}
+      className="md:w-[90%] w-[95%] mx-auto pt-32 pb-20"
+    >
+      <motion.h1
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="text-3xl md:text-4xl font-bold text-white mb-12"
+      >
+        Top Artists
+      </motion.h1>
+
       <Swiper
-        navigation={true}
+        navigation={{
+          prevEl: ".prevArtist",
+          nextEl: ".nextArtist",
+        }}
+        loop={true}
+        speed={600}
         modules={[Navigation]}
-        className="mySwiper"
+         
         breakpoints={{
           320: {
             slidesPerView: 1,
@@ -96,24 +162,65 @@ const TopArtists = () => {
         }}
         style={{ padding: "40px 0" }}
       >
-        {artistsSlides.map((artist) => (
+        {artistsSlides.map((artist, index) => (
           <SwiperSlide key={artist.id}>
-            <div className="flex flex-col  items-center justify-center cursor-pointer transition-transform duration-300 hover:-translate-y-5">
-              <Image
-                src={artist.image}
-                alt={artist.artistName}
-                height={180}
-                width={180}
-                className="rounded-full border-2 border-violet-500 shadow-lg shadow-violet-400/30 object-cover w-[180px] h-[180px] bg-[#181a2a] transition-shadow duration-300 hover:shadow-violet-500/80"
-              />
-              <div className="mt-4 text-white font-bold text-lg text-center tracking-wide">
+            <motion.div
+              variants={slideVariants}
+              custom={index}
+              className="flex flex-col items-center justify-center cursor-pointer"
+            >
+              <motion.div
+                className="relative"
+                whileHover="hover"
+                initial="visible"
+              >
+                <motion.div
+                  variants={imageVariants}
+                  className="rounded-full overflow-hidden  "
+                >
+                  <Image
+                    src={artist.image}
+                    alt={artist.artistName}
+                    height={180}
+                    width={180}
+                    className="rounded-full border-4 border-violet-500 shadow-lg shadow-violet-400/30 object-cover w-[180px] h-[180px] bg-[#181a2a] transition-shadow duration-300 hover:shadow-violet-500/80"
+                  />
+                </motion.div>
+              </motion.div>
+
+              <motion.div
+                variants={textVariants}
+                className="mt-4 text-white font-bold text-lg text-center tracking-wide"
+              >
                 {artist.artistName}
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </SwiperSlide>
         ))}
       </Swiper>
-    </div>
+      <div className=" flex justify-between   ">
+        <div className=" md:flex justify-center mb-3">
+          <div className="prevArtist   hover:bg-gradient-to-r -translate-y-[190px]     transition-all duration-300 bg-gray-300/30 backdrop:blur-lg   from-blue-500 to-purple-500 w-28 h-8 rounded-lg z-50 flex items-center justify-center cursor-pointer rotate-90">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-4 fill-white"
+              viewBox="0 0 24 24"
+            >
+              <path d="M11.99997 18.1669a2.38 2.38 0 0 1-1.68266-.69733l-9.52-9.52a2.38 2.38 0 1 1 3.36532-3.36532l7.83734 7.83734 7.83734-7.83734a2.38 2.38 0 1 1 3.36532 3.36532l-9.52 9.52a2.38 2.38 0 0 1-1.68266.69734z" />
+            </svg>
+          </div>
+        </div>
+        <div className="nextArtist   hover:bg-gradient-to-r -translate-y-[190px]   transition-all duration-300 bg-gray-300/30 backdrop:blur-lg   from-blue-500 to-purple-500 w-28 h-8 rounded-lg z-50 flex items-center justify-center cursor-pointer -rotate-90">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-4 fill-white"
+            viewBox="0 0 24 24"
+          >
+            <path d="M11.99997 18.1669a2.38 2.38 0 0 1-1.68266-.69733l-9.52-9.52a2.38 2.38 0 1 1 3.36532-3.36532l7.83734 7.83734 7.83734-7.83734a2.38 2.38 0 1 1 3.36532 3.36532l-9.52 9.52a2.38 2.38 0 0 1-1.68266.69734z" />
+          </svg>
+        </div>
+      </div>
+    </motion.div>
   );
 };
 
