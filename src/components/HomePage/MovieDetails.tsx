@@ -25,29 +25,12 @@ import {
 import { toast } from "sonner";
 import Link from "next/link";
 import ReviewCard from "../modules/Reviews/ReviewCard";
- 
-import { getCurrentUser } from "@/services/AuthServices";
 import { useUser } from "../context/UserContext";
 import { useCreatePaymentMutation } from "../redux/features/payment/paymentApi";
- 
- 
+
 import { useAppDispatch } from "../redux/hooks";
 import { addToWatchList } from "../redux/features/watchListSlice";
 import { Movie } from "@/types";
- 
-
- 
-interface Movie {
- 
-  id: string;
-  title: string;
-  thumbnail: string;
-  genre: {
-    genreName: string;
-  };
-  releaseYear: string;
-  duration: string;
-}
 
 interface ReviewFormData {
   rating: number;
@@ -56,19 +39,23 @@ interface ReviewFormData {
 }
 
 const MovieDetails = ({ currentUser }: any) => {
- 
-    const [createPayment] = useCreatePaymentMutation();
- 
+  const [createPayment] = useCreatePaymentMutation();
 
   const dispatch = useAppDispatch();
 
- 
+  const handleWatchlist = (data: Movie) => {
+    dispatch(addToWatchList(data));
+    toast.success("Added to Watchlist", {
+      icon: "⭐",
+    });
+  };
+
   const router = useRouter();
   const { id } = useParams();
   const { user } = useUser();
 
   const { data: movieDetails, isLoading } = useGetContentQuery(id);
- 
+
   const { data: allMovies, isLoading: isMoviesLoading } =
     useGetAllContentQuery(undefined);
   const { data: SingleUser } = useGetUserQuery(currentUser?.id);
@@ -124,7 +111,6 @@ const MovieDetails = ({ currentUser }: any) => {
   const videoUrl =
     "https://customer-342mt1gy0ibqe0dl.cloudflarestream.com/e5fe3013604cf504ace84b84d91b1f5a/downloads/default.mp4";
 
- 
   if (isLoading) {
     return <MovieDetailsSkeleton />;
   }
@@ -168,33 +154,27 @@ const MovieDetails = ({ currentUser }: any) => {
     }
   };
 
-
- 
-
-  const handlePurchase = async(data: any) => {
+  const handlePurchase = async (data: any) => {
     if (!user) {
       router.push("/login"); // redirect to login page
     } else {
-        // console.log(data)
-        const paymentData = {
-            contentId: data?.id,
-            status: "BOUGHT" 
-        }
-       
-        const payment = await createPayment(paymentData)
-        // console.log(payment?.data?.paymentUrl);
-        
-        window.open(payment?.data?.data?.paymentUrl)
-        
-        
+      // console.log(data)
+      const paymentData = {
+        contentId: data?.id,
+        status: "BOUGHT",
+      };
+
+      const payment = await createPayment(paymentData);
+      // console.log(payment?.data?.paymentUrl);
+
+      window.open(payment?.data?.data?.paymentUrl);
     }
   };
 
   return (
     <div className="min-h-screen container mx-auto text-white p-6 pt-24">
       {/* 🎬 Trial Video Section */}
- 
- 
+
       <div className="w-full  mb-10 hidden md:block">
         <div className="relative w-full   rounded-xl overflow-hidden">
           <Image
@@ -203,7 +183,6 @@ const MovieDetails = ({ currentUser }: any) => {
             width={600}
             height={400}
             className="w-full h-full object-cover rounded-xl"
- 
           />
         </div>
       </div>
@@ -228,12 +207,11 @@ const MovieDetails = ({ currentUser }: any) => {
             <button className="text-sm text-gray-400 hover:text-white cursor-pointer">
               🔗 Share
             </button>
- 
+
             <button
               onClick={() => handleWatchlist(movieDetails?.data)}
               className="text-sm text-gray-400 hover:text-white cursor-pointer"
             >
- 
               ⭐ Watchlist
             </button>
           </div>
@@ -247,7 +225,7 @@ const MovieDetails = ({ currentUser }: any) => {
           <h1 className="text-4xl font-bold mb-2">
             {movieDetails?.data?.title}
           </h1>
- 
+
           <p className="text-sm md:text-lg text-gray-400 mb-2 flex gap-1 items-center">
             <Rating
               style={{ maxWidth: 80 }}
@@ -257,7 +235,6 @@ const MovieDetails = ({ currentUser }: any) => {
             />{" "}
             {movieDetails?.data?.averageRating} | 📅{" "}
             {movieDetails?.data?.releaseYear} | ⏱️{" "}
-> 
             {movieDetails?.data?.duration} |{" "}
             <span>
               <Image
@@ -269,28 +246,24 @@ const MovieDetails = ({ currentUser }: any) => {
             </span>{" "}
             {movieDetails?.data?.platform?.platformName}
           </p>
- 
+
           <p className="mb-4 text-sm md:text-lg text-gray-300">
             {movieDetails?.data?.genre?.genreName}
           </p>
           <p className="mb-4 text-sm md:text-lg text-gray-300">
- 
             {movieDetails?.data?.synopsis}
           </p>
           <div className="space-y-3">
             <div className="flex gap-2">
- 
               <p className="text-sm md:text-lg text-gray-400">
                 Cast:{" "}
                 <span className="text-white">{movieDetails?.data?.actor},</span>
               </p>
               <p className="text-sm md:text-lg text-gray-400">
- 
                 <span className="text-white">
                   {movieDetails?.data?.actress}
                 </span>
               </p>
- 
             </div>
             <p className="text-sm md:text-lg text-gray-400">
               Producer:{" "}
@@ -323,14 +296,13 @@ const MovieDetails = ({ currentUser }: any) => {
               <span className="text-white text-xl">
                 {" "}
                 ${movieDetails?.data?.rentprice}
- 
               </span>
             </p>
           </div>
- 
+
           <div className="py-5">
             <button
-              onClick={()=>handlePurchase(movieDetails?.data)}
+              onClick={() => handlePurchase(movieDetails?.data)}
               className="px-6 py-3 mt-5 cursor-pointer flex gap-2 items-center rounded-xl font-medium text-white bg-gradient-to-r from-blue-500 to-purple-500 shadow-md hover:opacity-90 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-500/40 text-sm md:text-lg   duration-300"
             >
               Purchase Movie
@@ -341,7 +313,6 @@ const MovieDetails = ({ currentUser }: any) => {
             Recommended For You
           </h2>
 
- 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
             {recommendedMovies.map((movie) => (
               <Link key={movie.id} href={`/movies/${movie.id}`}>
@@ -358,13 +329,12 @@ const MovieDetails = ({ currentUser }: any) => {
                     className="w-full h-40 object-cover"
                   />
 
-
                   <div className="p-2 h-16 flex items-center">
                     <h3 className="text-white text-sm font-semibold line-clamp-2">
                       {movie.title}
                     </h3>
                   </div>
- 
+
                   <motion.div
                     variants={{
                       rest: { x: "100%", opacity: 0 },
@@ -375,12 +345,11 @@ const MovieDetails = ({ currentUser }: any) => {
                   >
                     <div>
                       <h3 className="text-lg font-semibold">{movie.title}</h3>
- 
+
                       <p className="text-sm md:text-lg text-gray-400 mt-1">
                         {movie.releaseYear} ・ {movie.duration}
                       </p>
                       <p className="text-sm md:text-lg mt-2 text-gray-300">
- 
                         {movie.genre.genreName}
                       </p>
                     </div>
@@ -401,9 +370,7 @@ const MovieDetails = ({ currentUser }: any) => {
 
             {/* Review Textarea */}
             <textarea
- 
               className="w-full mt-4 p-2 outline-none focus:border-blue-500 transition-all duration-300  bg-gray-800 border border-gray-600 rounded"
- 
               rows={4}
               placeholder="Your review *"
               {...register("reviewText", { required: "Review is required" })}
@@ -426,7 +393,7 @@ const MovieDetails = ({ currentUser }: any) => {
             )}
 
             {/* Checkbox for saving info */}
- 
+
             {/* <div className="mt-4">
  
               <label className="text-sm">
@@ -446,9 +413,7 @@ const MovieDetails = ({ currentUser }: any) => {
             <br />
             <button
               type="submit"
- 
               disabled={!user?.id || !SingleUser?.data?.id || rating === 0}
- 
               className="mt-4 px-10 py-3 cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-lg shadow-lg hover:-translate-y-1 hover:shadow-blue-500/40 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {!SingleUser?.data?.id ? "Loading user data..." : "Submit"}
@@ -458,9 +423,8 @@ const MovieDetails = ({ currentUser }: any) => {
           {/* Display Submitted Review */}
           <div className="mt-10">
             <h2 className="text-xl font-semibold mb-4">User Reviews</h2>
- 
+
             <ReviewCard ReviewData={allReview} UserData={SingleUser?.data} />
- 
           </div>
         </motion.div>
       </div>
