@@ -12,7 +12,7 @@ import { FaPen } from "react-icons/fa6";
 import { useRef, useState } from "react";
 import Image from "next/image";
 import LoadingSpinner from "@/components/ui/loading-spinner";
-import UpdataPlatformModal from "@/components/modals/UpdataPlatformModal";
+import UpdataPlatformModal from "@/components/modals/UpdatePlatformModal";
 
 interface Platform {
   id: string;

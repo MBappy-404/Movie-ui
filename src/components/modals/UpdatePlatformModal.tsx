@@ -1,17 +1,22 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
+"use client";
+import { motion, AnimatePresence } from "framer-motion";
 import { useForm, SubmitHandler } from "react-hook-form";
+import {
+  useCreatePlatformMutation,
+  useDeletePlatformMutation,
+  useGetAllPlatformQuery,
+  useUpdatePlatformMutation,
+} from "@/components/redux/features/platform/platformApi";
 import { toast } from "sonner";
-import { useUpdatePlatformMutation } from "@/components/redux/features/platform/platformApi";
+import { MdDeleteOutline } from "react-icons/md";
+import { FaPen } from "react-icons/fa6";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 
 interface Platform {
   id: string;
-  name: string;
-  description: string;
-  logo: string;
-  status: 'ACTIVE' | 'INACTIVE';
-  createdAt: string;
-  updatedAt: string;
+  platformName: string;
+  platformLogo: string | undefined;
 }
 
 interface UpdatePlatformModalProps {
@@ -31,28 +36,67 @@ const UpdatePlatformModal = ({
     reset,
     formState: { errors },
   } = useForm<Platform>();
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [thumbnail, setThumbnail] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [updatePlatform] = useUpdatePlatformMutation();
+
+  useEffect(() => {
+    if (platform?.platformLogo) {
+      setPreviewImage(platform.platformLogo);
+    }
+  }, [platform]);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (file) {
+      setThumbnail(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result as string);
+        // setValue("thumbnail", reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const clearImage = () => {
+    setPreviewImage(null);
+    // setValue("platformLogo", "");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   const onSubmit: SubmitHandler<Platform> = async (data) => {
     const toastId = toast.loading("Updating Platform....", { duration: 2000 });
 
-    const platformData = {
-      id: platform?.id,
-      name: data.name,
-      description: data.description,
-      status: data.status,
+    if (!platform?.id) {
+      toast.error("Platform ID is missing");
+      return;
+    }
+
+    const updatePlatformData = {
+      platformName: data.platformName,
     };
 
+    const formData = new FormData();
+    formData.append("data", JSON.stringify(updatePlatformData));
+    if (thumbnail) {
+      formData.append("file", thumbnail);
+    }
+
     try {
-      const res = await updatePlatform(platformData).unwrap();
+      const res = await updatePlatform({
+        platformId: platform.id,
+        formData
+      }).unwrap();
       toast.success("Platform updated successfully!", { id: toastId });
       setUpdatePlatformModalOpen(false);
       reset();
+      clearImage();
     } catch (error: any) {
       toast.error(error.message || "Failed to update platform", { id: toastId });
-      setUpdatePlatformModalOpen(false);
-      reset();
     }
   };
 
@@ -75,41 +119,57 @@ const UpdatePlatformModal = ({
             Update Platform
           </h2>
 
+          {/* Image Upload */}
+          <div className="mb-6">
+            <div className="border-2 border-dashed border-[#1a2d6d] rounded-xl p-4 text-center">
+              {previewImage ? (
+                <div className="relative group">
+                  <img
+                    src={previewImage}
+                    alt="Preview"
+                    className="w-full h-48 object-cover rounded-lg mb-4"
+                  />
+                  <button
+                    type="button"
+                    onClick={clearImage}
+                    className="absolute top-2 right-2 bg-red-500/80 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="bg-purple-600/20 text-purple-400 px-6 py-3 rounded-lg hover:bg-purple-600/30 transition-colors"
+                  >
+                    Upload Image
+                  </button>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Form Grid */}
-          <div className="grid grid-cols-1 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Left Column */}
             <div className="space-y-4">
               <input
-                {...register("name", { required: true })}
-                defaultValue={platform.name}
+                {...register("platformName", { required: true })}
+                defaultValue={platform.platformName}
                 placeholder="Platform Name"
                 className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
               />
-              {errors.name && (
+              {errors.platformName && (
                 <p className="text-red-500">Platform name is required!</p>
-              )}
-
-              <textarea
-                {...register("description", { required: true })}
-                defaultValue={platform.description}
-                placeholder="Description"
-                className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
-                rows={4}
-              />
-              {errors.description && (
-                <p className="text-red-500">Description is required!</p>
-              )}
-
-              <select
-                {...register("status", { required: true })}
-                defaultValue={platform.status}
-                className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
-              >
-                <option value="">Select Status</option>
-                <option value="ACTIVE">Active</option>
-                <option value="INACTIVE">Inactive</option>
-              </select>
-              {errors.status && (
-                <p className="text-red-500">Status is required!</p>
               )}
             </div>
           </div>
@@ -139,4 +199,4 @@ const UpdatePlatformModal = ({
   );
 };
 
-export default UpdatePlatformModal; 
+export default UpdatePlatformModal;
