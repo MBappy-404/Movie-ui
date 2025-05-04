@@ -36,6 +36,7 @@ const contentApi = baseApi.injectEndpoints({
       // },
     }),
     deleteContent: builder.mutation({
+ 
       query: (contentId) => ({
         url: `/content/${contentId}`,
         method: "DELETE",
@@ -43,10 +44,12 @@ const contentApi = baseApi.injectEndpoints({
       invalidatesTags: ["content"],
     }),
     getContent: builder.query({
+ 
       query: (contentId) => ({
         url: `/content/${contentId}`,
         method: "GET",
       }),
+      providesTags: ['content'],
     }),
     updateContent: builder.mutation({
       query: ({ contentId, formData }) => ({

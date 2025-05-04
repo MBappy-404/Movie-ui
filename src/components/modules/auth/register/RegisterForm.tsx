@@ -54,7 +54,7 @@ const RegisterForm = () => {
         if (redirect) {
           router.push('/login');
         } else {
-          router.push("/");
+          router.push("/login");
         }
       } else {
         toast.error(result?.message);
