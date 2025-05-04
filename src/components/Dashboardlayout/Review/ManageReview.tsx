@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 type ReviewStatus = 'PUBLISHED' | 'PENDING';
 
-interface Review {
+export interface Review {
   id: string;
   userId: string;
   contentId: string;
