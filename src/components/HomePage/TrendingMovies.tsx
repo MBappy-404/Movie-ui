@@ -17,11 +17,11 @@ interface MovieCardProps {
 
 const TrendingMovies = () => {
   const { data, isLoading } = useGetAllContentQuery([
-    { name: "sortBy", value: "reviews" },
+    { name: "sortBy", value: "rating" },
     { name: "sortOrder", value: "desc" },
     {
       name: "createdAt",
-      value: "asc",
+      value: "desc",
     },
   ]);
 

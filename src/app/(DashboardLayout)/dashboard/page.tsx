@@ -1,9 +1,12 @@
 "use client";
 import { useGetAllContentQuery } from '@/components/redux/features/content/contentApi';
-import {  useGetAllPaymentsQuery } from '@/components/redux/features/payment/paymentApi';
+import { useGetAllPaymentsQuery } from '@/components/redux/features/payment/paymentApi';
 import { useGetAllUserQuery } from '@/components/redux/features/user/userApi';
 import { useState, useMemo } from 'react';
-import { LineChart, BarChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import {
+  LineChart, BarChart, Line, Bar,
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+} from 'recharts';
 
 interface StatCardProps {
   title: string;
@@ -15,93 +18,133 @@ interface StatCardProps {
 
 interface ChartData {
   name: string;
-  sales: number;
-  rentals: number;
+  earnings: number;
+  count: number;
 }
+
+const groupPayments = (payments: any[], filter: string, now: Date): ChartData[] => {
+  const groups: ChartData[] = [];
+  const formatDate = (date: Date) => date.toISOString().split('T')[0];
+
+  switch (filter) {
+    case '7days':
+      Array.from({ length: 7 }).forEach((_, i) => {
+        const date = new Date(now);
+        date.setDate(date.getDate() - 6 + i);
+        const result = payments.reduce((acc, p) => {
+          if (formatDate(new Date(p.createdAt)) === formatDate(date)) {
+            acc.total += p.amount;
+            acc.count++;
+          }
+          return acc;
+        }, { total: 0, count: 0 });
+        groups.push({
+          name: date.toLocaleDateString('en-US', { weekday: 'short' }),
+          earnings: result.total,
+          count: result.count
+        });
+      });
+      break;
+
+    case '30days':
+      Array.from({ length: 4 }).forEach((_, i) => {
+        const weekStart = new Date(now);
+        weekStart.setDate(weekStart.getDate() - (7 * (4 - i)));
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 7);
+        const result = payments.reduce((acc, p) => {
+          const paymentDate = new Date(p.createdAt);
+          if (paymentDate >= weekStart && paymentDate < weekEnd) {
+            acc.total += p.amount;
+            acc.count++;
+          }
+          return acc;
+        }, { total: 0, count: 0 });
+        groups.push({ 
+          name: `Week ${i + 1}`, 
+          earnings: result.total,
+          count: result.count
+        });
+      });
+      break;
+
+    case '90days':
+      Array.from({ length: 3 }).forEach((_, i) => {
+        const start = new Date(now);
+        start.setDate(start.getDate() - (90 - 30 * i));
+        const end = new Date(start);
+        end.setDate(start.getDate() + 30);
+        const result = payments.reduce((acc, p) => {
+          const paymentDate = new Date(p.createdAt);
+          if (paymentDate >= start && paymentDate < end) {
+            acc.total += p.amount;
+            acc.count++;
+          }
+          return acc;
+        }, { total: 0, count: 0 });
+        groups.push({ 
+          name: `Month ${i + 1}`, 
+          earnings: result.total,
+          count: result.count
+        });
+      });
+      break;
+
+    case '1year':
+      Array.from({ length: 12 }).forEach((_, i) => {
+        const month = new Date(now.getFullYear(), now.getMonth() - 11 + i, 1);
+        const result = payments.reduce((acc, p) => {
+          const d = new Date(p.createdAt);
+          if (d.getMonth() === month.getMonth() && d.getFullYear() === month.getFullYear()) {
+            acc.total += p.amount;
+            acc.count++;
+          }
+          return acc;
+        }, { total: 0, count: 0 });
+        groups.push({ 
+          name: month.toLocaleDateString('en-US', { month: 'short' }), 
+          earnings: result.total,
+          count: result.count
+        });
+      });
+      break;
+  }
+
+  return groups;
+};
 
 const OverviewStats = () => {
   const [timeFilter, setTimeFilter] = useState<'7days' | '30days' | '90days' | '1year'>('30days');
-  const [chartType, setChartType] = useState<'sales' | 'rentals'>('sales');
+  const [chartType, setChartType] = useState<'line' | 'bar'>('line');
+  const [displayMode, setDisplayMode] = useState<'earnings' | 'count'>('earnings');
 
-  // Demo statistics
-  const statsData = {
-    totalUsers: '124,856',
-    totalMovies: '35,789',
-    totalPurchases: '89,432',
-    totalEarnings: '$2,456,230'
-  };
-
-  const { data: users, isLoading } = useGetAllUserQuery(undefined);
+  const { data: users } = useGetAllUserQuery(undefined);
   const { data: movie } = useGetAllContentQuery([{}]);
-  const {data: payments} = useGetAllPaymentsQuery({});
-  console.log(payments);
+  const { data: payments } = useGetAllPaymentsQuery({});
 
-  const earnings = payments?.data?.reduce((acc: number, payment: any) => {
-    const amount = payment.amount || 0;
-    return acc + amount;
-  }, 0);  
- 
-  
+  const totalEarnings = useMemo(() =>
+    payments?.data?.reduce((acc: number, payment: any) => acc + (payment.amount || 0), 0) || 0
+  , [payments]);
 
-  // Dynamic data generator
-  const generateChartData = (range: typeof timeFilter): ChartData[] => {
+  const generateChartData = useMemo(() => {
+    if (!payments?.data) return [];
     const now = new Date();
-    const data: ChartData[] = [];
+    return groupPayments(payments.data, timeFilter, now);
+  }, [timeFilter, payments]);
 
-    switch (range) {
-      case '7days':
-        return Array.from({ length: 7 }).map((_, i) => ({
-          name: new Date(now.setDate(now.getDate() - 6 + i)).toLocaleDateString('en-US', { weekday: 'short' }),
-          sales: Math.floor(Math.random() * 1000) + 500,
-          rentals: Math.floor(Math.random() * 800) + 300
-        }));
-
-      case '30days':
-        return Array.from({ length: 4 }).map((_, i) => ({
-          name: `Week ${i + 1}`,
-          sales: Math.floor(Math.random() * 3000) + 1500,
-          rentals: Math.floor(Math.random() * 2500) + 1000
-        }));
-
-      case '90days':
-        return Array.from({ length: 12 }).map((_, i) => ({
-          name: `W${i + 1}`,
-          sales: Math.floor(Math.random() * 5000) + 2000,
-          rentals: Math.floor(Math.random() * 4000) + 1500
-        }));
-
-      case '1year':
-        return Array.from({ length: 12 }).map((_, i) => ({
-          name: new Date(2023, i).toLocaleDateString('en-US', { month: 'short' }),
-          sales: Math.floor(Math.random() * 15000) + 5000,
-          rentals: Math.floor(Math.random() * 12000) + 4000
-        }));
-
-      default:
-        return [];
-    }
-  };
-
-  const chartData = useMemo(() => generateChartData(timeFilter), [timeFilter]);
-
-  // Custom Tooltip Component
   const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
+    if (active && payload?.length) {
       return (
         <div className="bg-[#00031b] p-4 rounded-lg border border-[#1a2d6d]">
           <p className="text-purple-400 font-semibold mb-2">
-            {timeFilter === '7days' ? 'Day' : 
-             timeFilter === '30days' ? 'Week' : 
-             timeFilter === '90days' ? 'Week' : 'Month'}: {label}
+            {['7days', '30days', '90days'].includes(timeFilter) ? 'Period' : 'Month'}: {label}
           </p>
           <div className="space-y-1">
             <p className="text-sm text-purple-200">
-              <span className="inline-block w-16">Sales:</span> 
-              <span className="ml-2">${payload[0].value.toLocaleString()}</span>
+              Transactions: <span className="ml-2">{payload[0].payload.count}</span>
             </p>
             <p className="text-sm text-purple-200">
-              <span className="inline-block w-16">Rentals:</span> 
-              <span className="ml-2">${payload[1].value.toLocaleString()}</span>
+              Earnings: <span className="ml-2">${payload[0].payload.earnings.toLocaleString()}</span>
             </p>
           </div>
         </div>
@@ -110,54 +153,22 @@ const OverviewStats = () => {
     return null;
   };
 
-  // XAxis label formatter
-  const xAxisFormatter = (value: string) => {
-    if (timeFilter === '1year') return value.slice(0, 3);
-    return value;
-  };
-
   return (
-    <div className="p-6 space-y-8">
-      {/* Statistics Cards Grid */}
+    <div className="p-2 md:p-6 space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard 
-          title="Total Users" 
-          value={users?.data?.length || '0'}
-          trend="12.5%"
-          icon="👥"
-          color="bg-purple-500/20"
-        />
-        <StatCard 
-          title="Total Movies" 
-          value={movie?.data?.length || '0'}
-          trend="8.2%"
-          icon="🎬"
-          color="bg-blue-500/20"
-        />
-        <StatCard 
-          title="Total Purchases" 
-          value={payments?.data?.length || '0'}
-          trend="18.4%"
-          icon="💰"
-          color="bg-green-500/20"
-        />
-        <StatCard 
-          title="Total Earnings" 
-          value={earnings || '0'}
-          trend="22.3%"
-          icon="💸"
-          color="bg-pink-500/20"
-        />
+        <StatCard title="Total Users" value={users?.data?.length?.toLocaleString() || '0'} trend="12.5%" icon="👥" color="bg-purple-500/20" />
+        <StatCard title="Total Movies" value={movie?.data?.length?.toLocaleString() || '0'} trend="8.2%" icon="🎬" color="bg-blue-500/20" />
+        <StatCard title="Total Transactions" value={payments?.data?.length?.toLocaleString() || '0'} trend="18.4%" icon="💳" color="bg-green-500/20" />
+        <StatCard title="Total Earnings" value={`$${totalEarnings.toLocaleString()}`} trend="22.3%" icon="💰" color="bg-pink-500/20" />
       </div>
 
-      {/* Analytics Section */}
-      <div className="bg-gradient-to-br from-[#000a3a] to-[#000a3a]/50 p-6 rounded-xl border border-[#00175f]/30">
+      <div className="bg-gradient-to-br from-[#000a3a] to-[#000a3a]/50 p-2 md:p-6 rounded-xl border border-[#00175f]/30">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-          <h3 className="text-lg font-semibold">Sales & Rental Analytics</h3>
-          <div className="flex gap-3">
-            <select 
+          <h3 className="text-lg font-semibold">Payment Analytics</h3>
+          <div className="flex flex-wrap gap-3">
+            <select
               value={timeFilter}
-              onChange={(e) => setTimeFilter(e.target.value as typeof timeFilter)}
+              onChange={(e) => setTimeFilter(e.target.value as any)}
               className="bg-[#00031b] px-3 py-2 rounded-lg text-sm border border-[#00175f]/50"
             >
               <option value="7days">Last 7 Days</option>
@@ -166,108 +177,82 @@ const OverviewStats = () => {
               <option value="1year">Last Year</option>
             </select>
             <div className="flex gap-2 bg-[#00031b] p-1 rounded-lg">
-              <button 
-                onClick={() => setChartType('sales')}
-                className={`px-3 py-1 rounded-md text-sm ${
-                  chartType === 'sales' ? 'bg-purple-500/20 text-purple-400' : 'text-gray-400'
-                }`}
+              <button
+                onClick={() => setChartType('line')}
+                className={`px-3 py-1 rounded-md text-sm ${chartType === 'line' ? 'bg-purple-500/20 text-purple-400' : 'text-gray-400'}`}
               >
-                Sales
+                Line
               </button>
-              <button 
-                onClick={() => setChartType('rentals')}
-                className={`px-3 py-1 rounded-md text-sm ${
-                  chartType === 'rentals' ? 'bg-purple-500/20 text-purple-400' : 'text-gray-400'
-                }`}
+              <button
+                onClick={() => setChartType('bar')}
+                className={`px-3 py-1 rounded-md text-sm ${chartType === 'bar' ? 'bg-purple-500/20 text-purple-400' : 'text-gray-400'}`}
               >
-                Rentals
+                Bar
+              </button>
+            </div>
+            <div className="flex gap-2 bg-[#00031b] p-1 rounded-lg">
+              <button
+                onClick={() => setDisplayMode('count')}
+                className={`px-3 py-1 rounded-md text-sm ${displayMode === 'count' ? 'bg-blue-500/20 text-blue-400' : 'text-gray-400'}`}
+              >
+                Show Count
+              </button>
+              <button
+                onClick={() => setDisplayMode('earnings')}
+                className={`px-3 py-1 rounded-md text-sm ${displayMode === 'earnings' ? 'bg-blue-500/20 text-blue-400' : 'text-gray-400'}`}
+              >
+                Show Earnings
               </button>
             </div>
           </div>
         </div>
 
-        {/* Chart Container */}
         <div className="h-96 bg-[#00031b] rounded-lg p-4">
-        <ResponsiveContainer width="100%" height="100%">
-          {chartType === 'sales' ? (
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1a2d6d" />
-              <XAxis 
-                dataKey="name" 
-                stroke="#8b5cf6" 
-                tick={{ fill: '#8b5cf6' }}
-                tickFormatter={xAxisFormatter}
-              />
-              <YAxis 
-                stroke="#8b5cf6" 
-                tick={{ fill: '#8b5cf6' }}
-                tickFormatter={(value) => `$${value.toLocaleString()}`}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend 
-                formatter={(value) => (
-                  <span className="text-purple-400 capitalize">{value}</span>
-                )}
-              />
-              <Line 
-                type="monotone" 
-                dataKey="sales" 
-                stroke="#8b5cf6" 
-                strokeWidth={2}
-                dot={{ fill: '#8b5cf6' }}
-              />
-              <Line 
-                type="monotone" 
-                dataKey="rentals" 
-                stroke="#4f46e5" 
-                strokeWidth={2}
-                dot={{ fill: '#4f46e5' }}
-              />
-            </LineChart>
-          ) : (
-            <BarChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1a2d6d" />
-              <XAxis 
-                dataKey="name" 
-                stroke="#8b5cf6" 
-                tick={{ fill: '#8b5cf6' }}
-                tickFormatter={xAxisFormatter}
-              />
-              <YAxis 
-                stroke="#8b5cf6" 
-                tick={{ fill: '#8b5cf6' }}
-                tickFormatter={(value) => `$${value.toLocaleString()}`}
-              />
-              <Tooltip 
-                content={<CustomTooltip />}
-                cursor={{ fill: 'transparent' }}
-              />
-              <Bar 
-                dataKey="sales" 
-                fill="#8b5cf6" 
-                radius={[4, 4, 0, 0]}
-                activeBar={false}
-                style={{ fillOpacity: 1 }}
-              />
-              <Bar 
-                dataKey="rentals" 
-                fill="#4f46e5" 
-                radius={[4, 4, 0, 0]}
-                activeBar={false}
-                style={{ fillOpacity: 1 }}
-              />
-            </BarChart>
-          )}
-        </ResponsiveContainer>
+          <ResponsiveContainer width="100%" height="100%">
+            {chartType === 'line' ? (
+              <LineChart data={generateChartData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#1a2d6d" />
+                <XAxis dataKey="name" stroke="#8b5cf6" tick={{ fill: '#8b5cf6' }} />
+                <YAxis 
+                  stroke="#8b5cf6" 
+                  tickFormatter={(value) => 
+                    displayMode === 'earnings' ? `$${value.toLocaleString()}` : value.toLocaleString()
+                  }
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Line 
+                  type="monotone" 
+                  dataKey={displayMode === 'earnings' ? 'earnings' : 'count'} 
+                  stroke="#8b5cf6" 
+                  strokeWidth={2} 
+                  dot={{ fill: '#8b5cf6' }} 
+                />
+              </LineChart>
+            ) : (
+              <BarChart data={generateChartData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#1a2d6d" />
+                <XAxis dataKey="name" stroke="#8b5cf6" tick={{ fill: '#8b5cf6' }} />
+                <YAxis 
+                  stroke="#8b5cf6" 
+                  tickFormatter={(value) => 
+                    displayMode === 'earnings' ? `$${value.toLocaleString()}` : value.toLocaleString()
+                  }
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar 
+                  dataKey={displayMode === 'earnings' ? 'earnings' : 'count'} 
+                  fill="#8b5cf6" 
+                  radius={[4, 4, 0, 0]} 
+                />
+              </BarChart>
+            )}
+          </ResponsiveContainer>
         </div>
       </div>
-
-     
     </div>
   );
 };
 
-// StatCard Component
 const StatCard: React.FC<StatCardProps> = ({ title, value, trend, icon, color }) => (
   <div className="bg-gradient-to-br from-[#000a3a] to-[#000a3a]/50 p-6 rounded-xl border border-[#00175f]/30">
     <div className="flex justify-between items-start">
@@ -275,7 +260,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, trend, icon, color })
         <h4 className="text-gray-400 text-sm mb-2">{title}</h4>
         <p className="text-2xl font-bold">{value}</p>
         <span className="text-green-400 text-sm mt-2 inline-flex items-center">
-          ↑ {trend} <span className="text-gray-500 ml-2">vs last month</span>
+          ↑ {trend} <span className="text-gray-500 ml-2">vs previous</span>
         </span>
       </div>
       <div className={`${color} p-3 rounded-lg`}>
