@@ -8,14 +8,12 @@ interface SidebarProps {
 }
 
 const menuItems = [
-    { name: "Overview", link: "/" },
-    { name: "Content", link: "/content" },
-    { name: "Users", link: "/users" },
-    { name: "Reviews", link: "/reviews" },
-    { name: "Platform", link: "/platform" },
-    { name: "Genre", link: "/genre" },
-  ];
-  
+  { name: "Overview", link: "/" },
+  { name: "Content", link: "/content" },
+  { name: "Users", link: "/users" },
+  { name: "Reviews", link: "/reviews" },
+  { name: "Platform & Genre", link: "/platformGenre" },
+];
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
   return (
@@ -48,7 +46,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
               href={`/dashboard/${item.link}`}
               className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#00175f]/30 transition-colors text-gray-300 hover:text-white"
             >
-              <span className="material-icons-outlined text-purple-400">📊</span>
+              <span className="material-icons-outlined text-purple-400">
+                📊
+              </span>
               {item?.name}
             </Link>
           ))}
