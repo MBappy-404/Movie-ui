@@ -94,7 +94,7 @@ const ManageContent = () => {
   };
 
   const onSubmit: SubmitHandler<Movie> = async (data) => {
-    console.log(data);
+    //console.log(data);
     const toastId = toast.loading("Adding Content....", { duration: 2000 });
 
     if (!thumbnail) {
@@ -121,7 +121,7 @@ const ManageContent = () => {
     // uploading movie
     try {
       const res = await addContent(formData);
-      console.log(res);
+      //console.log(res);
       if ("error" in res && res.error) {
         const errorMessage =
           (res.error as any)?.data?.message || "An error occurred";
@@ -148,7 +148,7 @@ const ManageContent = () => {
 
     try {
       const res = await deleteContent(contentId);
-      console.log(res);
+      //console.log(res);
       if ("error" in res && res.error) {
         const errorMessage =
           (res.error as any)?.data?.message || "An error occurred";

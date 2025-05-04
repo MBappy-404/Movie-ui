@@ -68,14 +68,11 @@ const ReviewCard = ({
     (item: any) => item.status === "PUBLISHED"
   );
 
-  console.log(publishedReviews);
-  
+  //console.log(publishedReviews);
 
   return (
     <div>
-      {
-        !publishedReviews?.length && <p>No reviews found</p>
-      }
+      {!publishedReviews?.length && <p>No reviews found</p>}
       {publishedReviews?.length > 0 && (
         <div className="bg-gray-900 rounded-lg p-6 shadow-md flex flex-col gap-6">
           {publishedReviews?.map((item: any, index: number) => (
