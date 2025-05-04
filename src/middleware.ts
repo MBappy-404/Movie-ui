@@ -7,16 +7,15 @@ const authRoutes = ["/login", "/register"];
 
 const roleBasedPrivateRoutes = {
   USER: [/^\/user/, /^\/profile/],
-  ADMIN: [/^\/admin/, /^\/profile/],
+  ADMIN: [/^\/dashboard/, /^\/profile/],
 };
-
 
 export const middleware = async (request: NextRequest) => {
   const { pathname } = request.nextUrl;
 
   const userInfo = await getCurrentUser();
 
-  console.log(userInfo)
+  console.log(userInfo);
 
   if (!userInfo) {
     if (authRoutes.includes(pathname)) {
