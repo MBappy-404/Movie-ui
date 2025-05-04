@@ -29,7 +29,7 @@ const Navbar = () => {
     { name: "Home", path: "/", icon: HomeModernIcon },
     { name: "Movies", path: "/movies", icon: FilmIcon },
     { name: "Series", path: "/series", icon: TvIcon },
-    { name: "Watchlist", path: "/list", icon: BookmarkIcon },
+    { name: "Watchlist", path: "/watchlist", icon: BookmarkIcon },
   ];
 
   const handleLogout = () => {
@@ -41,7 +41,8 @@ const Navbar = () => {
   // Desktop scroll handler
   useEffect(() => {
     const handleScroll = () => {
-      if (window.innerWidth >= 768) { // Only for desktop
+      if (window.innerWidth >= 768) {
+        // Only for desktop
         setIsScrolled(window.scrollY > 10);
       }
     };
@@ -52,11 +53,11 @@ const Navbar = () => {
   // Mobile menu body lock
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
-      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
-      document.documentElement.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
+      document.documentElement.style.overflow = "unset";
     }
   }, [isOpen]);
 
@@ -71,10 +72,19 @@ const Navbar = () => {
   };
 
   return (
-    <nav className={`fixed w-full z-[990] ${isScrolled ? 'backdrop-blur-md bg-gray-900/90' : 'bg-gray-900 md:bg-transparent'} transition-all duration-500`}>
+    <nav
+      className={`fixed w-full z-[990] ${
+        isScrolled
+          ? "backdrop-blur-md bg-gray-900/90"
+          : "bg-gray-900 md:bg-transparent"
+      } transition-all duration-500`}
+    >
       <div className="container mx-auto px-4 xl:px-12">
         <div className="flex items-center justify-between h-16 xl:h-20">
-          <Link href="/" className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent">
+          <Link
+            href="/"
+            className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent"
+          >
             CineVerse
           </Link>
 
@@ -88,9 +98,20 @@ const Navbar = () => {
                   whileHover="hover"
                   animate="rest"
                 >
-                  <motion.div className="flex items-center gap-2" variants={navItemVariants}>
-                    <Icon className={`w-5 h-5 ${pathname === path ? 'text-indigo-400' : 'text-gray-200'}`} />
-                    <span className={`font-bold text-lg ${pathname === path ? 'text-indigo-400' : 'text-gray-200'}`}>
+                  <motion.div
+                    className="flex items-center gap-2"
+                    variants={navItemVariants}
+                  >
+                    <Icon
+                      className={`w-5 h-5 ${
+                        pathname === path ? "text-indigo-400" : "text-gray-200"
+                      }`}
+                    />
+                    <span
+                      className={`font-bold text-lg ${
+                        pathname === path ? "text-indigo-400" : "text-gray-200"
+                      }`}
+                    >
                       {name}
                     </span>
                   </motion.div>
@@ -126,7 +147,9 @@ const Navbar = () => {
                       exit={{ opacity: 0, y: 10 }}
                     >
                       <div className="px-4 py-2 border-b border-gray-700">
-                        <p className="text-sm font-medium text-gray-200 truncate">{user.email}</p>
+                        <p className="text-sm font-medium text-gray-200 truncate">
+                          {user.email}
+                        </p>
                       </div>
                       <Link
                         href="/profile"
@@ -167,7 +190,11 @@ const Navbar = () => {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
             >
-              {isOpen ? <XMarkIcon className="w-7 h-7" /> : <Bars3Icon className="w-7 h-7" />}
+              {isOpen ? (
+                <XMarkIcon className="w-7 h-7" />
+              ) : (
+                <Bars3Icon className="w-7 h-7" />
+              )}
             </motion.button>
           </div>
         </div>
@@ -185,7 +212,7 @@ const Navbar = () => {
                 className="absolute inset-0 bg-black/30 backdrop-blur-sm"
                 onClick={() => setIsOpen(false)}
               />
-              
+
               <motion.div
                 className="absolute right-0 top-0 h-full w-[75%] bg-gray-900 shadow-2xl border-l border-gray-800 overflow-y-auto"
                 variants={mobileMenuVariants}
@@ -195,7 +222,9 @@ const Navbar = () => {
               >
                 <div className="h-full flex flex-col p-6">
                   <div className="flex justify-between items-center mb-8">
-                    <span className="text-xl font-bold text-indigo-400">CineVerse</span>
+                    <span className="text-xl font-bold text-indigo-400">
+                      CineVerse
+                    </span>
                     <button
                       className="p-2 text-gray-400 hover:text-indigo-400 transition-colors"
                       onClick={() => setIsOpen(false)}
@@ -212,8 +241,20 @@ const Navbar = () => {
                         className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors"
                         onClick={() => setIsOpen(false)}
                       >
-                        <Icon className={`w-6 h-6 ${pathname === path ? 'text-indigo-400' : 'text-gray-200'}`} />
-                        <span className={`${pathname === path ? 'text-indigo-400' : 'text-gray-200'} font-medium`}>
+                        <Icon
+                          className={`w-6 h-6 ${
+                            pathname === path
+                              ? "text-indigo-400"
+                              : "text-gray-200"
+                          }`}
+                        />
+                        <span
+                          className={`${
+                            pathname === path
+                              ? "text-indigo-400"
+                              : "text-gray-200"
+                          } font-medium`}
+                        >
                           {name}
                         </span>
                       </Link>
