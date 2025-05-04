@@ -1,0 +1,74 @@
+'use client';
+
+import { useGetUserQuery } from '@/components/redux/features/user/userApi';
+import { Rating } from '@smastrom/react-rating';
+import Image from 'next/image';
+import React from 'react';
+import Comments from '../Comment/Comments';
+
+const ReviewCard = ({
+  imageURL,
+  ReviewData,
+  UserData,
+}: {
+  imageURL: any;
+  ReviewData: any;
+  UserData: any;
+}) => {
+  return (
+    <div>
+      <div className="bg-gray-900 rounded-lg p-6 shadow-md flex flex-col gap-6">
+        {ReviewData?.data?.map((item: any, index: number) => {
+          const { data: SingleUser } = useGetUserQuery(item.userId);
+
+          const date = new Date(item.createdAt);
+          const formattedDate = date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          });
+
+          return (
+            <div
+              key={index}
+              className="flex flex-col gap-4 border-b border-gray-700 pb-6"
+            >
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-shrink-0">
+                  <Image
+                    src={imageURL}
+                    alt="Reviewer Avatar"
+                    width={60}
+                    height={60}
+                    className="rounded-full"
+                  />
+                </div>
+                <div className="flex-grow">
+                  <div className="flex items-center gap-2">
+                    <Rating
+                      style={{ maxWidth: 80 }}
+                      value={item.rating}
+                      readOnly
+                    />
+                    <p className="text-sm text-gray-400">{formattedDate}</p>
+                  </div>
+                  <p className="font-semibold text-white mt-1">
+                    {SingleUser?.data?.name || 'Anonymous'}
+                  </p>
+                  <p className="mt-2 text-gray-300 text-sm">
+                    {item.reviewText}
+                  </p>
+                </div>
+              </div>
+
+              {/* ✅ Specific comment section for this review */}
+              <Comments UserData={UserData} ReviewData={item} />
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+export default ReviewCard;
