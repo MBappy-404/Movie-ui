@@ -5,7 +5,12 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { toast } from "sonner";
 import { MdDeleteOutline } from "react-icons/md";
 import { FaPen } from "react-icons/fa6";
-import { useGetAllUserQuery, useCreateUserMutation, useDeleteUserMutation, useUpdateUserMutation } from "@/components/redux/features/user/userApi";
+import {
+  useGetAllUserQuery,
+  useCreateUserMutation,
+  useDeleteUserMutation,
+  useUpdateUserMutation,
+} from "@/components/redux/features/user/userApi";
 import UpdateUserModal from "@/components/modals/UpdateUserModal";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 
@@ -13,9 +18,9 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: 'USER' | 'ADMIN';
+  role: "USER" | "ADMIN";
   contactNumber: string;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: "ACTIVE" | "INACTIVE";
   profilePhoto?: string;
   createdAt: string;
   updatedAt: string;
@@ -88,10 +93,10 @@ const ManageUser = () => {
       const res = await createUser(formData).unwrap();
 
       // Log FormData contents
-      console.log('Form Data Contents:');
-      for (let pair of formData.entries()) {
-        console.log(pair[0] + ': ' + pair[1]);
-      }
+      // console.log('Form Data Contents:');
+      // for (let pair of formData.entries()) {
+      //   console.log(pair[0] + ': ' + pair[1]);
+      // }
 
       toast.success("User added successfully!", { id: toastId });
       setIsModalOpen(false);
@@ -118,31 +123,43 @@ const ManageUser = () => {
     }
   };
 
-  const handleRoleUpdate = async (userId: string, newRole: 'USER' | 'ADMIN') => {
+  const handleRoleUpdate = async (
+    userId: string,
+    newRole: "USER" | "ADMIN"
+  ) => {
     const toastId = toast.loading("Updating User Role...", { duration: 2000 });
 
     try {
       const res = await updateUser({
         id: userId,
-        role: newRole
+        role: newRole,
       }).unwrap();
       toast.success("User role updated successfully!", { id: toastId });
     } catch (error: any) {
-      toast.error(error.message || "Failed to update user role", { id: toastId });
+      toast.error(error.message || "Failed to update user role", {
+        id: toastId,
+      });
     }
   };
 
-  const handleStatusUpdate = async (userId: string, newStatus: 'ACTIVE' | 'INACTIVE') => {
-    const toastId = toast.loading("Updating User Status...", { duration: 2000 });
+  const handleStatusUpdate = async (
+    userId: string,
+    newStatus: "ACTIVE" | "INACTIVE"
+  ) => {
+    const toastId = toast.loading("Updating User Status...", {
+      duration: 2000,
+    });
 
     try {
       const res = await updateUser({
         id: userId,
-        status: newStatus
+        status: newStatus,
       }).unwrap();
       toast.success("User status updated successfully!", { id: toastId });
     } catch (error: any) {
-      toast.error(error.message || "Failed to update user status", { id: toastId });
+      toast.error(error.message || "Failed to update user status", {
+        id: toastId,
+      });
     }
   };
 
@@ -203,18 +220,24 @@ const ManageUser = () => {
                       <td className="px-6 py-4">{user.email}</td>
                       <td className="px-6 py-4">{user.contactNumber}</td>
                       <td className="px-6 py-4">
-                        <span className={`px-3 py-1 rounded-full text-sm border ${user.role === 'ADMIN'
-                            ? "border-purple-500/50 text-purple-400"
-                            : "border-blue-500/50 text-blue-400"
-                          }`}>
+                        <span
+                          className={`px-3 py-1 rounded-full text-sm border ${
+                            user.role === "ADMIN"
+                              ? "border-purple-500/50 text-purple-400"
+                              : "border-blue-500/50 text-blue-400"
+                          }`}
+                        >
                           {user.role}
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`px-3 py-1 rounded-full text-sm border ${user.status === 'ACTIVE'
-                            ? "border-green-500/50 text-green-400"
-                            : "border-red-500/50 text-red-400"
-                          }`}>
+                        <span
+                          className={`px-3 py-1 rounded-full text-sm border ${
+                            user.status === "ACTIVE"
+                              ? "border-green-500/50 text-green-400"
+                              : "border-red-500/50 text-red-400"
+                          }`}
+                        >
                           {user.status}
                         </span>
                       </td>
@@ -271,7 +294,8 @@ const ManageUser = () => {
                   transition={{ delay: 0.2 }}
                   className="text-gray-300 mb-6"
                 >
-                  Are you sure you want to delete this user? This action cannot be undone.
+                  Are you sure you want to delete this user? This action cannot
+                  be undone.
                 </motion.p>
                 <motion.div
                   initial={{ y: 20, opacity: 0 }}

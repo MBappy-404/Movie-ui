@@ -25,7 +25,7 @@ const UpdateGenreModal = ({
   const [updateGenre] = useUpdateGenreMutation();
 
   const onSubmit: SubmitHandler<Genre> = async (data) => {
-    console.log(data);
+    //console.log(data);
     const toastId = toast.loading("Updating Genre....", { duration: 2000 });
 
     const genreData = {

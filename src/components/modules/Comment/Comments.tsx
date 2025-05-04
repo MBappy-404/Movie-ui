@@ -1,9 +1,13 @@
-'use client';
+"use client";
 
-import { useCreateCommentMutation, useGetCommentsQuery, useGetCommentsByParentIdQuery } from '@/components/redux/features/comments/commentsApi';
-import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
+import {
+  useCreateCommentMutation,
+  useGetCommentsQuery,
+  useGetCommentsByParentIdQuery,
+} from "@/components/redux/features/comments/commentsApi";
+import React, { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 interface Comment {
   id: string;
@@ -37,8 +41,13 @@ interface PaginatedResponse {
   };
 }
 
-const CommentItem = ({ comment, UserData, onReply, level = 0 }: { 
-  comment: Comment; 
+const CommentItem = ({
+  comment,
+  UserData,
+  onReply,
+  level = 0,
+}: {
+  comment: Comment;
   UserData: any;
   onReply: (parentId: string) => void;
   level?: number;
@@ -52,16 +61,17 @@ const CommentItem = ({ comment, UserData, onReply, level = 0 }: {
   const [showReplies, setShowReplies] = useState(false);
 
   // Fetch replies for this comment
-  const { data: repliesData, isLoading: isLoadingReplies } = useGetCommentsByParentIdQuery(
-    { parentId: comment.id, page: replyPage, limit: 3 },
-    { skip: !comment.id || !showReplies }
-  );
+  const { data: repliesData, isLoading: isLoadingReplies } =
+    useGetCommentsByParentIdQuery(
+      { parentId: comment.id, page: replyPage, limit: 3 },
+      { skip: !comment.id || !showReplies }
+    );
 
   // Update replies when data changes
   useEffect(() => {
     if (repliesData?.data) {
-      console.log('Parent Comment:', comment);
-      console.log('Replies data received:', repliesData.data.data);
+      //console.log('Parent Comment:', comment);
+      //console.log('Replies data received:', repliesData.data.data);
       setReplies(repliesData.data.data);
       if (repliesData.meta) {
         setReplyTotalPages(repliesData.meta.totalPages);
@@ -71,7 +81,7 @@ const CommentItem = ({ comment, UserData, onReply, level = 0 }: {
 
   const onSubmitReply = async (formData: { comment: string }) => {
     if (!UserData?.id) {
-      toast.error('User data not available');
+      toast.error("User data not available");
       return;
     }
 
@@ -79,12 +89,12 @@ const CommentItem = ({ comment, UserData, onReply, level = 0 }: {
       reviewId: comment.reviewId,
       userId: UserData.id,
       parentId: comment.id,
-      comment: formData.comment
+      comment: formData.comment,
     };
 
     try {
       const response = await addComment(newReply).unwrap();
-      
+
       if (response?.data) {
         const replyWithUser = {
           ...response.data,
@@ -97,19 +107,19 @@ const CommentItem = ({ comment, UserData, onReply, level = 0 }: {
             status: UserData.status,
             profilePhoto: UserData.profilePhoto,
             createdAt: UserData.createdAt,
-            updatedAt: UserData.updatedAt
-          }
+            updatedAt: UserData.updatedAt,
+          },
         };
 
         // Add the reply to the replies state
-        setReplies(prevReplies => [replyWithUser, ...prevReplies]);
+        setReplies((prevReplies) => [replyWithUser, ...prevReplies]);
         setShowReplyInput(false);
         reset();
-        toast.success('Reply added successfully');
+        toast.success("Reply added successfully");
       }
     } catch (error) {
-      console.error('Error submitting reply:', error);
-      toast.error('Error adding reply');
+      console.error("Error submitting reply:", error);
+      toast.error("Error adding reply");
     }
   };
 
@@ -133,19 +143,23 @@ const CommentItem = ({ comment, UserData, onReply, level = 0 }: {
   };
 
   return (
-    <div className={`mb-4 ${level > 0 ? 'ml-8 border-l-2 border-gray-700 pl-4' : ''}`}>
+    <div
+      className={`mb-4 ${
+        level > 0 ? "ml-8 border-l-2 border-gray-700 pl-4" : ""
+      }`}
+    >
       <div className="flex items-start gap-3">
         <div className="flex-shrink-0">
           {comment.user?.profilePhoto ? (
             <img
               src={comment.user.profilePhoto}
-              alt={comment.user?.name || 'User'}
+              alt={comment.user?.name || "User"}
               className="w-10 h-10 rounded-full"
             />
           ) : (
             <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
               <span className="text-white text-lg">
-                {comment.user?.name?.charAt(0) || 'A'}
+                {comment.user?.name?.charAt(0) || "A"}
               </span>
             </div>
           )}
@@ -154,38 +168,59 @@ const CommentItem = ({ comment, UserData, onReply, level = 0 }: {
           <div className="bg-gray-800 rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
               <div>
-                <p className="text-white font-medium">{comment.user?.name || 'Anonymous'}</p>
+                <p className="text-white font-medium">
+                  {comment.user?.name || "Anonymous"}
+                </p>
                 <p className="text-xs text-gray-400">
-                  {comment.createdAt && new Date(comment.createdAt).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
+                  {comment.createdAt &&
+                    new Date(comment.createdAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
                 </p>
               </div>
             </div>
             <p className="text-gray-300 mb-3">{comment.comment}</p>
-            
+
             <div className="flex gap-4">
               {UserData && (
                 <button
                   onClick={() => setShowReplyInput(!showReplyInput)}
                   className="text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z"
+                      clipRule="evenodd"
+                    />
                   </svg>
-                  {showReplyInput ? 'Cancel Reply' : 'Reply'}
+                  {showReplyInput ? "Cancel Reply" : "Reply"}
                 </button>
               )}
               <button
                 onClick={toggleReplies}
                 className="text-sm text-gray-400 hover:text-white flex items-center gap-1"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
                 </svg>
-                {showReplies ? 'Hide Replies' : 'Show Replies'}
+                {showReplies ? "Hide Replies" : "Show Replies"}
               </button>
             </div>
           </div>
@@ -193,7 +228,7 @@ const CommentItem = ({ comment, UserData, onReply, level = 0 }: {
           {showReplyInput && (
             <form onSubmit={handleSubmit(onSubmitReply)} className="mt-3">
               <textarea
-                {...register('comment', { required: true })}
+                {...register("comment", { required: true })}
                 className="w-full p-3 bg-gray-700 text-white border border-gray-600 rounded-md resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 rows={2}
                 placeholder="Write your reply..."
@@ -226,7 +261,7 @@ const CommentItem = ({ comment, UserData, onReply, level = 0 }: {
                       level={level + 1}
                     />
                   ))}
-                  
+
                   {replyTotalPages > 1 && (
                     <div className="flex justify-between items-center mt-4">
                       <button
@@ -260,7 +295,13 @@ const CommentItem = ({ comment, UserData, onReply, level = 0 }: {
   );
 };
 
-const Comments = ({ UserData, ReviewData }: { UserData: any; ReviewData: any }) => {
+const Comments = ({
+  UserData,
+  ReviewData,
+}: {
+  UserData: any;
+  ReviewData: any;
+}) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [showInput, setShowInput] = useState(false);
   const [page, setPage] = useState(1);
@@ -275,15 +316,19 @@ const Comments = ({ UserData, ReviewData }: { UserData: any; ReviewData: any }) 
   useEffect(() => {
     if (data?.data) {
       // Filter out replies and organize comments
-      const mainComments = data.data.filter((comment: Comment) => !comment.parentId);
+      const mainComments = data.data.filter(
+        (comment: Comment) => !comment.parentId
+      );
       const replies = data.data.filter((comment: Comment) => comment.parentId);
-      
+
       // Attach replies to their parent comments
       const commentsWithReplies = mainComments.map((comment: Comment) => ({
         ...comment,
-        replies: replies.filter((reply: Comment) => reply.parentId === comment.id)
+        replies: replies.filter(
+          (reply: Comment) => reply.parentId === comment.id
+        ),
       }));
-      
+
       setComments(commentsWithReplies);
       if (data.meta) {
         setTotalPages(data.meta.totalPages);
@@ -295,20 +340,20 @@ const Comments = ({ UserData, ReviewData }: { UserData: any; ReviewData: any }) 
 
   const onSubmitComment = async (formData: { comment: string }) => {
     if (!UserData?.id) {
-      toast.error('User data not available');
+      toast.error("User data not available");
       return;
     }
 
     const newComment = {
       reviewId: ReviewData.id,
       userId: UserData.id,
-      comment: formData.comment
+      comment: formData.comment,
       // parentId is omitted for main comments
     };
 
     try {
       const response = await addComment(newComment).unwrap();
-      
+
       if (response?.data) {
         const commentWithUser = {
           ...response.data,
@@ -321,22 +366,22 @@ const Comments = ({ UserData, ReviewData }: { UserData: any; ReviewData: any }) 
             status: UserData.status,
             profilePhoto: UserData.profilePhoto,
             createdAt: UserData.createdAt,
-            updatedAt: UserData.updatedAt
+            updatedAt: UserData.updatedAt,
           },
-          replies: []
+          replies: [],
         };
 
-        setComments(prevComments => [commentWithUser, ...prevComments]);
+        setComments((prevComments) => [commentWithUser, ...prevComments]);
         reset();
         setShowInput(false);
-        toast.success('Comment added successfully');
+        toast.success("Comment added successfully");
         refetch();
       } else {
-        toast.error('Failed to add comment');
+        toast.error("Failed to add comment");
       }
     } catch (error) {
-      console.error('Error submitting comment:', error);
-      toast.error('Error adding comment');
+      console.error("Error submitting comment:", error);
+      toast.error("Error adding comment");
     }
   };
 
@@ -359,20 +404,36 @@ const Comments = ({ UserData, ReviewData }: { UserData: any; ReviewData: any }) 
           onClick={() => setShowInput(true)}
           className="mb-4 px-4 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors flex items-center gap-2"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z"
+              clipRule="evenodd"
+            />
           </svg>
           Add a comment
         </button>
       )}
 
       {showInput && (
-        <form onSubmit={handleSubmit(onSubmitComment)} className="mb-4 space-y-2">
+        <form
+          onSubmit={handleSubmit(onSubmitComment)}
+          className="mb-4 space-y-2"
+        >
           <textarea
-            {...register('comment', { required: true })}
+            {...register("comment", { required: true })}
             className="w-full p-3 bg-gray-800 text-white border border-gray-600 rounded-md resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             rows={3}
-            placeholder={!UserData ? "Please log in to comment..." : "Write your comment..."}
+            placeholder={
+              !UserData
+                ? "Please log in to comment..."
+                : "Write your comment..."
+            }
             disabled={!UserData}
           />
           <div className="flex justify-between items-center">
@@ -380,12 +441,12 @@ const Comments = ({ UserData, ReviewData }: { UserData: any; ReviewData: any }) 
               type="submit"
               disabled={!UserData}
               className={`px-4 py-2 text-sm text-white rounded-md transition-colors ${
-                UserData 
-                  ? 'bg-blue-600 hover:bg-blue-700' 
-                  : 'bg-gray-600 cursor-not-allowed'
+                UserData
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "bg-gray-600 cursor-not-allowed"
               }`}
             >
-              {!UserData ? 'Please Log In to Comment' : 'Post Comment'}
+              {!UserData ? "Please Log In to Comment" : "Post Comment"}
             </button>
             <button
               type="button"

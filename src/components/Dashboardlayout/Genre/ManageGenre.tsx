@@ -41,7 +41,7 @@ const ManageGenre = () => {
 
     try {
       const res = await addGenres(newGenre);
-      console.log(res);
+      //console.log(res);
       if ("error" in res && res.error) {
         const errorMessage =
           (res.error as any)?.data?.message || "An error occurred";
@@ -65,7 +65,7 @@ const ManageGenre = () => {
 
     try {
       const res = await deleteGenre(genreId);
-      console.log(res);
+      //console.log(res);
       if ("error" in res && res.error) {
         const errorMessage =
           (res.error as any)?.data?.message || "An error occurred";
