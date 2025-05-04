@@ -6,8 +6,8 @@ type Role = keyof typeof roleBasedPrivateRoutes;
 const authRoutes = ["/login", "/register"];
 
 const roleBasedPrivateRoutes = {
-  USER: [/^\/user/, /^\/profile/],
-  ADMIN: [/^\/admin/, /^\/profile/],
+  USER: [/^\/profile/],
+  ADMIN: [/^\/dashboard/, /^\/profile/],
 };
 
 
@@ -15,8 +15,6 @@ export const middleware = async (request: NextRequest) => {
   const { pathname } = request.nextUrl;
 
   const userInfo = await getCurrentUser();
-
-  console.log(userInfo)
 
   if (!userInfo) {
     if (authRoutes.includes(pathname)) {
@@ -31,23 +29,22 @@ export const middleware = async (request: NextRequest) => {
     }
   }
 
-  if (userInfo?.role && roleBasedPrivateRoutes[userInfo?.role as Role]) {
-    const routes = roleBasedPrivateRoutes[userInfo?.role as Role];
-    if (routes.some((route) => pathname.match(route))) {
-      return NextResponse.next();
-    }
-  }
+  const role = userInfo?.role as Role;
+  const allowedRoutes = roleBasedPrivateRoutes[role];
 
-  return NextResponse.redirect(new URL("/", request.url));
+  if (allowedRoutes && allowedRoutes.some((route) => pathname.match(route))) {
+    return NextResponse.next();
+  }
+  const response = NextResponse.redirect(new URL("/login", request.url));
+  response.cookies.set("accessToken", "", { maxAge: 0 }); // Or your actual token key
+  return response;
 };
 
 export const config = {
   matcher: [
-    "/login",
-    "/profile",
-    "/admin",
-    "/admin/:page",
-    "/user",
-    "/user/:page",
+    '/login',
+    '/profile',
+    '/dashboard',
+    "/dashboard/:page*"
   ],
 };

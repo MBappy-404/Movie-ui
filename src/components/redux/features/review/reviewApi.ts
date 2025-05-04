@@ -13,7 +13,7 @@ const reviewApi = baseApi.injectEndpoints({
         }),
 
         getAllReview: builder.query({
-            query: (args) => {
+            query: () => {
       
               return {
                 url: "/reviews",
@@ -21,11 +21,33 @@ const reviewApi = baseApi.injectEndpoints({
               };
             },
             providesTags: ["review"],
+            // transformResponse: (response: any) => {
+            //     return {
+            //         data: response?.data,
+            //     }
+            // }
           }),
+          getAllReviewByContentId: builder.query({
+            query: (contentId) => {
+      
+              return {
+                url: `/reviews/${contentId}`,
+                method: "GET",
+              };
+            },
+            providesTags: ["review"],
+            // transformResponse: (response: any) => {
+            //     return {
+            //         data: response?.data,
+            //     }
+            // }
+          }),
+
     })
 })
 
 export const {
     useCreateReviewMutation,
-    useGetAllReviewQuery
+    useGetAllReviewQuery,
+    useGetAllReviewByContentIdQuery
 } = reviewApi
