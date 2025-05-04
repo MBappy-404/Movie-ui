@@ -14,8 +14,6 @@ const ReviewItem = ({
   item: any;
   UserData: any;
 }) => {
-  const { data: SingleUser } = useGetUserQuery(item.userId);
-
   const date = new Date(item.createdAt);
   const formattedDate = date.toLocaleDateString("en-US", {
     year: "numeric",
@@ -41,7 +39,7 @@ const ReviewItem = ({
             <p className="text-sm text-gray-400">{formattedDate}</p>
           </div>
           <p className="font-semibold text-white mt-1">
-            {SingleUser?.data?.name || "Anonymous"}
+            {item.user?.name || "Anonymous"}
           </p>
           <p className="mt-2 text-gray-300 text-sm">{item.reviewText}</p>
         </div>

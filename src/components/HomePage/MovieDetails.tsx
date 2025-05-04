@@ -44,41 +44,46 @@ interface ReviewFormData {
 }
 
 const MovieDetails = ({ currentUser }: any) => {
-  const router = useRouter();
-  const { id } = useParams();
+    const router = useRouter();
+    const { id } = useParams();
+    
+    const { data: movieDetails, isLoading } = useGetContentQuery(id);
+    const { data: allMovies, isLoading: isMoviesLoading } = useGetAllContentQuery(undefined);
+    const { data: SingleUser } = useGetUserQuery(currentUser?.id);
+    
+    const [recommendedMovies, setRecommendedMovies] = useState<Movie[]>([]);
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<ReviewFormData>();
+    const [addReview] = useCreateReviewMutation();
+    const contentId = movieDetails?.data.id;
 
-  const { data: movieDetails, isLoading } = useGetContentQuery(id);
-  console.log(movieDetails);
-  
+    const {data: allReview } = useGetAllReviewByContentIdQuery(contentId);
 
-  const { data: allMovies } = useGetAllContentQuery({ undefined });
-  const { data: SingleUser } = useGetUserQuery(currentUser?.id);
+    useEffect(() => {
 
-  const [recommendedMovies, setRecommendedMovies] = useState<Movie[]>([]);
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<ReviewFormData>();
-  const [addReview] = useCreateReviewMutation();
-  const contentId = movieDetails?.data.id;
+        if (allMovies?.data && movieDetails?.data) {
+            const currentGenre = movieDetails.data.genre?.genreName;
+            console.log('Current Genre:', currentGenre);
 
-  const { data: allReview } = useGetAllReviewByContentIdQuery(contentId);
-
-  useEffect(() => {
-    if (allMovies?.data && movieDetails?.data) {
-      const currentGenre = movieDetails.data.genre?.genreName;
-      if (currentGenre) {
-        const filteredMovies = allMovies.data.filter(
-          (movie: Movie) =>
-            movie.genre?.genreName === currentGenre &&
-            movie.id !== movieDetails.data.id
-        );
-        setRecommendedMovies(filteredMovies);
-      }
-    }
-  }, [allMovies, movieDetails]);
+            if (currentGenre) {
+                const filteredMovies = allMovies.data
+                    .filter((movie: Movie) => {
+                        console.log('Checking movie:', movie.title, 'Genre:', movie.genre?.genreName);
+                        return movie.genre?.genreName === currentGenre && 
+                               movie.id !== movieDetails.data.id;
+                    })
+                    .slice(0, 4);
+                
+                console.log('Filtered Movies:', filteredMovies);
+                setRecommendedMovies(filteredMovies);
+            } else {
+                console.log('No current genre found');
+                setRecommendedMovies([]);
+            }
+        } else {
+            console.log('No movies data available');
+            setRecommendedMovies([]);
+        }
+    }, [allMovies, movieDetails]);
 
   const [rating, setRating] = useState(0);
   const [isChecked, setIsChecked] = useState(false);
