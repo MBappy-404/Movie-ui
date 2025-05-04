@@ -124,9 +124,9 @@ const ManageReview = () => {
 
         {/* Review Table */}
         {isLoading ? (
-          <div className="flex justify-center items-center min-h-[400px]">
-            <LoadingSpinner size="lg" />
-          </div>
+          <p className="text-white text-5xl font-bold text-center">
+            <LoadingSpinner />
+          </p>
         ) : pendingReviews.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-gray-400 text-lg">No pending reviews found</p>
@@ -206,7 +206,7 @@ const ManageReview = () => {
                 transition={{ type: "spring", duration: 0.5 }}
                 className="bg-[#000a3a] p-6 rounded-xl border border-[#1a2d6d] max-w-md w-full mx-4"
               >
-                <motion.h3 
+                <motion.h3
                   initial={{ y: -20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.1 }}
@@ -214,7 +214,7 @@ const ManageReview = () => {
                 >
                   Confirm Delete
                 </motion.h3>
-                <motion.p 
+                <motion.p
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.2 }}
@@ -222,7 +222,7 @@ const ManageReview = () => {
                 >
                   Are you sure you want to delete this review? This action cannot be undone.
                 </motion.p>
-                <motion.div 
+                <motion.div
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.3 }}
