@@ -17,7 +17,6 @@ import { useUser } from "../context/UserContext";
 import { logout } from "@/services/AuthServices";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { MdDashboard } from "react-icons/md";
 import { LucideLayoutDashboard } from "lucide-react";
 import { toast } from "sonner";
 
@@ -39,7 +38,6 @@ const Navbar = () => {
   const handleLogout = () => {
     logout();
     toast.success("Logged out successfully");
-    router.push("/login");
     setIsLoading(true);
     setDropdownOpen(false);
   };

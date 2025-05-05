@@ -28,8 +28,8 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
     if (window.location.pathname === '/') {
       const user = await getCurrentUser();
       setUser(user);
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   useEffect(() => {

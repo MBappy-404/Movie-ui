@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
+ 
 
 interface UserState {
   user: {
@@ -44,3 +45,4 @@ const userSlice = createSlice({
 
 export const { setUser, setToken, logout } = userSlice.actions;
 export default userSlice.reducer;
+// export const selectCurrentUser = (state: RootState) => state.auth.user;
