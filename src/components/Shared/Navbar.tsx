@@ -11,11 +11,14 @@ import {
   BookmarkIcon,
   ArrowRightEndOnRectangleIcon,
   QuestionMarkCircleIcon,
+  Square2StackIcon,
 } from "@heroicons/react/24/outline";
 import { useUser } from "../context/UserContext";
 import { logout } from "@/services/AuthServices";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { MdDashboard } from "react-icons/md";
+import { LucideLayoutDashboard } from "lucide-react";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,7 +31,6 @@ const Navbar = () => {
   const navLinks = [
     { name: "Home", path: "/", icon: HomeModernIcon },
     { name: "Movies", path: "/movies", icon: FilmIcon },
-    { name: "Series", path: "/series", icon: TvIcon },
     { name: "Watchlist", path: "/watchlist", icon: BookmarkIcon },
   ];
 
@@ -132,36 +134,46 @@ const Navbar = () => {
             {user && (
               <div ref={dropdownRef} className="relative">
                 <button
-                  className="p-2 text-gray-300 hover:text-indigo-400 transition-colors"
+                  className="p-2 cursor-pointer text-gray-300 hover:text-indigo-400 transition-colors"
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                 >
-                  <UserCircleIcon className="w-7 h-7" />
+                  <UserCircleIcon className="w-7 h-7 md:w-10 md:h-10" />
                 </button>
 
                 <AnimatePresence>
                   {dropdownOpen && (
                     <motion.div
-                      className="absolute right-0 top-full mt-2 w-48 bg-gray-800 rounded-lg shadow-2xl py-2 border border-gray-700"
+                      className="absolute right-0 top-full mt-2 w-48 md:w-52 h-auto bg-gray-800 rounded-lg shadow-2xl py-2 border border-gray-700"
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
                     >
                       <div className="px-4 py-2 border-b border-gray-700">
-                        <p className="text-sm font-medium text-gray-200 truncate">
+                        <p className="text-sm md:text-base  text-gray-200 truncate">
                           {user.email}
                         </p>
                       </div>
                       <Link
                         href="/profile"
-                        className="flex items-center gap-2 px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors"
+                        className="flex text-sm md:text-base items-center gap-2 px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors"
                         onClick={() => setDropdownOpen(false)}
                       >
                         <UserCircleIcon className="w-5 h-5" />
                         Profile
                       </Link>
+                      {user?.role === "ADMIN" && (
+                        <Link
+                          href="/dashboard"
+                          className="flex text-sm md:text-base items-center gap-2 px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors"
+                          onClick={() => setDropdownOpen(false)}
+                        >
+                          <LucideLayoutDashboard className="w-5 h-5" />
+                          Dashboard
+                        </Link>
+                      )}
                       <button
                         onClick={handleLogout}
-                        className="flex items-center gap-2 w-full px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors"
+                        className="flex text-sm md:text-base cursor-pointer items-center gap-2 w-full px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors"
                       >
                         <ArrowRightEndOnRectangleIcon className="w-5 h-5" />
                         Logout

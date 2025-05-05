@@ -19,18 +19,21 @@ const paymentApi = baseApi.injectEndpoints({
           }),
           invalidatesTags: ["payment"],
         }),
-        // deleteGenre: builder.mutation({
-        //   query: (genreId) => ({
-        //     url: `/genre/${genreId}`,
-        //     method: "DELETE",
-        //   }),
-        //   invalidatesTags: ["genres"],
-        // }),
+
+        getPaymentWithVerify: builder.query({
+          query: (tarnId) => ({
+            url: `/payment/verify-payment?tran_id=${tarnId}`,
+            method: "GET",
+          }),
+          providesTags: ["payment"],
+        }),
+         
       }),
    
 });
 
 export const {
    useGetAllPaymentsQuery,
-   useCreatePaymentMutation
+   useCreatePaymentMutation,
+   useGetPaymentWithVerifyQuery
 } = paymentApi;
