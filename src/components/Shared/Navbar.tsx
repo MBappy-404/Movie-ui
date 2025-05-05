@@ -73,28 +73,17 @@ const Navbar = () => {
 
   return (
     <nav
-<<<<<<< HEAD
-      className={`fixed w-full z-50 bg-gray-900 md:bg-none transition-all duration-500 ${
-        isScrolled ? "md:backdrop-blur-md md:bg-gray-900/90" : "md:bg-transparent"
-      }`}
-=======
       className={`fixed w-full z-[990] ${
         isScrolled
           ? "backdrop-blur-md bg-gray-900/90"
           : "bg-gray-900 md:bg-transparent"
       } transition-all duration-500`}
->>>>>>> d3958f2ad0e9032993827592932ba791501bd3bb
     >
       <div className="container mx-auto px-4 xl:px-12">
         <div className="flex items-center justify-between h-16 xl:h-20">
           <Link
             href="/"
             className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent"
-<<<<<<< HEAD
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 300 }}
-=======
->>>>>>> d3958f2ad0e9032993827592932ba791501bd3bb
           >
             CineVerse
           </Link>
@@ -103,18 +92,11 @@ const Navbar = () => {
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map(({ name, path, icon: Icon }) => (
               <Link key={name} href={path}>
-<<<<<<< HEAD
-                <motion.a
-                  className="flex items-center gap-2 text-gray-300 hover:text-indigo-400 group"
-                  variants={navItemVariants}
-                  whileHover="hover"
-=======
                 <motion.div
                   className="relative group"
                   initial="rest"
                   whileHover="hover"
                   animate="rest"
->>>>>>> d3958f2ad0e9032993827592932ba791501bd3bb
                 >
                   <motion.div
                     className="flex items-center gap-2"
@@ -147,33 +129,12 @@ const Navbar = () => {
 
           {/* Right Section */}
           <div className="flex items-center gap-6">
-<<<<<<< HEAD
-            <button
-              onClick={() => setDarkMode(!darkMode)}
-              className="p-2 text-gray-300 hover:text-indigo-400 transition-colors"
-            >
-              {darkMode ? (
-                <SunIcon className="w-6 h-6" />
-              ) : (
-                <MoonIcon className="w-6 h-6" />
-              )}
-            </button>
-
-            {user ? (
-              <div
-                className="relative"
-                onMouseEnter={() => setDropdownOpen(true)}
-                onMouseLeave={() => setDropdownOpen(false)}
-              >
-                <button className="p-2 text-gray-300 hover:text-indigo-400">
-=======
             {user && (
               <div ref={dropdownRef} className="relative">
                 <button
                   className="p-2 text-gray-300 hover:text-indigo-400 transition-colors"
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                 >
->>>>>>> d3958f2ad0e9032993827592932ba791501bd3bb
                   <UserCircleIcon className="w-7 h-7" />
                 </button>
 
@@ -186,11 +147,7 @@ const Navbar = () => {
                       exit={{ opacity: 0, y: 10 }}
                     >
                       <div className="px-4 py-2 border-b border-gray-700">
-<<<<<<< HEAD
-                        <p className="text-sm font-medium text-gray-200">
-=======
                         <p className="text-sm font-medium text-gray-200 truncate">
->>>>>>> d3958f2ad0e9032993827592932ba791501bd3bb
                           {user.email}
                         </p>
                       </div>
@@ -213,13 +170,9 @@ const Navbar = () => {
                   )}
                 </AnimatePresence>
               </div>
-<<<<<<< HEAD
-            ) : (
-=======
             )}
 
             {!user && (
->>>>>>> d3958f2ad0e9032993827592932ba791501bd3bb
               <Link href="/login">
                 <motion.button
                   className="px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all"
@@ -287,12 +240,6 @@ const Navbar = () => {
                         href={path}
                         className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors"
                         onClick={() => setIsOpen(false)}
-<<<<<<< HEAD
-                        initial={{ x: 20 }}
-                        animate={{ x: 0 }}
-                        transition={{ type: "spring" }}
-=======
->>>>>>> d3958f2ad0e9032993827592932ba791501bd3bb
                       >
                         <Icon
                           className={`w-6 h-6 ${
@@ -316,22 +263,7 @@ const Navbar = () => {
 
                   <div className="mt-8 pt-6 border-t border-gray-800">
                     <div className="flex flex-col gap-4">
-<<<<<<< HEAD
-                      <button
-                        onClick={() => setDarkMode(!darkMode)}
-                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800"
-                      >
-                        {darkMode ? (
-                          <SunIcon className="w-6 h-6 text-indigo-400" />
-                        ) : (
-                          <MoonIcon className="w-6 h-6 text-indigo-400" />
-                        )}
-                        <span className="text-gray-200">Theme</span>
-                      </button>
-                      <a
-=======
                       <Link
->>>>>>> d3958f2ad0e9032993827592932ba791501bd3bb
                         href="/support"
                         className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors"
                       >
