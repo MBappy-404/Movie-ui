@@ -1,47 +1,36 @@
-import { configureStore } from "@reduxjs/toolkit";
-import userReducer from "./features/user/userState";
-import watchListSlice from "./features/watchListSlice";
+import { configureStore } from '@reduxjs/toolkit'
+import authReducer from './features/auth/authSlice'
+import { baseApi } from './api/baseApi'
 import {
-  persistReducer,
-  persistStore,
-  FLUSH,
-  REHYDRATE,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER,
-} from "redux-persist";
-import storage from "redux-persist/lib/storage";
-import { baseApi } from "./api/baseApi";
+    persistReducer, persistStore, FLUSH,
+    REHYDRATE,
+    PAUSE,
+    PERSIST,
+    PURGE,
+    REGISTER
+} from 'redux-persist'
+import storage from 'redux-persist/lib/storage'
 
-const watchListPersistConfig = {
-  key: "watchList",
-  storage,
-};
+const authPersistConfig = {
+    key: 'auth',
+    storage: storage
+}
+const persistedAuthReducer = persistReducer(authPersistConfig, authReducer)
 
-const persistedWatchListReducer = persistReducer(
-  watchListPersistConfig,
-  watchListSlice
-);
-
-export const makeStore = () => {
-  return configureStore({
+export const store = configureStore({
     reducer: {
-      user: userReducer,
-      [baseApi.reducerPath]: baseApi.reducer,
-      watchList: persistedWatchListReducer,
+        [baseApi.reducerPath]: baseApi.reducer,
+        auth: persistedAuthReducer
     },
-    middleware: (getDefaultMiddlewares) =>
-      getDefaultMiddlewares({
-        serializableCheck: {
-          ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-        },
-      }).concat(baseApi.middleware),
-  });
-};
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: {
+                ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+            },
+        }).concat(baseApi.middleware),
+})
 
-export const persistor = persistStore(makeStore());
+export type RootState = ReturnType<typeof store.getState>
+export type AppDispatch = typeof store.dispatch
 
-export type AppStore = ReturnType<typeof makeStore>;
-export type RootState = ReturnType<AppStore["getState"]>;
-export type AppDispatch = AppStore["dispatch"];
+export const persistor = persistStore(store);
