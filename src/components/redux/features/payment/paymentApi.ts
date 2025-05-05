@@ -27,6 +27,13 @@ const paymentApi = baseApi.injectEndpoints({
           }),
           providesTags: ["payment"],
         }),
+        purchaseHistory: builder.query({
+          query: () => ({
+            url: `/payment/verify-payment`,
+            method: "GET",
+          }),
+          providesTags: ["payment"],
+        }),
          
       }),
    
@@ -35,5 +42,6 @@ const paymentApi = baseApi.injectEndpoints({
 export const {
    useGetAllPaymentsQuery,
    useCreatePaymentMutation,
-   useGetPaymentWithVerifyQuery
+   useGetPaymentWithVerifyQuery,
+   usePurchaseHistoryQuery
 } = paymentApi;

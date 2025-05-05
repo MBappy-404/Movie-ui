@@ -1,5 +1,15 @@
 "use client";
-import { useGetUserQuery, useUpdateUserMutation } from "@/components/redux/features/user/userApi";
+import {
+  useGetPaymentWithVerifyQuery,
+  usePurchaseHistoryQuery,
+} from "@/components/redux/features/payment/paymentApi";
+import {
+  useGetUserQuery,
+  useUpdateUserMutation,
+} from "@/components/redux/features/user/userApi";
+import { Movie } from "@/types";
+import { ShoppingBagIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
 import { useState, useRef } from "react";
 import React from "react";
 import { toast } from "sonner";
@@ -117,9 +127,9 @@ const UserProfile = ({ userData }: any) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -129,7 +139,7 @@ const UserProfile = ({ userData }: any) => {
 
     try {
       if (!userId) {
-        throw new Error('User ID is required');
+        throw new Error("User ID is required");
       }
 
       const userData = {
@@ -140,22 +150,22 @@ const UserProfile = ({ userData }: any) => {
 
       const formDataToSend = new FormData();
       formDataToSend.append("data", JSON.stringify(userData));
-      
+
       if (thumbnail) {
         formDataToSend.append("file", thumbnail);
       }
 
       const response = await updateUser({
         id: userId,
-        data: formDataToSend
+        data: formDataToSend,
       }).unwrap();
 
       if (response?.data) {
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           name: response.data.name || prev.name,
           email: response.data.email || prev.email,
-          contactNumber: response.data.contactNumber || prev.contactNumber
+          contactNumber: response.data.contactNumber || prev.contactNumber,
         }));
 
         if (response.data.profilePhoto) {
@@ -166,10 +176,13 @@ const UserProfile = ({ userData }: any) => {
         toast.success("Profile updated successfully!", { id: toastId });
       }
     } catch (error) {
-      console.error('Failed to update profile:', error);
+      console.error("Failed to update profile:", error);
       toast.error("Failed to update profile", { id: toastId });
     }
   };
+
+  const { data: purchaseHistory } = usePurchaseHistoryQuery([]);
+  console.log(purchaseHistory?.data);
 
   return (
     <div className="min-h-screen bg-gradient-to-br pt-28 from-[#00031b] to-[#0a0b2a] py-12  px-2 lg:px-8">
@@ -178,13 +191,13 @@ const UserProfile = ({ userData }: any) => {
         <div className="relative group">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-3xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity"></div>
           <div className="relative bg-[#00031b]/80 backdrop-blur-xl rounded-3xl p-2 md:p-8 shadow-2xl border border-white/10">
-            <div className="flex flex-col md:flex-row items-center gap-8 mb-8">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-8">
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-tr from-blue-500 to-purple-500 rounded-full animate-spin-slow blur-2xl opacity-30"></div>
                 <img
                   src={previewImage || user?.avatar}
                   alt={formData.name || user?.name}
-                  className="w-36 h-36 rounded-full border-4 border-white/10 shadow-xl object-cover"
+                  className="w-36 h-36 rounded-full mt-5 md:mt-2 border-4 border-white/10 shadow-xl object-cover"
                 />
                 {isEditing && (
                   <div className="absolute bottom-0 right-0 flex gap-2">
@@ -193,9 +206,24 @@ const UserProfile = ({ userData }: any) => {
                       onClick={() => fileInputRef.current?.click()}
                       className="bg-blue-500 p-2 rounded-full hover:bg-blue-600 transition-colors"
                     >
-                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <svg
+                        className="w-5 h-5 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
                       </svg>
                     </button>
                     {previewImage && (
@@ -204,8 +232,18 @@ const UserProfile = ({ userData }: any) => {
                         onClick={clearImage}
                         className="bg-red-500 p-2 rounded-full hover:bg-red-600 transition-colors"
                       >
-                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        <svg
+                          className="w-5 h-5 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
                         </svg>
                       </button>
                     )}
@@ -220,7 +258,7 @@ const UserProfile = ({ userData }: any) => {
                 />
               </div>
               <div className="flex-1 text-center md:text-left">
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-300 bg-clip-text text-transparent">
+                <h1 className="text-4xl uppercase py-1 font-bold bg-gradient-to-r from-blue-400 to-purple-300 bg-clip-text text-transparent">
                   {data?.data?.name ? data?.data?.name : user?.name}
                 </h1>
                 <p className="mt-2 text-gray-300 flex items-center justify-center md:justify-start gap-2">
@@ -245,19 +283,21 @@ const UserProfile = ({ userData }: any) => {
 
                 {/* Stats Grid */}
                 <div className="mt-6 grid grid-cols-3 gap-4 max-w-md">
-                  <div className="bg-white/5 p-4 rounded-xl border border-white/10">
-                    <div className="text-lg md:text-2xl font-bold text-blue-400">
-                      {user.stats.watched}
+                  <div className="bg-white/5 p-4  rounded-xl border border-white/10">
+                    <div className="text-lg md:text-2xl text-center font-bold text-blue-400">
+                      {purchaseHistory?.data?.length}
                     </div>
-                    <div className="text-sm text-gray-400">Movies Watched!</div>
+                    <div className="text-sm text-center text-gray-400">
+                      Movies Purchased!
+                    </div>
                   </div>
-                  <div className="bg-white/5 p-4 rounded-xl border border-white/10">
+                  <div className="bg-white/5 p-4 text-center rounded-xl border border-white/10">
                     <div className="text-lg md:text-2xl font-bold text-purple-400">
                       {user.stats.watching}
                     </div>
                     <div className="text-sm text-gray-400">Watching Now</div>
                   </div>
-                  <div className="bg-white/5 p-4 rounded-xl border border-white/10">
+                  <div className="bg-white/5 p-4 text-center rounded-xl border border-white/10">
                     <div className="text-lg md:text-2xl font-bold text-pink-400">
                       {user.stats.lists}
                     </div>
@@ -300,20 +340,8 @@ const UserProfile = ({ userData }: any) => {
                     : "text-gray-400 hover:bg-white/5"
                 }`}
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  />
-                </svg>
-               Purchase History ({watchlist.length})
+                <ShoppingBagIcon className="w-5 h-5" />
+                Purchase History
               </button>
             </div>
 
@@ -395,58 +423,25 @@ const UserProfile = ({ userData }: any) => {
               </form>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {watchlist.map((movie) => (
-                  <div
-                    key={movie.id}
-                    className="group relative bg-white/5 rounded-2xl border border-white/10 overflow-hidden hover:border-white/20 transition-all"
-                  >
-                    <div className="relative">
-                      <img
-                        src={movie.poster}
-                        alt={movie.title}
-                        className="w-full h-80 object-cover object-top"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="absolute bottom-0 left-0 right-0 p-4">
-                          <div className="flex justify-between items-center mb-2">
-                            <span className="text-sm font-medium text-gray-300">
-                              {movie.genre}
-                            </span>
-                            <div className="flex items-center gap-1 text-yellow-400">
-                              <svg
-                                className="w-4 h-4 fill-current"
-                                viewBox="0 0 20 20"
-                              >
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                              </svg>
-                              <span>{movie.rating}</span>
-                            </div>
-                          </div>
-                          <div className="h-1 bg-white/10 rounded-full">
-                            <div
-                              className="h-full bg-gradient-to-r from-blue-400 to-purple-400 rounded-full transition-all duration-500"
-                              style={{ width: `${movie.progress}%` }}
-                            ></div>
-                          </div>
-                        </div>
+                {purchaseHistory?.data?.map((movie: any) => (
+                  <Link key={movie.id} href={`/movies/${movie?.content?.id}`}>
+                    <div className="group relative bg-white/5 rounded-2xl border border-white/10 overflow-hidden hover:border-white/20 transition-all">
+                      <div className="relative">
+                        <img
+                          src={movie?.content?.thumbnail}
+                          alt={movie.title}
+                          className="w-full h-80 object-cover object-top"
+                        />
+                      </div>
+                      <div className="p-4">
+                        <h3 className="text-lg font-semibold text-gray-100">
+                          {movie?.content?.title}
+                        </h3>
+
+                        <p>{movie?.content?.genre?.genreName}</p>
                       </div>
                     </div>
-                    <div className="p-4">
-                      <h3 className="text-lg font-semibold text-gray-100">
-                        {movie.title}
-                      </h3>
-                      <button
-                        onClick={() =>
-                          setWatchlist(
-                            watchlist.filter((m) => m.id !== movie.id)
-                          )
-                        }
-                        className="mt-4 w-full py-2 text-sm font-medium bg-white/5 rounded-lg hover:bg-white/10 transition-colors"
-                      >
-                        Remove from Watchlist
-                      </button>
-                    </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}
