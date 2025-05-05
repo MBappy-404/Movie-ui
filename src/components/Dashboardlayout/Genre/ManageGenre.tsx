@@ -85,12 +85,12 @@ const ManageGenre = () => {
       <div className="max-w-full mx-auto">
         {/* Header Section */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold  bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
-            Genre CMS
+          <h1 className="lg:text-3xl text-2xl font-bold  bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+            Genre
           </h1>
           <button
             onClick={() => setIsModalOpen(true)}
-            className=" cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-2 rounded-lg transition-all"
+            className=" cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-1 lg:px-6 lg:py-2 rounded-lg transition-all"
           >
             Add Genre
           </button>
@@ -150,7 +150,7 @@ const ManageGenre = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 backdrop-blur-lg z-50"
+              className="fixed inset-0 bg-black/50 mx-4 backdrop-blur-lg z-50"
             >
               <motion.div
                 initial={{ scale: 0.95, y: 20 }}
@@ -161,7 +161,7 @@ const ManageGenre = () => {
                   onSubmit={handleSubmit(onSubmit)}
                   className="p-8 max-h-[90vh] overflow-y-auto"
                 >
-                  <h2 className="text-2xl font-bold mb-6  bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+                  <h2 className="lg:text-2xl text-xl font-bold mb-6  bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
                     Add New Genre
                   </h2>
 
@@ -191,7 +191,7 @@ const ManageGenre = () => {
                     </button>
                     <button
                       type="submit"
-                      className=" bg-gradient-to-r from-blue-500 to-purple-500  cursor-pointer px-6 py-2 rounded-lg transition-colors"
+                      className=" bg-gradient-to-r from-blue-500 to-purple-500  cursor-pointer px-4 lg:px-6 lg:py-2 rounded-lg transition-colors"
                     >
                       Add Genre
                     </button>

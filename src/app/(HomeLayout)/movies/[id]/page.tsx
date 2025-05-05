@@ -1,4 +1,4 @@
-import MovieDetails from '@/components/HomePage/MovieDetails'
+import MovieDetails from '@/components/Movies/MovieDetails'
 import { getCurrentUser } from '@/services/AuthServices'
 import React, { Suspense } from 'react'
 

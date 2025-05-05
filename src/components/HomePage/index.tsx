@@ -5,6 +5,7 @@ import NewReleases from "./NewRelease";
 import HomeBanner from "./HomeBanner";
 import TopArtists from "./TopArtists";
 import TopNews from "./TopNews";
+import EditorsPicks from "../Movies/EditorsPicks";
 
 const HomePage = () => {
   return (
@@ -12,6 +13,7 @@ const HomePage = () => {
       <HeroSection />
       <TrendingMovies />
       <NewReleases />
+      <EditorsPicks />
       <HomeBanner />
       <TopArtists />
       <TopNews />

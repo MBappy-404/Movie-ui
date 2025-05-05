@@ -1,6 +1,5 @@
-import { AllMovies } from '@/components/HomePage/AllMovies'
-import NewReleases from '@/components/HomePage/NewRelease'
-import TrendingMovies from '@/components/HomePage/TrendingMovies'
+import { AllMovies } from '@/components/Movies/AllMovies'
+import EditorsPicks from '@/components/Movies/EditorsPicks'
 import React from 'react'
 
 const moviesPage = () => {
