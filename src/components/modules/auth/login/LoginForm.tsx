@@ -53,7 +53,6 @@ const LoginForm = () => {
 
       // ✅ Set tokens as cookies
       Cookies.set('accessToken', res?.data?.accessToken, { expires: 7, secure: true });
-      Cookies.set('refreshToken', res?.data?.refreshToken, { expires: 7, secure: true });
 
       dispatch(setUser({
         user: user,

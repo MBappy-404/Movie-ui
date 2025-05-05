@@ -7,6 +7,7 @@ import { FaUser, FaSignOutAlt } from "react-icons/fa";
 import { selectCurrentToken } from "@/components/redux/features/auth/authSlice";
 import { verifyToken } from "@/utils/verifyToken";
 import { useGetUserQuery } from "@/components/redux/features/user/userApi";
+import Cookies from 'js-cookie';
 
 interface HeaderProps {
   toggleSidebar: () => void;
@@ -27,7 +28,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
 
 
 
-    const {data: UserData} = useGetUserQuery(user.id)
+    const {data: UserData} = useGetUserQuery(user?.id)
 
     console.log(UserData)
 
@@ -47,6 +48,8 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
   const handleLogout = () => {
     dispatch(logout());
     toast.success("Logged out successfully");
+    Cookies.remove('refreshToken'); // Replace 'refreshToken' with the actual cookie name(s) you're using
+    Cookies.remove('accessToken'); // Replace 'accessToken' with the actual cookie name(s) you're using
     router.push("/login");
   };
 
@@ -62,7 +65,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
         <div className="flex-1">
           <h2 className="text-xl font-semibold text-gray-100">Dashboard Overview</h2>
-          <p className="text-sm text-purple-400/70 mt-1">Welcome back, {UserData.data?.name || 'Admin'}</p>
+          <p className="text-sm text-purple-400/70 mt-1">Welcome back, {UserData?.data?.name || 'Admin'}</p>
         </div>
 
         <div className="flex items-center gap-4 w-full md:w-auto">
@@ -80,7 +83,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
                 {UserData?.data?.profilePhoto ? (
                   <img
                     src={UserData?.data?.profilePhoto}
-                    alt={user.name}
+                    alt={UserData?.data?.name}
                     className="w-full h-full rounded-full object-cover"
                   />
                 ) : (
