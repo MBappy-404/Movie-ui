@@ -16,7 +16,7 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LucideLayoutDashboard } from "lucide-react";
-
+import Cookies from 'js-cookie';
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { selectCurrentToken, logout } from "../redux/features/auth/authSlice";
@@ -53,6 +53,8 @@ const Navbar = () => {
   const handleLogout = () => {
     dispatch(logout())
     toast.success("Logged out successfully");
+    Cookies.remove('accessToken'); // Replace 'accessToken' with the actual cookie name(s) you're using
+    Cookies.remove('refreshToken'); // Replace 'refreshToken' with the actual cookie name(s) you're using
     router.push("/login");
     setDropdownOpen(false);
   };
