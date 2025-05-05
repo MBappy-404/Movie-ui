@@ -16,9 +16,10 @@ import {
 import { useUser } from "../context/UserContext";
 import { logout } from "@/services/AuthServices";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { MdDashboard } from "react-icons/md";
 import { LucideLayoutDashboard } from "lucide-react";
+import { toast } from "sonner";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,6 +27,7 @@ const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { user, setIsLoading } = useUser();
   const pathname = usePathname();
+  const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const navLinks = [
@@ -36,6 +38,8 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout();
+    toast.success("Logged out successfully");
+    router.push("/login");
     setIsLoading(true);
     setDropdownOpen(false);
   };
