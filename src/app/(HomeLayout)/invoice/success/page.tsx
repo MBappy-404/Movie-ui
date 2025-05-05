@@ -28,7 +28,7 @@ const MovieInvoice = () => {
   const tarnId = searchParams.get("tran_id");
   console.log(tarnId);
 
-  const generateMockData = () => ({
+  const generateMockData : any= () => ({
     invoiceNumber: `CINEFLIX-${Math.floor(1000 + Math.random() * 9000)}`,
     customerName: "Raj Shekhar",
     customerEmail: "raj@example.com",
