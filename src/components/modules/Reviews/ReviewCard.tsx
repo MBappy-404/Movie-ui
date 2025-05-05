@@ -9,6 +9,8 @@ import { useAppSelector } from "@/components/redux/hooks";
 import { selectCurrentToken } from "@/components/redux/features/auth/authSlice";
 import { verifyToken } from "@/utils/verifyToken";
 import { TUser } from "@/components/types/user";
+import { ThumbsUpIcon } from "lucide-react";
+import { MdThumbUp } from "react-icons/md";
 
 // Separate component for individual review items
 const ReviewItem = ({ item, UserData }: { item: any; UserData: any }) => {
@@ -18,6 +20,9 @@ const ReviewItem = ({ item, UserData }: { item: any; UserData: any }) => {
     month: "long",
     day: "numeric",
   });
+
+  const [liked, setLiked] = useState(false);
+  
 
   return (
     <div className="flex flex-col gap-4 border-b border-gray-700 pb-6">
@@ -40,6 +45,28 @@ const ReviewItem = ({ item, UserData }: { item: any; UserData: any }) => {
             {item.user?.name || "Anonymous"}
           </p>
           <p className="mt-2 text-gray-300 text-sm">{item.reviewText}</p>
+          <div className="flex gap-x-5 translate-y-5">
+            <button   onClick={() => setLiked(!liked)} className=" top-2 left-2  cursor-pointer flex gap-2 items-center   transition">
+              <ThumbsUpIcon
+              className="h-6 w-6"
+              // className={`h-7 w-7 ${
+              //   liked ? "text-blue-500" : "text-gray-500"
+              // } hover:scale-110 rotate-180`}
+              />
+              <MdThumbUp className="h-6 w-6" />
+              <span>145</span>
+            </button>
+            <button  onClick={() => setLiked(!liked)} className=" top-2 cursor-pointer left-2 flex gap-2  items-center transition">
+              <ThumbsUpIcon 
+                className="h-6 w-6 rotate-180 translate-y-1"
+              // className={`h-7 w-7 ${
+              //   liked ? "text-blue-500" : "text-gray-500"
+              // } hover:scale-110 rotate-180`}
+              />
+               <MdThumbUp className="h-6 w-6 rotate-180" />
+               <span>145</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -56,15 +83,13 @@ const ReviewCard = ({
   ReviewData: any;
   UserData: any;
 }) => {
-  
-  
-    const token = useAppSelector(selectCurrentToken);
-    let userinfo : any
-    if (token) {
-      userinfo = verifyToken(token)
-    }
-  
-    console.log(userinfo)
+  const token = useAppSelector(selectCurrentToken);
+  let userinfo: any;
+  if (token) {
+    userinfo = verifyToken(token);
+  }
+
+  console.log(userinfo);
   const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
   const [editedText, setEditedText] = useState("");
 
@@ -91,16 +116,17 @@ const ReviewCard = ({
     setEditingReviewId(null);
   };
 
+  const isUser = userinfo && pendingReviews?.length > 0;
   return (
     <div>
-      {!publishedReviews?.length && <p>No reviews found</p>}
-      <div className="bg-gray-900 rounded-lg p-6 mb-5 shadow-md flex flex-col gap-6">
+      {isUser && (
         <h1 className="text-lg font-semibold text-yellow-500">
           Your Pending Reviews: {pendingReviews?.length}{" "}
         </h1>
-        {userinfo &&
-          pendingReviews?.length > 0 &&
-          pendingReviews?.map((item: any) => (
+      )}
+      {isUser && (
+        <div className="bg-gray-900 rounded-lg p-6 mb-5 shadow-md flex flex-col gap-6">
+          {pendingReviews?.map((item: any) => (
             <div key={item.id} className="relative p-4 rounded-md">
               {/* Pending Tag */}
 
@@ -180,8 +206,9 @@ const ReviewCard = ({
               </div>
             </div>
           ))}
-      </div>
-
+        </div>
+      )}
+      {!publishedReviews?.length && <p>No reviews found</p>}
       {publishedReviews?.length > 0 && (
         <div className="bg-gray-900 rounded-lg p-6 shadow-md flex flex-col gap-6">
           {publishedReviews?.map((item: any, index: number) => (
