@@ -1,6 +1,5 @@
 "use client";
 
-import TrendingMovieSkeletonSpinner from "@/components/Movies/TrendingMovieSkeleton";
 import { AppStore, makeStore } from "@/components/redux/store";
 import { ReactNode, useRef } from "react";
 import { Provider } from "react-redux";
@@ -17,7 +16,7 @@ export default function StoreProvider({ children }: { children: ReactNode }) {
 
   return (
     <Provider store={storeRef.current}>
-      <PersistGate loading={<TrendingMovieSkeletonSpinner/>} persistor={persistedStore}>
+      <PersistGate loading={"Loading"} persistor={persistedStore}>
         {children}
       </PersistGate>
     </Provider>

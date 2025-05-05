@@ -15,12 +15,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { loginValidation } from "./loginValidation";
 import { useRouter, useSearchParams } from "next/navigation";
-import { loginUser } from "@/services/AuthServices";
-import { useUser } from "@/components/context/UserContext";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useAppDispatch } from "@/components/redux/hooks";
-import { setUser, setToken } from "@/components/redux/features/user/userState";
+import { setUser } from "@/components/redux/features/auth/authSlice";
+import { useLoginMutation } from "@/components/redux/features/auth/authApi";
+import { verifyToken } from "@/utils/verifyToken";
+import { TUser } from "@/components/types/user";
 
 const LoginForm = () => {
   const searchParams = useSearchParams();
@@ -29,34 +30,35 @@ const LoginForm = () => {
   const dispatch = useAppDispatch();
   const form = useForm({
     resolver: zodResolver(loginValidation),
-  });
-  const { setIsLoading } = useUser();
+  })
+
+  const [login] = useLoginMutation();
 
   const {
     formState: { isSubmitting },
   } = form;
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    try {
-      const result = await loginUser(data);
 
-      if (result?.success) {
-        // Set user data in Redux
-        // dispatch(setUser(result.data.user));
-        // dispatch(setToken(result.data.accessToken));
-        toast.success(result.message);
-        if (redirect) {
-          router.push(redirect);
-          setIsLoading(true);
-        } else {
-          router.push("/");
-        }
-      } else {
-        toast.error(result.message);
+    const toastId = toast.loading('Logging in');
+
+    try {
+      const userInfo = {
+        email: data?.email,
+        password: data?.password
       }
-      return result;
-    } catch (error: any) {
-      return Error(error);
+      const res = await login(userInfo).unwrap();
+      const user = verifyToken(res?.data?.accessToken) as TUser;
+
+      dispatch(setUser({
+        user: user,
+        token: res?.data?.accessToken
+      }))
+      toast.success('Logged in', { id: toastId });
+    } catch (error) {
+      console.log(error);
+      toast.error('Something went wrong', { id: toastId });
+
     }
   };
 

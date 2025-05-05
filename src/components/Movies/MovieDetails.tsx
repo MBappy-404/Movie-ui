@@ -23,12 +23,13 @@ import {
 import { toast } from "sonner";
 import Link from "next/link";
 import ReviewCard from "../modules/Reviews/ReviewCard";
-import { useUser } from "../context/UserContext";
 import { useCreatePaymentMutation } from "../redux/features/payment/paymentApi";
 
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { addToWatchList, watchListSelector } from "../redux/features/watchListSlice";
 import { Movie } from "@/types";
+import { verifyToken } from "@/utils/verifyToken";
+import { selectCurrentToken } from "../redux/features/auth/authSlice";
 
 interface ReviewFormData {
   rating: number;
@@ -36,37 +37,41 @@ interface ReviewFormData {
   tags: string;
 }
 
-const MovieDetails = ({ currentUser }: any) => {
+const MovieDetails = () => {
   const [createPayment] = useCreatePaymentMutation();
   const [showModal, setShowModal] = useState(false);
 
-  const movieList = useAppSelector(watchListSelector);
+  // const movieList = useAppSelector(watchListSelector);
 
   const dispatch = useAppDispatch();
 
   const handleWatchlist = (data: Movie) => {
-    const isExistInWatchList = movieList.some((item) => item.id === data.id);
+    // const isExistInWatchList = movieList.some((item) => item.id === data.id);
 
-    if (isExistInWatchList) {
-      toast.warning("Already Added to Watchlist");
-      return;
-    }
-    
-    dispatch(addToWatchList(data));
-    toast.success("Added to Watchlist", {
-      icon: "⭐",
-    });
+    // if (isExistInWatchList) {
+    //   toast.warning("Already Added to Watchlist");
+    //   return;
+    // }
+
+    // dispatch(addToWatchList(data));
+    // toast.success("Added to Watchlist", {
+    //   icon: "⭐",
+    // });
   };
 
   const router = useRouter();
   const { id } = useParams();
-  const { user } = useUser();
+  const token = useAppSelector(selectCurrentToken);
+  let user: any
+  if (token) {
+    user = verifyToken(token)
+  }
 
   const { data: movieDetails, isLoading } = useGetContentQuery(id);
 
   const { data: allMovies, isLoading: isMoviesLoading } =
     useGetAllContentQuery(undefined);
-  const { data: SingleUser } = useGetUserQuery(currentUser?.id);
+  const { data: SingleUser } = useGetUserQuery(user?.id);
 
   const [recommendedMovies, setRecommendedMovies] = useState<Movie[]>([]);
   const {
@@ -125,7 +130,7 @@ const MovieDetails = ({ currentUser }: any) => {
 
   const onSubmit = async (data: ReviewFormData) => {
     const toastId = toast.loading("Adding Review...");
-    if (!SingleUser?.data?.id) {
+    if (!user.id) {
       toast.error("User information not available. Please try again later.", {
         id: toastId,
       });
@@ -137,7 +142,7 @@ const MovieDetails = ({ currentUser }: any) => {
         rating: rating,
         reviewText: data.reviewText,
         contentId: movieDetails.data.id,
-        userId: SingleUser.data.id,
+        userId: user.id,
         tags: data.tags || "CLASSIC", // Provide a default value if tags is undefined
       };
 
@@ -335,7 +340,7 @@ const MovieDetails = ({ currentUser }: any) => {
                     }
                     className="py-2 px-4 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
                   >
-                    Buy ${movieDetails?.data?.price} 
+                    Buy ${movieDetails?.data?.price}
                   </button>
                   <button
                     onClick={() =>
