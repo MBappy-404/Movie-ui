@@ -5,7 +5,10 @@ import { Rating } from "@smastrom/react-rating";
 import Image from "next/image";
 import React, { useState } from "react";
 import Comments from "../Comment/Comments";
-import { useUser } from "@/components/context/UserContext";
+import { useAppSelector } from "@/components/redux/hooks";
+import { selectCurrentToken } from "@/components/redux/features/auth/authSlice";
+import { verifyToken } from "@/utils/verifyToken";
+import { TUser } from "@/components/types/user";
 
 // Separate component for individual review items
 const ReviewItem = ({ item, UserData }: { item: any; UserData: any }) => {
@@ -53,7 +56,15 @@ const ReviewCard = ({
   ReviewData: any;
   UserData: any;
 }) => {
-  const { user } = useUser();
+  
+  
+    const token = useAppSelector(selectCurrentToken);
+    let userinfo : any
+    if (token) {
+      userinfo = verifyToken(token)
+    }
+  
+    console.log(userinfo)
   const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
   const [editedText, setEditedText] = useState("");
 
@@ -61,7 +72,7 @@ const ReviewCard = ({
     (item: any) => item.status === "PUBLISHED"
   );
   const pendingReviews = ReviewData?.data?.filter(
-    (item: any) => item.status === "PENDING" && item?.userId === user?.id
+    (item: any) => item.status === "PENDING" && item?.userId === userinfo?.id
   );
 
   const handleEdit = (item: any) => {
@@ -87,7 +98,7 @@ const ReviewCard = ({
         <h1 className="text-lg font-semibold text-yellow-500">
           Your Pending Reviews: {pendingReviews?.length}{" "}
         </h1>
-        {user &&
+        {userinfo &&
           pendingReviews?.length > 0 &&
           pendingReviews?.map((item: any) => (
             <div key={item.id} className="relative p-4 rounded-md">

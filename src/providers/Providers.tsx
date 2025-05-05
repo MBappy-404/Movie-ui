@@ -13,15 +13,8 @@ export const Providers = ({ children }: { children: ReactNode }) => {
         <>
           {children}
           <Toaster
-            position="top-right"
-            duration={1000}
-            toastOptions={{
-              style: {
-                backgroundColor: '#fb5770',
-                color: '#ffffff',
-                borderRadius: '8px',
-              },
-            }}
+            position="top-center"
+            richColors
           />
         </>
       </PersistGate>
