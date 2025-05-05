@@ -1,11 +1,15 @@
 import MovieDetails from '@/components/HomePage/MovieDetails'
-import React from 'react'
+import { getCurrentUser } from '@/services/AuthServices'
+import React, { Suspense } from 'react'
 
-const MovieDetailsPage = async({ params }: any) => {
-    const {id} = await params
+const MovieDetailsPage = async ({ params }: any) => {
+  const { id } = await params
+  const currentUser = await getCurrentUser()
   return (
     <div>
-        <MovieDetails/>
+      <Suspense>
+        <MovieDetails currentUser={currentUser} />
+      </Suspense>
     </div>
   )
 }

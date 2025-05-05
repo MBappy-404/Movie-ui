@@ -3,6 +3,8 @@ import HeroSection from "./Hero";
 import TrendingMovies from "./TrendingMovies";
 import NewReleases from "./NewRelease";
 import HomeBanner from "./HomeBanner";
+import TopArtists from "./TopArtists";
+import TopNews from "./TopNews";
 
 const HomePage = () => {
   return (
@@ -11,6 +13,8 @@ const HomePage = () => {
       <TrendingMovies />
       <NewReleases />
       <HomeBanner />
+      <TopArtists />
+      <TopNews />
     </div>
   );
 };

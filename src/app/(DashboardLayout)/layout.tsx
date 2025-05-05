@@ -1,16 +1,16 @@
-import Sidebar from '@/components/sidebar/sidebar';
+import DashboardLayout from "@/components/Dashboardlayout";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Wellcome to Dashboard",
+  description: "this is admin dashboard.",
+};
+
 
 const Layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="flex h-screen overflow-hidden">
-        <Sidebar />
-        <main className="flex-1 overflow-y-auto">
-          <div className="p-4 sm:p-6 lg:p-8">
-            {children}
-          </div>
-        </main>
-      </div>
+    <div>
+      <DashboardLayout children={children} />
     </div>
   );
 };

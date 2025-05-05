@@ -18,11 +18,15 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { loginUser } from "@/services/AuthServices";
 import { useUser } from "@/components/context/UserContext";
 import { motion } from "framer-motion";
+import Link from "next/link";
+import { useAppDispatch } from "@/components/redux/hooks";
+import { setUser, setToken } from "@/components/redux/features/user/userState";
 
 const LoginForm = () => {
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirectPath");
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const form = useForm({
     resolver: zodResolver(loginValidation),
   });
@@ -33,11 +37,14 @@ const LoginForm = () => {
   } = form;
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    console.log(data);
     try {
       const result = await loginUser(data);
 
       if (result?.success) {
+        // Set user data in Redux
+        dispatch(setUser(result.data.user));
+        dispatch(setToken(result.data.accessToken));
+        
         toast.success(result.message);
         if (redirect) {
           router.push(redirect);
@@ -62,17 +69,12 @@ const LoginForm = () => {
       transition={{ duration: 1 }}
     >
       <motion.div
-        className="bg-black/70 p-8 rounded-lg border-2 w-full max-w-sm shadow-xl backdrop-blur"
+        className="bg-black/70 p-8 rounded-lg border-2 border-blue-400 w-full max-w-sm shadow-xl backdrop-blur"
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.3 }}
       >
-        <motion.h1
-          className="text-center text-3xl font-bold text-[#16a34a] mb-4 tracking-widest"
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-        >
+        <motion.h1 className="text-center text-3xl font-bold  bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent   mb-4 tracking-widest">
           LOGIN FORM
         </motion.h1>
 
@@ -107,7 +109,7 @@ const LoginForm = () => {
                       {...field}
                       type="password"
                       value={field.value || ""}
-                      className="bg-gray-800 text-white"
+                      className="bg-gray-800 text-white "
                     />
                   </FormControl>
                   <FormMessage className="text-red-400" />
@@ -115,10 +117,10 @@ const LoginForm = () => {
               )}
             />
 
-            <motion.div whileHover={{ scale: 1.05 }}>
+            <motion.div>
               <Button
                 type="submit"
-                className="w-full bg-[#16a34a] hover:bg-green-700 mt-6 shadow-lg"
+                className="w-full cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500    mt-6 shadow-lg"
               >
                 {isSubmitting ? "LOGGING IN..." : "LOGIN"}
               </Button>
@@ -128,12 +130,12 @@ const LoginForm = () => {
 
         <p className="text-center mt-4 text-white">
           You have no account?{" "}
-          <a
+          <Link
             href="/register"
-            className="text-[#16a34a] font-semibold hover:underline"
+            className=" bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent font-semibold hover:underline"
           >
             REGISTER HERE
-          </a>
+          </Link>
         </p>
       </motion.div>
     </motion.div>

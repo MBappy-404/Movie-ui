@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
+import * as React from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -23,15 +23,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 
 const userFormSchema = z.object({
   username: z.string().min(2, {
@@ -43,12 +43,12 @@ const userFormSchema = z.object({
   role: z.enum(["ADMIN", "USER"], {
     required_error: "Please select a role.",
   }),
-})
+});
 
-type UserFormValues = z.infer<typeof userFormSchema>
+type UserFormValues = z.infer<typeof userFormSchema>;
 
 export function AddUserDialog() {
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = React.useState(false);
 
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userFormSchema),
@@ -57,12 +57,12 @@ export function AddUserDialog() {
       email: "",
       role: "USER",
     },
-  })
+  });
 
   function onSubmit(data: UserFormValues) {
     // TODO: Implement user creation logic
-    console.log(data)
-    setOpen(false)
+    //console.log(data)
+    setOpen(false);
   }
 
   return (
@@ -145,5 +145,5 @@ export function AddUserDialog() {
         </Form>
       </DialogContent>
     </Dialog>
-  )
-} 
+  );
+}

@@ -88,7 +88,7 @@ const HomeBanner = () => {
         <div className="relative w-full max-w-full h-full mx-auto">
           <Swiper
             loop={true}
-            speed={600} 
+            speed={600}
             modules={[Thumbs, Navigation]}
             navigation={{
               prevEl: ".prev",
@@ -145,7 +145,7 @@ const HomeBanner = () => {
               direction={"horizontal"} // default for mobile
               slidesPerView={4}
               spaceBetween={16}
-              speed={600} 
+              speed={600}
               loop={true}
               breakpoints={{
                 768: {

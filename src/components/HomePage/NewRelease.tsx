@@ -6,77 +6,23 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-interface MovieCardProps {
-  title: string;
-  rating: number;
-  description: string;
-  imageUrl: string;
-  genre: string;
-  year: number;
-  duration: string;
-}
+import { useGetAllContentQuery } from "../redux/features/content/contentApi";
+import { Movie } from "@/types";
+import Link from "next/link";
 
 const NewReleases = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  const movies: MovieCardProps[] = [
+  const { data, isLoading } = useGetAllContentQuery([
+    // { name: "sortBy", value: "rating" },
     {
-      title: "Cyber Nexus",
-      rating: 9.2,
-      description:
-        "In a dystopian future, a rogue AI threatens humanity's last hope. A team of enhanced hackers must breach the neural network to save mankind.",
-      imageUrl:
-        "https://streamvid.jwsuperthemes.com/wp-content/uploads/2024/12/7I6VUdPj6tQECNHdviJkUHD2u89-scaled-630x400.jpg",
-      genre: "Cyberpunk/Thriller",
-      year: 2024,
-      duration: "2h 12m",
+      name: "createdAt",
+      value: "asc",
     },
-    {
-      title: "Eclipse of Titans",
-      rating: 8.9,
-      description:
-        "Ancient gods return to reclaim Earth in this epic fantasy adventure. Humanity's last stand begins at the celestial alignment.",
-      imageUrl:
-        "https://streamvid.jwsuperthemes.com/wp-content/uploads/2024/12/7I6VUdPj6tQECNHdviJkUHD2u89-scaled-630x400.jpg",
-      genre: "Fantasy/Adventure",
-      year: 2024,
-      duration: "2h 45m",
-    },
-    {
-      title: "Cyber Nexus",
-      rating: 9.2,
-      description:
-        "In a dystopian future, a rogue AI threatens humanity's last hope. A team of enhanced hackers must breach the neural network to save mankind.",
-      imageUrl:
-        "https://streamvid.jwsuperthemes.com/wp-content/uploads/2024/12/7I6VUdPj6tQECNHdviJkUHD2u89-scaled-630x400.jpg",
-      genre: "Cyberpunk/Thriller",
-      year: 2024,
-      duration: "2h 12m",
-    },
-    {
-      title: "Eclipse of Titans",
-      rating: 8.9,
-      description:
-        "Ancient gods return to reclaim Earth in this epic fantasy adventure. Humanity's last stand begins at the celestial alignment.",
-      imageUrl:
-        "https://streamvid.jwsuperthemes.com/wp-content/uploads/2024/12/7I6VUdPj6tQECNHdviJkUHD2u89-scaled-630x400.jpg",
-      genre: "Fantasy/Adventure",
-      year: 2024,
-      duration: "2h 45m",
-    },
-    {
-      title: "Eclipse of Titans",
-      rating: 8.9,
-      description:
-        "Ancient gods return to reclaim Earth in this epic fantasy adventure. Humanity's last stand begins at the celestial alignment.",
-      imageUrl:
-        "https://streamvid.jwsuperthemes.com/wp-content/uploads/2024/12/7I6VUdPj6tQECNHdviJkUHD2u89-scaled-630x400.jpg",
-      genre: "Fantasy/Adventure",
-      year: 2024,
-      duration: "2h 45m",
-    },
-  ];
+  ]);
+
+  const moviesData: Movie[] = data?.data?.slice(0, 6);
 
   const cardVariants = {
     hidden: { opacity: 0, y: 50 },
@@ -117,12 +63,6 @@ const NewReleases = () => {
         <div className=" pb-8 ">
           <Swiper
             loop={true}
-            speed={600}
-            autoplay={{
-              delay: 3000,
-              disableOnInteraction: false,  
-              pauseOnMouseEnter: true,  
-            }}
             spaceBetween={20}
             slidesPerView={1}
             breakpoints={{
@@ -135,7 +75,7 @@ const NewReleases = () => {
                 spaceBetween: 25,
               },
               1024: {
-                slidesPerView: 4,  
+                slidesPerView: 4,
                 spaceBetween: 20,
               },
             }}
@@ -146,106 +86,120 @@ const NewReleases = () => {
               nextEl: ".next",
             }}
           >
-            {movies.map((movie, index) => (
-              <SwiperSlide key={index}>
-                <motion.div
-                  className="group relative cursor-pointer"
-                  variants={cardVariants}
-                  initial="hidden"
-                  animate={isInView ? "visible" : "hidden"}
-                  custom={index}
-                   
-                >
+            {isLoading &&
+              [...Array(4)].map((_, index) => (
+                <SwiperSlide key={index}>
+                  <div
+                    key={index}
+                    className="w-full h-[500px]  bg-gray-700 animate-pulse rounded-xl"
+                  ></div>
+                </SwiperSlide>
+              ))}
+            {moviesData?.map((movie: Movie, index: number) => (
+              <SwiperSlide key={movie.id}>
+                <Link href={`/movies/${movie.id}`}>
                   <motion.div
-                    variants={hoverVariants}
-                    className="relative h-[500px] overflow-hidden rounded-3xl shadow-2xl"
+                    className="group relative cursor-pointer"
+                    variants={cardVariants}
+                    initial="hidden"
+                    animate={isInView ? "visible" : "hidden"}
+                    custom={index}
                   >
-                    <img
-                      src={movie.imageUrl}
-                      alt={movie.title}
-                      className="h-full w-full object-cover object-center"
-                    />
-
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent" />
-
-                    <div className="absolute top-4 left-4 flex items-center gap-2">
-                      <span className="rounded-full bg-gradient-to-r from-blue-500 to-purple-500 px-3 py-1 text-xs font-bold text-white">
-                        NEW
-                      </span>
-                      <span className="flex items-center gap-1 rounded-full bg-black/20 px-3 py-1 text-xs text-white backdrop-blur-sm">
-                        <ClockIcon className="h-4 w-4" />
-                        {movie.duration}
-                      </span>
-                    </div>
-
                     <motion.div
-                      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{
-                        scale: 1,
-                        opacity: 1,
-                        transition: { delay: 0.3 + index * 0.1 },
-                      }}
+                      variants={hoverVariants}
+                      className="relative h-[500px] overflow-hidden rounded-3xl shadow-2xl"
                     >
-                      <div className="rounded-full bg-white/10 p-4 backdrop-blur-md transition-all group-hover:bg-gradient-to-r from-blue-500 to-purple-500 group-hover:scale-110">
-                        <PlayIcon className="h-10 w-10 text-white/90" />
+                      <img
+                        src={movie.thumbnail}
+                        alt={movie.title}
+                        className="h-full w-full object-cover object-center"
+                      />
+
+                      {/* Gradient Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent" />
+
+                      <div className="absolute top-4 left-4 flex items-center gap-2">
+                        <span className="rounded-full bg-gradient-to-r from-blue-500 to-purple-500 px-3 py-1 text-xs font-bold text-white">
+                          NEW
+                        </span>
+                        <span className="flex items-center gap-1 rounded-full bg-black/20 px-3 py-1 text-xs text-white backdrop-blur-sm">
+                          <ClockIcon className="h-4 w-4" />
+                          {movie.duration}
+                        </span>
+                      </div>
+
+                      <motion.div
+                        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{
+                          scale: 1,
+                          opacity: 1,
+                          transition: { delay: 0.3 + index * 0.1 },
+                        }}
+                      >
+                        <div className="rounded-full bg-white/10 p-4 backdrop-blur-md transition-all group-hover:bg-gradient-to-r from-blue-500 to-purple-500 group-hover:scale-110">
+                          <PlayIcon className="h-10 w-10 text-white/90" />
+                        </div>
+                      </motion.div>
+
+                      <div className="absolute bottom-0 left-0 right-0 space-y-4 p-6">
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{
+                            opacity: 1,
+                            y: 0,
+                            transition: { delay: 0.4 + index * 0.1 },
+                          }}
+                        >
+                          <h3 className="text-2xl font-bold text-white">
+                            {movie.title}
+                          </h3>
+                          <div className="flex items-center gap-4 text-sm text-gray-300">
+                            <span>{movie?.releaseYear}</span>
+                            <span className="h-1 w-1 rounded-full bg-gray-400" />
+                            <span>{movie?.genre?.genreName}</span>
+                          </div>
+                        </motion.div>
+
+                        {/* Rating Progress */}
+                        <motion.div
+                          className="flex items-center gap-3"
+                          initial={{ opacity: 0 }}
+                          animate={{
+                            opacity: 1,
+                            transition: { delay: 0.5 + index * 0.1 },
+                          }}
+                        >
+                          <div className="relative h-2 w-full rounded-full bg-white/10">
+                            <div
+                              className="absolute left-0 top-0 h-full rounded-full bg-gradient-to-r from-blue-500 to-purple-500"
+                              style={{
+                                width: `${
+                                  (movie?.averageRating as number) * 5
+                                }%`,
+                              }}
+                            />
+                          </div>
+                          <span className="text-sm font-semibold text-yellow-500">
+                            {movie?.averageRating}/5
+                          </span>
+                        </motion.div>
+
+                        <motion.p
+                          className="text-sm text-gray-300 line-clamp-2"
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{
+                            opacity: 1,
+                            y: 0,
+                            transition: { delay: 0.6 + index * 0.1 },
+                          }}
+                        >
+                          {movie.synopsis}
+                        </motion.p>
                       </div>
                     </motion.div>
-
-                    <div className="absolute bottom-0 left-0 right-0 space-y-4 p-6">
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{
-                          opacity: 1,
-                          y: 0,
-                          transition: { delay: 0.4 + index * 0.1 },
-                        }}
-                      >
-                        <h3 className="text-2xl font-bold text-white">
-                          {movie.title}
-                        </h3>
-                        <div className="flex items-center gap-4 text-sm text-gray-300">
-                          <span>{movie.year}</span>
-                          <span className="h-1 w-1 rounded-full bg-gray-400" />
-                          <span>{movie.genre}</span>
-                        </div>
-                      </motion.div>
-
-                      {/* Rating Progress */}
-                      <motion.div
-                        className="flex items-center gap-3"
-                        initial={{ opacity: 0 }}
-                        animate={{
-                          opacity: 1,
-                          transition: { delay: 0.5 + index * 0.1 },
-                        }}
-                      >
-                        <div className="relative h-3 w-full rounded-full bg-white/10">
-                          <div
-                            className="absolute left-0 top-0 h-full rounded-full bg-gradient-to-r from-blue-500 to-purple-500"
-                            style={{ width: `${movie.rating * 10}%` }}
-                          />
-                        </div>
-                        <span className="text-sm font-bold text-blue-500">
-                          {movie.rating}/10
-                        </span>
-                      </motion.div>
-
-                      <motion.p
-                        className="text-sm text-gray-300 line-clamp-2"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{
-                          opacity: 1,
-                          y: 0,
-                          transition: { delay: 0.6 + index * 0.1 },
-                        }}
-                      >
-                        {movie.description}
-                      </motion.p>
-                    </div>
                   </motion.div>
-                </motion.div>
+                </Link>
               </SwiperSlide>
             ))}
           </Swiper>

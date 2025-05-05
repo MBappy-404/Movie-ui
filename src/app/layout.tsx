@@ -36,7 +36,10 @@ export default function RootLayout({
         data-gr-ext-installed=""
       >
         <div>
-          <Providers>{children}</Providers>
+          <Providers>
+            <Toaster position="top-center" richColors />
+            {children}
+          </Providers>
         </div>
       </body>
     </html>
