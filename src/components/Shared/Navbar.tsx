@@ -13,7 +13,6 @@ import {
   QuestionMarkCircleIcon,
   Square2StackIcon,
 } from "@heroicons/react/24/outline";
-import { logout } from "@/services/AuthServices";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { MdDashboard } from "react-icons/md";
@@ -21,7 +20,7 @@ import { LucideLayoutDashboard } from "lucide-react";
 
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { selectCurrentToken } from "../redux/features/auth/authSlice";
+import { selectCurrentToken, logout } from "../redux/features/auth/authSlice";
 import { verifyToken } from "@/utils/verifyToken";
 
 const Navbar = () => {
@@ -52,9 +51,8 @@ const Navbar = () => {
     { name: "Watchlist", path: "/watchlist", icon: BookmarkIcon },
   ];
 
-  const handleLogout = async () => {
-    await logout();
-    dispatch({ type: 'auth/logout' });
+  const handleLogout = () => {
+    dispatch(logout())
     toast.success("Logged out successfully");
     router.push("/login");
     setDropdownOpen(false);
@@ -181,14 +179,14 @@ const Navbar = () => {
                         Profile
                       </Link>
   
-                        <Link
+                        {user.role === "ADMIN" && (<Link
                           href="/dashboard"
                           className="flex text-sm md:text-base items-center gap-2 px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors"
                           onClick={() => setDropdownOpen(false)}
                         >
                           <LucideLayoutDashboard className="w-5 h-5" />
                           Dashboard
-                        </Link>
+                        </Link>) }
                       <button
                         onClick={handleLogout}
                         className="flex text-sm md:text-base cursor-pointer items-center gap-2 w-full px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors"

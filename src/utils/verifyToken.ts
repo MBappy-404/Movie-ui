@@ -1,6 +1,7 @@
 import { jwtDecode } from "jwt-decode"
 
 interface UserTokenPayload {
+  id: string;
   role: 'USER' | 'ADMIN';
   email: string;
   [key: string]: any;
