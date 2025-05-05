@@ -3,5 +3,5 @@ export type TUser = {
   exp?: number;
   iat?: number;
   id: string;
-  role: "user" | "admin";
+  role: "USER" | "ADMIN";
 };

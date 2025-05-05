@@ -271,7 +271,7 @@ const UserProfile = ({ userData }: any) => {
             <div className="flex gap-4 border-b border-white/10 pb-2 mb-8">
               <button
                 onClick={() => setActiveTab("profile")}
-                className={`px-6 py-3 rounded-t-xl font-medium flex items-center gap-2 transition-all ${
+                className={`px-6 py-3 rounded-t-xl font-medium cursor-pointer flex items-center gap-2 transition-all ${
                   activeTab === "profile"
                     ? "text-white bg-white/10 border-b-2 border-blue-400"
                     : "text-gray-400 hover:bg-white/5"
@@ -294,7 +294,7 @@ const UserProfile = ({ userData }: any) => {
               </button>
               <button
                 onClick={() => setActiveTab("watchlist")}
-                className={`px-6 py-3 rounded-t-xl font-medium flex items-center gap-2 transition-all ${
+                className={`px-6 py-3 rounded-t-xl cursor-pointer font-medium flex items-center gap-2 transition-all ${
                   activeTab === "watchlist"
                     ? "text-white bg-white/10 border-b-2 border-purple-400"
                     : "text-gray-400 hover:bg-white/5"
@@ -313,7 +313,7 @@ const UserProfile = ({ userData }: any) => {
                     d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
                   />
                 </svg>
-                Watchlist ({watchlist.length})
+               Purchase History ({watchlist.length})
               </button>
             </div>
 
@@ -377,7 +377,7 @@ const UserProfile = ({ userData }: any) => {
                       </button>
                       <button
                         type="submit"
-                        className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl hover:opacity-90 transition-opacity"
+                        className="px-6 py-2.5 cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl hover:opacity-90 transition-opacity"
                       >
                         Save Changes
                       </button>
@@ -386,7 +386,7 @@ const UserProfile = ({ userData }: any) => {
                     <button
                       type="button"
                       onClick={() => setIsEditing(true)}
-                      className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl hover:opacity-90 transition-opacity"
+                      className="px-6 py-2.5 bg-gradient-to-r cursor-pointer from-blue-500 to-purple-500 rounded-xl hover:opacity-90 transition-opacity"
                     >
                       Edit Profile
                     </button>

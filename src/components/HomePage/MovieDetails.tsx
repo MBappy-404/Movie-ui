@@ -3,11 +3,10 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import moviePoster from "@/assets/images/movieposter.jpg";
-import manvector from "@/assets/images/manvector.png";
-import { redirect, useRouter } from "next/navigation";
+ 
+import {  useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import ReactPlayer from "react-player";
+ 
 import { Rating } from "@smastrom/react-rating";
 import "@smastrom/react-rating/style.css";
 import { useParams } from "next/navigation";
@@ -20,7 +19,6 @@ import { useGetUserQuery } from "../redux/features/user/userApi";
 import {
   useCreateReviewMutation,
   useGetAllReviewByContentIdQuery,
-  useGetAllReviewQuery,
 } from "../redux/features/review/reviewApi";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -40,7 +38,8 @@ interface ReviewFormData {
 
 const MovieDetails = ({ currentUser }: any) => {
   const [createPayment] = useCreatePaymentMutation();
-
+  const [showModal, setShowModal] = useState(false);
+ 
   const dispatch = useAppDispatch();
 
   const handleWatchlist = (data: Movie) => {
@@ -154,19 +153,26 @@ const MovieDetails = ({ currentUser }: any) => {
     }
   };
 
-  const handlePurchase = async (data: any) => {
+  // Purchasing
+  const handleOptionSelect = async (data: Movie, option: string) => {
+    const toastId = toast.loading("Loading Payment Page...");
     if (!user) {
       router.push("/login"); // redirect to login page
     } else {
       // console.log(data)
       const paymentData = {
         contentId: data?.id,
-        status: "BOUGHT",
+        status: option,
       };
 
       const payment = await createPayment(paymentData);
       // console.log(payment?.data?.paymentUrl);
-
+      if (payment?.data?.success) {
+        toast.success("Redirecting to payment page...", { id: toastId });
+      } else {
+        toast.error("Failed to create payment", { id: toastId });
+      }
+      setShowModal(false);
       window.open(payment?.data?.data?.paymentUrl);
     }
   };
@@ -302,12 +308,44 @@ const MovieDetails = ({ currentUser }: any) => {
 
           <div className="py-5">
             <button
-              onClick={() => handlePurchase(movieDetails?.data)}
+              onClick={() => setShowModal(true)}
               className="px-6 py-3 mt-5 cursor-pointer flex gap-2 items-center rounded-xl font-medium text-white bg-gradient-to-r from-blue-500 to-purple-500 shadow-md hover:opacity-90 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-500/40 text-sm md:text-lg   duration-300"
             >
               Purchase Movie
             </button>
           </div>
+
+          {showModal && (
+            <div className="fixed inset-0 z-50 bg-black/20  backdrop-blur-xl flex items-center justify-center">
+              <div className="bg-[#00031b] rounded-xl shadow-lg p-6 w-80 text-center">
+                <h2 className="text-lg font-semibold mb-4">Choose an option</h2>
+                <div className="flex flex-col gap-4">
+                  <button
+                    onClick={() =>
+                      handleOptionSelect(movieDetails?.data, "BOUGHT")
+                    }
+                    className="py-2 px-4 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                  >
+                    Buy {movieDetails?.data?.price} USD
+                  </button>
+                  <button
+                    onClick={() =>
+                      handleOptionSelect(movieDetails?.data, "RENTED")
+                    }
+                    className="py-2 px-4 bg-purple-600 cursor-pointer text-white rounded-lg hover:bg-purple-700 transition"
+                  >
+                    Rent {movieDetails?.data?.rentprice}
+                  </button>
+                </div>
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="mt-4 text-sm text-gray-500 hover:underline"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
 
           <h2 className="mt-8 text-xl font-semibold text-white">
             Recommended For You
