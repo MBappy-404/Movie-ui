@@ -41,22 +41,22 @@ const MovieDetails = () => {
   const [createPayment] = useCreatePaymentMutation();
   const [showModal, setShowModal] = useState(false);
 
-  // const movieList = useAppSelector(watchListSelector);
+  const movieList = useAppSelector(watchListSelector);
 
   const dispatch = useAppDispatch();
 
   const handleWatchlist = (data: Movie) => {
-    // const isExistInWatchList = movieList.some((item) => item.id === data.id);
+    const isExistInWatchList = movieList.some((item) => item.id === data.id);
 
-    // if (isExistInWatchList) {
-    //   toast.warning("Already Added to Watchlist");
-    //   return;
-    // }
+    if (isExistInWatchList) {
+      toast.warning("Already Added to Watchlist");
+      return;
+    }
 
-    // dispatch(addToWatchList(data));
-    // toast.success("Added to Watchlist", {
-    //   icon: "⭐",
-    // });
+    dispatch(addToWatchList(data));
+    toast.success("Added to Watchlist", {
+      icon: "⭐",
+    });
   };
 
   const router = useRouter();

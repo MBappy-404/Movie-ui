@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
 import authReducer from './features/auth/authSlice'
 import { baseApi } from './api/baseApi'
+import watchListSlice from "./features/watchListSlice";
 import {
     persistReducer, persistStore, FLUSH,
     REHYDRATE,
@@ -15,12 +16,25 @@ const authPersistConfig = {
     key: 'auth',
     storage: storage
 }
+
+const watchListPersistConfig = {
+    key: "watchList",
+    storage,
+};
+
+const persistedWatchListReducer = persistReducer(
+    watchListPersistConfig,
+    watchListSlice
+);
+
+
 const persistedAuthReducer = persistReducer(authPersistConfig, authReducer)
 
 export const store = configureStore({
     reducer: {
         [baseApi.reducerPath]: baseApi.reducer,
-        auth: persistedAuthReducer
+        auth: persistedAuthReducer,
+        watchList: persistedWatchListReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

@@ -1,4 +1,5 @@
 "use client";
+import { selectCurrentToken } from "@/components/redux/features/auth/authSlice";
 import {
   useGetPaymentWithVerifyQuery,
   usePurchaseHistoryQuery,
@@ -7,7 +8,9 @@ import {
   useGetUserQuery,
   useUpdateUserMutation,
 } from "@/components/redux/features/user/userApi";
+import { useAppSelector } from "@/components/redux/hooks";
 import { Movie } from "@/types";
+import { verifyToken } from "@/utils/verifyToken";
 import { ShoppingBagIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useState, useRef } from "react";
@@ -43,8 +46,17 @@ interface FormData {
   contactNumber: string;
 }
 
-const UserProfile = ({ userData }: any) => {
-  const userId = userData?.id;
+const UserProfile = () => {
+ 
+
+    const token = useAppSelector(selectCurrentToken);
+    let userInfo
+    if (token) {
+      userInfo = verifyToken(token)
+    }
+
+    const userId = userInfo?.id;
+  
   const { data } = useGetUserQuery(userId);
   const [updateUser] = useUpdateUserMutation();
   const fileInputRef = useRef<HTMLInputElement>(null);
