@@ -36,7 +36,7 @@ const MovieInvoice = () => {
       {
         id: "1",
         title: "Gangs of Wasseypur",
-        format: 'HD',
+        format: 'HD' as const,
         quantity: 2,
         price: 299,
         poster: "/path/to/poster1.jpg"
@@ -44,7 +44,7 @@ const MovieInvoice = () => {
       {
         id: "2",
         title: "Kabuliwala",
-        format: '4K',
+        format: '4K' as const,
         quantity: 1,
         price: 499,
         poster: "/path/to/poster2.jpg"
