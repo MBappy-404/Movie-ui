@@ -17,6 +17,8 @@ export const AllMovies = () => {
   const [selectedYear, setSelectedYear] = useState<string>("All");
   const [sortBy, setSortBy] = useState<string>("Latest");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
 
   const [genres, setGenres] = useState<GenreFilter[]>([
     { name: "All", active: true },
@@ -170,7 +172,15 @@ export const AllMovies = () => {
     searchType,
   ]);
 
-   
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredMovies.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedMovies = filteredMovies.slice(startIndex, startIndex + itemsPerPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div className="min-h-screen   text-white pt-14">
@@ -409,7 +419,7 @@ export const AllMovies = () => {
                   </div>
                 ))}
 
-              {filteredMovies.map((movie) => (
+              {!isLoading && paginatedMovies.map((movie) => (
                 <Link href={`/movies/${movie.id}`}
                   key={movie.id}
                   
@@ -446,6 +456,41 @@ export const AllMovies = () => {
                 </Link>
               ))}
             </div>
+
+            {/* Pagination Controls */}
+            {!isLoading && totalPages > 1 && (
+              <div className="flex justify-center items-center gap-2 mt-8 mb-12">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="px-4 py-2 bg-[#1C1C3A] text-white rounded-lg border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#2C2C4A] transition-colors"
+                >
+                  Previous
+                </button>
+                
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`px-4 py-2 rounded-lg border transition-colors ${
+                      currentPage === page
+                        ? 'bg-purple-600 text-white border-purple-600'
+                        : 'bg-[#1C1C3A] text-white border-gray-700 hover:bg-[#2C2C4A]'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+                
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="px-4 py-2 bg-[#1C1C3A] text-white rounded-lg border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#2C2C4A] transition-colors"
+                >
+                  Next
+                </button>
+              </div>
+            )}
 
             {/* Top 5 Movies - Mobile and Tablet Only */}
             <div className="mt-12 lg:hidden mb-5">
