@@ -76,7 +76,7 @@ const TrendingMovies = () => {
       className="container mx-auto px-4 py-12"
     >
       <motion.h2
-        className="text-3xl md:text-4xl font-bold text-white mb-8"
+        className="text-3xl md:text-4xl font-bold text-white"
         variants={{
           hidden: { opacity: 0, x: -50 },
           visible: {
@@ -132,7 +132,7 @@ const TrendingMovies = () => {
                 >
                   <div className="bg-black/50 backdrop-blur-xs rounded-xl p-3">
                     <div className="flex justify-between items-start mb-3">
-                      <h3 className="text-xl font-bold text-white">
+                      <h3 className=" text-lg font-bold text-white">
                         {movie.title}
                       </h3>
                       <div className="flex items-center bg-white/10 px-3 py-1 rounded-full">

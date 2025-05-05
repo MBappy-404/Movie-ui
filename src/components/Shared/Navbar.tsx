@@ -16,7 +16,6 @@ import {
 import { logout } from "@/services/AuthServices";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { MdDashboard } from "react-icons/md";
 import { LucideLayoutDashboard } from "lucide-react";
 
 import { toast } from "sonner";
