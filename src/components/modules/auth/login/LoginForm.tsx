@@ -42,8 +42,8 @@ const LoginForm = () => {
 
       if (result?.success) {
         // Set user data in Redux
-        dispatch(setUser(result.data.user));
-        dispatch(setToken(result.data.accessToken));
+        // dispatch(setUser(result.data.user));
+        // dispatch(setToken(result.data.accessToken));
         toast.success(result.message);
         if (redirect) {
           router.push(redirect);
