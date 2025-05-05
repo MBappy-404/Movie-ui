@@ -13,22 +13,38 @@ import {
   QuestionMarkCircleIcon,
   Square2StackIcon,
 } from "@heroicons/react/24/outline";
-import { useUser } from "../context/UserContext";
 import { logout } from "@/services/AuthServices";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { MdDashboard } from "react-icons/md";
 import { LucideLayoutDashboard } from "lucide-react";
+
 import { toast } from "sonner";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { selectCurrentToken } from "../redux/features/auth/authSlice";
+import { verifyToken } from "@/utils/verifyToken";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const { user, setIsLoading } = useUser();
+ 
   const pathname = usePathname();
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const dispatch = useAppDispatch();
+
+
+  const token = useAppSelector(selectCurrentToken);
+  let user
+  if (token) {
+    user = verifyToken(token)
+  }
+
+  console.log(user)
+
+
 
   const navLinks = [
     { name: "Home", path: "/", icon: HomeModernIcon },
@@ -36,11 +52,11 @@ const Navbar = () => {
     { name: "Watchlist", path: "/watchlist", icon: BookmarkIcon },
   ];
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
+    dispatch({ type: 'auth/logout' });
     toast.success("Logged out successfully");
     router.push("/login");
-    setIsLoading(true);
     setDropdownOpen(false);
   };
 
@@ -135,8 +151,7 @@ const Navbar = () => {
 
           {/* Right Section */}
           <div className="flex items-center gap-6">
-            {user && (
-              <div ref={dropdownRef} className="relative">
+              {user && (<div ref={dropdownRef} className="relative">
                 <button
                   className="p-2 cursor-pointer text-gray-300 hover:text-indigo-400 transition-colors"
                   onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -154,7 +169,7 @@ const Navbar = () => {
                     >
                       <div className="px-4 py-2 border-b border-gray-700">
                         <p className="text-sm md:text-base  text-gray-200 truncate">
-                          {user.email}
+                          {user?.email}
                         </p>
                       </div>
                       <Link
@@ -165,7 +180,7 @@ const Navbar = () => {
                         <UserCircleIcon className="w-5 h-5" />
                         Profile
                       </Link>
-                      {user?.role === "ADMIN" && (
+  
                         <Link
                           href="/dashboard"
                           className="flex text-sm md:text-base items-center gap-2 px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors"
@@ -174,7 +189,6 @@ const Navbar = () => {
                           <LucideLayoutDashboard className="w-5 h-5" />
                           Dashboard
                         </Link>
-                      )}
                       <button
                         onClick={handleLogout}
                         className="flex text-sm md:text-base cursor-pointer items-center gap-2 w-full px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors"
@@ -185,11 +199,9 @@ const Navbar = () => {
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </div>
-            )}
+              </div>)}
 
-            {!user && (
-              <Link href="/login">
+              {!user && (<Link href="/login">
                 <motion.button
                   className="px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all"
                   whileHover={{ scale: 1.05 }}
@@ -197,8 +209,7 @@ const Navbar = () => {
                 >
                   Sign In
                 </motion.button>
-              </Link>
-            )}
+              </Link>)}
 
             <motion.button
               className="md:hidden p-2 text-gray-300 hover:text-indigo-400 transition-colors"

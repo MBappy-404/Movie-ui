@@ -11,10 +11,11 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const { user } = useAppSelector((state) => state.user);
+  const { user } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
+
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -39,6 +40,9 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
     router.push("/profile");
     setIsDropdownOpen(false);
   };
+
+  
+  console.log(user)
 
   return (
     <header className="sticky top-0 z-20 bg-[#000a3a]/95 backdrop-blur-sm border-b border-[#00175f]/50 p-4">
