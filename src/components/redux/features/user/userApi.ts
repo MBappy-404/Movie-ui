@@ -3,6 +3,14 @@ import { baseApi } from "../../api/baseApi";
 
 const userApi = baseApi.injectEndpoints({
     endpoints: (builder)=> ({
+        createUser: builder.mutation({
+            query: (data) => ({
+                url: "/user/register",
+                method: "POST",
+                body: data,
+            }),
+            invalidatesTags: ['user'],
+        }),
         getAllUser: builder.query({
             query: (args) => {
                 const params = new URLSearchParams();
@@ -27,14 +35,6 @@ const userApi = baseApi.injectEndpoints({
                 method: "GET",
             }),
             providesTags: ['user'],
-        }),
-        createUser: builder.mutation({
-            query: (data) => ({
-                url: "/user",
-                method: "POST",
-                body: data,
-            }),
-            invalidatesTags: ['user'],
         }),
         updateUser: builder.mutation({
             query: ({ id, data }) => ({

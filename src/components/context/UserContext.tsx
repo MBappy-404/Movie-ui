@@ -24,15 +24,18 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   const handleUser = async () => {
-    const user = await getCurrentUser();
-
-    setUser(user);
+    // Only fetch user if we're on the home page
+    if (window.location.pathname === '/') {
+      const user = await getCurrentUser();
+      setUser(user);
+    }
     setIsLoading(false);
   };
 
   useEffect(() => {
     handleUser();
-  }, [isLoading]);
+  }, []);
+
   return (
     <UserContext.Provider value={{ user, setUser, isLoading, setIsLoading }}>
       {children}

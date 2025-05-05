@@ -4,10 +4,10 @@ import ManageGenre from "@/components/Dashboardlayout/Genre/ManageGenre";
 const PlatformAndGenre = () => {
   return (
     <div className="flex flex-col lg:flex-row justify-between gap-5">
-      <div className="flex-1/2">
+      <div className="flex-[60%]">
         <ManagePlatform />
       </div>
-      <div className="flex-1/2">
+      <div className="flex-[40%]">
         <ManageGenre />
       </div>
     </div>

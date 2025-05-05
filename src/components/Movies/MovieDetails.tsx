@@ -3,10 +3,10 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
- 
-import {  useRouter } from "next/navigation";
+
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
- 
+
 import { Rating } from "@smastrom/react-rating";
 import "@smastrom/react-rating/style.css";
 import { useParams } from "next/navigation";
@@ -14,7 +14,7 @@ import {
   useGetAllContentQuery,
   useGetContentQuery,
 } from "../redux/features/content/contentApi";
-import MovieDetailsSkeleton from "../Movies/MovieDetailsSkeleton";
+import MovieDetailsSkeleton from "./MovieDetailsSkeleton";
 import { useGetUserQuery } from "../redux/features/user/userApi";
 import {
   useCreateReviewMutation,
@@ -26,8 +26,8 @@ import ReviewCard from "../modules/Reviews/ReviewCard";
 import { useUser } from "../context/UserContext";
 import { useCreatePaymentMutation } from "../redux/features/payment/paymentApi";
 
-import { useAppDispatch } from "../redux/hooks";
-import { addToWatchList } from "../redux/features/watchListSlice";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { addToWatchList, watchListSelector } from "../redux/features/watchListSlice";
 import { Movie } from "@/types";
 
 interface ReviewFormData {
@@ -39,10 +39,19 @@ interface ReviewFormData {
 const MovieDetails = ({ currentUser }: any) => {
   const [createPayment] = useCreatePaymentMutation();
   const [showModal, setShowModal] = useState(false);
- 
+
+  const movieList = useAppSelector(watchListSelector);
+
   const dispatch = useAppDispatch();
 
   const handleWatchlist = (data: Movie) => {
+    const isExistInWatchList = movieList.some((item) => item.id === data.id);
+
+    if (isExistInWatchList) {
+      toast.warning("Already Added to Watchlist");
+      return;
+    }
+    
     dispatch(addToWatchList(data));
     toast.success("Added to Watchlist", {
       icon: "⭐",
@@ -155,10 +164,10 @@ const MovieDetails = ({ currentUser }: any) => {
 
   // Purchasing
   const handleOptionSelect = async (data: Movie, option: string) => {
-    const toastId = toast.loading("Loading Payment Page...");
     if (!user) {
       router.push("/login"); // redirect to login page
     } else {
+      const toastId = toast.loading("Loading Payment Page...");
       // console.log(data)
       const paymentData = {
         contentId: data?.id,
@@ -326,7 +335,7 @@ const MovieDetails = ({ currentUser }: any) => {
                     }
                     className="py-2 px-4 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
                   >
-                    Buy {movieDetails?.data?.price} USD
+                    Buy ${movieDetails?.data?.price} 
                   </button>
                   <button
                     onClick={() =>
@@ -334,7 +343,7 @@ const MovieDetails = ({ currentUser }: any) => {
                     }
                     className="py-2 px-4 bg-purple-600 cursor-pointer text-white rounded-lg hover:bg-purple-700 transition"
                   >
-                    Rent {movieDetails?.data?.rentprice}
+                    Rent ${movieDetails?.data?.rentprice}
                   </button>
                 </div>
                 <button
