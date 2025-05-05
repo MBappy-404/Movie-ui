@@ -6,7 +6,6 @@ import { useGetPaymentWithVerifyQuery } from "@/components/redux/features/paymen
  
 
 const MovieInvoice = () => {
- 
 
   const searchParams = useSearchParams();
   const tarnId = searchParams.get("tran_id");
@@ -15,9 +14,6 @@ const MovieInvoice = () => {
   const paymentData = data?.data;
   console.log("paymentData", paymentData);
   
- 
- 
-
   if (!paymentData) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#00031b]">
