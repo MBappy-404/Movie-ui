@@ -211,7 +211,7 @@ const UpdateUserModal = ({ isUpdateModalOpen, setUpdateModalOpen, user }: Update
               >
                 <option value="">Select Status</option>
                 <option value="ACTIVE">Active</option>
-                <option value="INACTIVE">Inactive</option>
+                <option value="BLOCKED">Inactive</option>
               </select>
               {errors.status && (
                 <p className="text-red-500">Status is required!</p>
