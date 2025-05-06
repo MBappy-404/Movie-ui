@@ -5,11 +5,19 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MdDeleteOutline } from "react-icons/md";
 import { FaPen } from "react-icons/fa";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import LoadingSpinner from "@/components/ui/loading-spinner";
 
 const DiscountManagement = () => {
   const { data: discounts, isLoading } = useGetAllDiscountsQuery(undefined);
   const discountData = discounts?.data;
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = date.toLocaleString('en-US', { month: 'long' });
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+  };
 
   return (
     <div className="min-h-screen bg-[#00031b] p-2">
@@ -50,19 +58,18 @@ const DiscountManagement = () => {
                     >
                       <td className="px-6 py-4">{discount?.content?.title}</td>
                       <td className="px-6 py-4">
-                        {discount?.startDate}
+                        {formatDate(discount?.startDate)}
                       </td>
                       <td className="px-6 py-4">
-                        {discount?.startDate}
+                        {formatDate(discount?.endDate)}
                       </td>
                       <td className="px-6 py-4">{discount?.percentage}%</td>
                       <td className="px-6 py-4">
                         <span
-                          className={`px-2 py-1 rounded-full text-sm ${
-                            discount.isActive
+                          className={`px-2 py-1 rounded-full text-sm ${discount.isActive
                               ? "bg-green-500/20 text-green-400"
                               : "bg-red-500/20 text-red-400"
-                          }`}
+                            }`}
                         >
                           {discount.isActive ? "Active" : "Deactivate"}
                         </span>
@@ -76,10 +83,10 @@ const DiscountManagement = () => {
                         />
                         <FaPen
                           className="text-xl"
-                          //   onClick={() => {
-                          //     setUpdateModalOpen(true);
-                          //     setContent(movie);
-                          //   }}
+                        //   onClick={() => {
+                        //     setUpdateModalOpen(true);
+                        //     setContent(movie);
+                        //   }}
                         />
                       </td>
                     </motion.tr>
