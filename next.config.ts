@@ -17,11 +17,7 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: '**', // Allow ALL HTTPS image sources
-      },
-      {
-        protocol: 'https',
-        hostname: 'res.cloudinary.com',
-      },
+      }
     ],
   },
 };
