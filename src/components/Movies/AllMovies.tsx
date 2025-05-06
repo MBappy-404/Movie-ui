@@ -42,7 +42,32 @@ export const AllMovies = () => {
 
   // Add search filter if query exists
   if (searchQuery.trim()) {
-    filterParams.push({ name: 'searchTerm', value: searchQuery });
+    switch (searchType) {
+      case 'title':
+        filterParams.push({ name: 'searchTerm', value: searchQuery });
+        filterParams.push({ name: 'searchType', value: 'title' });
+        break;
+      case 'director':
+        filterParams.push({ name: 'searchTerm', value: searchQuery });
+        filterParams.push({ name: 'searchType', value: 'director' });
+        break;
+      case 'genre':
+        filterParams.push({ name: 'searchTerm', value: searchQuery });
+        filterParams.push({ name: 'searchType', value: 'genre' });
+        break;
+      case 'actor':
+        filterParams.push({ name: 'searchTerm', value: searchQuery });
+        filterParams.push({ name: 'searchType', value: 'actor' });
+        break;
+      case 'actress':
+        filterParams.push({ name: 'searchTerm', value: searchQuery });
+        filterParams.push({ name: 'searchType', value: 'actress' });
+        break;
+      case 'platform':
+        filterParams.push({ name: 'searchTerm', value: searchQuery });
+        filterParams.push({ name: 'searchType', value: 'platform' });
+        break;
+    }
   }
 
   // Add platform filter if selected

@@ -1,3 +1,7 @@
+
+import { Genre } from "@/types"
+import { TPlatform } from "./platform"
+
 export interface TMovie {
     id: string
     title: string
@@ -19,26 +23,11 @@ export interface TMovie {
     createdAt: string
     updatedAt: string
     genre: Genre
-    platform: Platform
+    platform: TPlatform
     ContentLinks: ContentLinks
     reviews: Review[]
     averageRating: number
     totalReviews: number
-  }
-  
-  export interface Genre {
-    id: string
-    genreName: string
-    createdAt: string
-    updatedAt: string
-  }
-  
-  export interface Platform {
-    id: string
-    platformName: string
-    platformLogo: string
-    createdAt: string
-    updatedAt: string
   }
   
   export interface ContentLinks {
