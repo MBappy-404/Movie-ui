@@ -4,14 +4,22 @@ import React, { useState, useMemo } from "react";
 import { FaChevronDown, FaSearch } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useGetAllContentQuery } from "../redux/features/content/contentApi";
+import { useGetAllGenresQuery } from "../redux/features/genre/genreApi";
 import Link from "next/link";
-import { GenreFilter, Movie } from "@/types";
+import { GenreFilter } from "@/types";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { toast } from "sonner";
 import {
   addToWatchList,
   watchListSelector,
 } from "../redux/features/watchListSlice";
+import { TMovie } from "../types/movie";
+
+
+
+interface Genre {
+  genreName: string;
+}
 
 export const AllMovies = () => {
   const router = useRouter();
@@ -19,41 +27,116 @@ export const AllMovies = () => {
   const [searchType, setSearchType] = useState<string>("title");
   const [selectedGenre, setSelectedGenre] = useState<string>("All");
   const [selectedYear, setSelectedYear] = useState<string>("All");
+  const [selectedPlatform, setSelectedPlatform] = useState<string>("All");
   const [sortBy, setSortBy] = useState<string>("Latest");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
   const dispatch = useAppDispatch();
-  const [genres, setGenres] = useState<GenreFilter[]>([
-    { name: "All", active: true },
-    { name: "Action", active: false },
-    { name: "Adventure", active: false },
-    { name: "Anime", active: false },
-    { name: "Comedy", active: false },
-    { name: "Crime", active: false },
-    { name: "Documentary", active: false },
-    { name: "Drama", active: false },
-    { name: "Family", active: false },
-    { name: "History", active: false },
-    { name: "Horror", active: false },
-    { name: "Romance", active: false },
-    { name: "Sci-Fi", active: false },
-    { name: "Thriller", active: false },
-  ]);
 
-  const years = [
-    "All",
-    "2016",
-    "2017",
-    "2018",
-    "2019",
-    "2020",
-    "2021",
-    "2022",
-    "2023",
-    "2024",
-    "2025",
+  // Create filter params
+  const filterParams = [
+    { name: 'page', value: currentPage.toString() },
+    { name: 'limit', value: itemsPerPage.toString() }
   ];
+
+  // Add search filter if query exists
+  if (searchQuery.trim()) {
+    switch (searchType) {
+      case 'title':
+        filterParams.push({ name: 'searchTerm', value: searchQuery });
+        filterParams.push({ name: 'searchType', value: 'title' });
+        break;
+      case 'director':
+        filterParams.push({ name: 'searchTerm', value: searchQuery });
+        filterParams.push({ name: 'searchType', value: 'director' });
+        break;
+      case 'genre':
+        filterParams.push({ name: 'searchTerm', value: searchQuery });
+        filterParams.push({ name: 'searchType', value: 'genre' });
+        break;
+      case 'actor':
+        filterParams.push({ name: 'searchTerm', value: searchQuery });
+        filterParams.push({ name: 'searchType', value: 'actor' });
+        break;
+      case 'actress':
+        filterParams.push({ name: 'searchTerm', value: searchQuery });
+        filterParams.push({ name: 'searchType', value: 'actress' });
+        break;
+      case 'platform':
+        filterParams.push({ name: 'searchTerm', value: searchQuery });
+        filterParams.push({ name: 'searchType', value: 'platform' });
+        break;
+    }
+  }
+
+  // Add platform filter if selected
+  if (selectedPlatform && selectedPlatform !== "All") {
+    filterParams.push({ name: 'platform', value: selectedPlatform });
+  }
+
+  // Add genre filter if not "All"
+  if (selectedGenre !== "All") {
+    filterParams.push({ name: 'genre', value: selectedGenre });
+  }
+
+  // Add year filter if not "All"
+  if (selectedYear !== "All") {
+    filterParams.push({ name: 'releaseYear', value: selectedYear });
+  }
+
+  // Add sort parameters
+  switch (sortBy) {
+    case "Latest":
+      filterParams.push({ name: 'sortBy', value: 'latest' });
+      filterParams.push({ name: 'sortOrder', value: 'desc' });
+      break;
+    case "Oldest":
+      filterParams.push({ name: 'sortBy', value: 'latest' });
+      filterParams.push({ name: 'sortOrder', value: 'asc' });
+      break;
+    case "Name":
+      filterParams.push({ name: 'sortBy', value: 'title' });
+      filterParams.push({ name: 'sortOrder', value: 'asc' });
+      break;
+    case "Price Low to High":
+      filterParams.push({ name: 'sortBy', value: 'price' });
+      filterParams.push({ name: 'sortOrder', value: 'asc' });
+      break;
+    case "Price High to Low":
+      filterParams.push({ name: 'sortBy', value: 'price' });
+      filterParams.push({ name: 'sortOrder', value: 'desc' });
+      break;
+  }
+
+  // Fetch data
+  const { data: genresData } = useGetAllGenresQuery(undefined);
+  const { data: contentData, isLoading } = useGetAllContentQuery(filterParams);
+  const movies = contentData?.data || [];
+
+  // Format genres data
+  const genres = useMemo(() => {
+    const allGenres = [{ genreName: "All" }];
+    if (genresData?.data) {
+      return [...allGenres, ...genresData.data];
+    }
+    return allGenres;
+  }, [genresData]);
+
+  // Get unique release years from content data
+  const getYears = () => {
+    const allYears = ["All"];
+    if (movies.length > 0) {
+      const uniqueYears = [...new Set(movies.map((movie: TMovie) => movie.releaseYear))] as string[];
+      return [...allYears, ...uniqueYears.sort((a, b) => {
+        if (a === "All") return -1;
+        if (b === "All") return 1;
+        return parseInt(b) - parseInt(a);
+      })];
+    }
+    return allYears;
+  };
+
   const sortOptions = [
     "Latest",
     "Oldest",
@@ -62,126 +145,15 @@ export const AllMovies = () => {
     "Price High to Low",
   ];
 
-  const { data, isLoading } = useGetAllContentQuery([{}]);
-  const demoMovies: Movie[] = data?.data || [];
+  // Remove client-side filtering since it's handled by the API
+  const filteredMovies = movies;
+
+  // Calculate pagination using total from API response
+  const totalPages = Math.ceil((contentData?.meta?.total || 0) / itemsPerPage);
 
   const handleGenreClick = (genreName: string) => {
-    setGenres((prevGenres) =>
-      prevGenres.map((g) => ({
-        ...g,
-        active: g.name === genreName,
-      }))
-    );
     setSelectedGenre(genreName);
   };
-
-  // Filter and sort movies
-  const filteredMovies = useMemo(() => {
-    let filtered = [...demoMovies];
-
-    // Search filter
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      switch (searchType) {
-        case "title":
-          filtered = filtered.filter((movie) =>
-            movie.title.toLowerCase().includes(query)
-          );
-          break;
-        case "genre":
-          filtered = filtered.filter((movie) =>
-            movie.genre.genreName.toLowerCase().includes(query)
-          );
-          break;
-        case "director":
-          filtered = filtered.filter((movie) =>
-            movie.director.toLowerCase().includes(query)
-          );
-          break;
-        case "actor":
-          filtered = filtered.filter((movie) =>
-            movie.actor.toLowerCase().includes(query)
-          );
-          break;
-        case "actress":
-          filtered = filtered.filter((movie) =>
-            movie.actress.toLowerCase().includes(query)
-          );
-          break;
-        case "platform":
-          filtered = filtered.filter((movie) =>
-            movie.platform.platformName.toLowerCase().includes(query)
-          );
-          break;
-        default:
-          filtered = filtered.filter(
-            (movie) =>
-              movie.title.toLowerCase().includes(query) ||
-              movie.genre.genreName.toLowerCase().includes(query) ||
-              movie.director.toLowerCase().includes(query) ||
-              movie.actor.toLowerCase().includes(query) ||
-              movie.actress.toLowerCase().includes(query) ||
-              movie.platform.platformName.toLowerCase().includes(query)
-          );
-      }
-    }
-
-    // Filter by genre
-    if (selectedGenre !== "All") {
-      filtered = filtered.filter(
-        (movie) => movie.genre.genreName === selectedGenre
-      );
-    }
-
-    // Filter by year
-    if (selectedYear !== "All") {
-      filtered = filtered.filter((movie) => movie.releaseYear === selectedYear);
-    }
-
-    // Sort movies
-    switch (sortBy) {
-      case "Latest":
-        filtered.sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-        break;
-      case "Oldest":
-        filtered.sort(
-          (a, b) =>
-            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-        );
-        break;
-      case "Name":
-        filtered.sort((a, b) => a.title.localeCompare(b.title));
-        break;
-      case "Price Low to High":
-        filtered.sort((a, b) => a.price - b.price);
-        break;
-      case "Price High to Low":
-        filtered.sort((a, b) => b.price - a.price);
-        break;
-      default:
-        break;
-    }
-
-    return filtered;
-  }, [
-    demoMovies,
-    searchQuery,
-    selectedGenre,
-    selectedYear,
-    sortBy,
-    searchType,
-  ]);
-
-  // Calculate pagination
-  const totalPages = Math.ceil(filteredMovies.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedMovies = filteredMovies.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -190,7 +162,7 @@ export const AllMovies = () => {
 
   // add to watch list
   const movieList = useAppSelector(watchListSelector);
-  const handleWatchlist = (data: Movie) => {
+  const handleWatchlist = (data: TMovie) => {
     const isExistInWatchList = movieList.some((item) => item.id === data.id);
 
     if (isExistInWatchList) {
@@ -251,15 +223,15 @@ export const AllMovies = () => {
                 Genres
               </h2>
               <div className="space-y-2 lg:space-y-3">
-                {genres.map((genre) => (
+                {genres.map((genre: Genre) => (
                   <div
-                    key={genre.name}
-                    onClick={() => handleGenreClick(genre.name)}
+                    key={genre.genreName}
+                    onClick={() => handleGenreClick(genre.genreName)}
                     className={`cursor-pointer ${
-                      genre.active ? "text-purple-500" : "text-gray-400"
+                      selectedGenre === genre.genreName ? "text-purple-500" : "text-gray-400"
                     } hover:text-purple-500 transition-colors`}
                   >
-                    {genre.name}
+                    {genre.genreName}
                   </div>
                 ))}
               </div>
@@ -271,7 +243,7 @@ export const AllMovies = () => {
                 Release Year
               </h2>
               <div className="grid grid-cols-3 gap-2">
-                {years.map((year) => (
+                {(getYears() as string[]).map((year: string) => (
                   <div
                     key={year}
                     onClick={() => setSelectedYear(year)}
@@ -293,7 +265,7 @@ export const AllMovies = () => {
                 Top 5 Movies
               </h2>
               <div className="space-y-4">
-                {filteredMovies.slice(0, 5).map((movie) => (
+                {filteredMovies.slice(0, 5).map((movie: TMovie) => (
                   <Link
                     href={`/movies/${movie.id}`}
                     key={movie.id}
@@ -309,13 +281,6 @@ export const AllMovies = () => {
                       <p className="text-sm text-gray-400">
                         {movie.genre.genreName}
                       </p>
-                      <div className="flex items-center mt-1">
-                        <img
-                          src={movie.platform.platformLogo}
-                          alt={movie.platform.platformName}
-                          className="h-4 w-auto"
-                        />
-                      </div>
                     </div>
                   </Link>
                 ))}
@@ -336,9 +301,9 @@ export const AllMovies = () => {
                       value={selectedGenre}
                       onChange={(e) => handleGenreClick(e.target.value)}
                     >
-                      {genres.map((genre) => (
-                        <option key={genre.name} value={genre.name}>
-                          {genre.name}
+                      {genres.map((genre: Genre) => (
+                        <option key={genre.genreName} value={genre.genreName}>
+                          {genre.genreName}
                         </option>
                       ))}
                     </select>
@@ -350,7 +315,7 @@ export const AllMovies = () => {
                       value={selectedYear}
                       onChange={(e) => setSelectedYear(e.target.value)}
                     >
-                      {years.map((year) => (
+                      {getYears().map((year) => (
                         <option key={year} value={year}>
                           {year}
                         </option>
@@ -442,7 +407,7 @@ export const AllMovies = () => {
                 ))}
 
               {!isLoading &&
-                paginatedMovies.map((movie) => (
+                filteredMovies.map((movie: TMovie) => (
                   <Link
                     href={`/movies/${movie.id}`}
                     key={movie.id}
@@ -559,7 +524,7 @@ export const AllMovies = () => {
                     </div>
                   </div>
                 )}
-                {filteredMovies.slice(0, 5).map((movie) => (
+                {filteredMovies.slice(0, 5).map((movie: TMovie) => (
                   <Link
                     href={`/movies/${movie.id}`}
                     key={movie.id}
