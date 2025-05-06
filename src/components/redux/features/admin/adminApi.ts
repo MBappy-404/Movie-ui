@@ -7,7 +7,7 @@
          url: `/admin/dashboard-stats`,
          method: "GET",
        }),
-       providesTags: ["admin"],
+       providesTags: ['admin'],
      }),
   
    
