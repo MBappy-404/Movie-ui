@@ -3,11 +3,10 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import moviePoster from "@/assets/images/movieposter.jpg";
-import manvector from "@/assets/images/manvector.png";
-import { redirect, useRouter } from "next/navigation";
+
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import ReactPlayer from "react-player";
+
 import { Rating } from "@smastrom/react-rating";
 import "@smastrom/react-rating/style.css";
 import { useParams } from "next/navigation";
@@ -15,22 +14,22 @@ import {
   useGetAllContentQuery,
   useGetContentQuery,
 } from "../redux/features/content/contentApi";
-import MovieDetailsSkeleton from "../Movies/MovieDetailsSkeleton";
+import MovieDetailsSkeleton from "./MovieDetailsSkeleton";
 import { useGetUserQuery } from "../redux/features/user/userApi";
 import {
   useCreateReviewMutation,
   useGetAllReviewByContentIdQuery,
-  useGetAllReviewQuery,
 } from "../redux/features/review/reviewApi";
 import { toast } from "sonner";
 import Link from "next/link";
 import ReviewCard from "../modules/Reviews/ReviewCard";
-import { useUser } from "../context/UserContext";
 import { useCreatePaymentMutation } from "../redux/features/payment/paymentApi";
 
-import { useAppDispatch } from "../redux/hooks";
-import { addToWatchList } from "../redux/features/watchListSlice";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { addToWatchList, watchListSelector } from "../redux/features/watchListSlice";
 import { Movie } from "@/types";
+import { verifyToken } from "@/utils/verifyToken";
+import { selectCurrentToken } from "../redux/features/auth/authSlice";
 
 interface ReviewFormData {
   rating: number;
@@ -38,12 +37,22 @@ interface ReviewFormData {
   tags: string;
 }
 
-const MovieDetails = ({ currentUser }: any) => {
+const MovieDetails = () => {
   const [createPayment] = useCreatePaymentMutation();
+  const [showModal, setShowModal] = useState(false);
+
+  const movieList = useAppSelector(watchListSelector);
 
   const dispatch = useAppDispatch();
 
   const handleWatchlist = (data: Movie) => {
+    const isExistInWatchList = movieList.some((item) => item.id === data.id);
+
+    if (isExistInWatchList) {
+      toast.warning("Already Added to Watchlist");
+      return;
+    }
+
     dispatch(addToWatchList(data));
     toast.success("Added to Watchlist", {
       icon: "⭐",
@@ -52,13 +61,17 @@ const MovieDetails = ({ currentUser }: any) => {
 
   const router = useRouter();
   const { id } = useParams();
-  const { user } = useUser();
+  const token = useAppSelector(selectCurrentToken);
+  let user: any
+  if (token) {
+    user = verifyToken(token)
+  }
 
   const { data: movieDetails, isLoading } = useGetContentQuery(id);
 
   const { data: allMovies, isLoading: isMoviesLoading } =
     useGetAllContentQuery(undefined);
-  const { data: SingleUser } = useGetUserQuery(currentUser?.id);
+  const { data: SingleUser } = useGetUserQuery(user?.id);
 
   const [recommendedMovies, setRecommendedMovies] = useState<Movie[]>([]);
   const {
@@ -117,7 +130,7 @@ const MovieDetails = ({ currentUser }: any) => {
 
   const onSubmit = async (data: ReviewFormData) => {
     const toastId = toast.loading("Adding Review...");
-    if (!SingleUser?.data?.id) {
+    if (!user.id) {
       toast.error("User information not available. Please try again later.", {
         id: toastId,
       });
@@ -129,7 +142,7 @@ const MovieDetails = ({ currentUser }: any) => {
         rating: rating,
         reviewText: data.reviewText,
         contentId: movieDetails.data.id,
-        userId: SingleUser.data.id,
+        userId: user.id,
         tags: data.tags || "CLASSIC", // Provide a default value if tags is undefined
       };
 
@@ -154,19 +167,26 @@ const MovieDetails = ({ currentUser }: any) => {
     }
   };
 
-  const handlePurchase = async (data: any) => {
+  // Purchasing
+  const handleOptionSelect = async (data: Movie, option: string) => {
     if (!user) {
       router.push("/login"); // redirect to login page
     } else {
+      const toastId = toast.loading("Loading Payment Page...");
       // console.log(data)
       const paymentData = {
         contentId: data?.id,
-        status: "BOUGHT",
+        status: option,
       };
 
       const payment = await createPayment(paymentData);
       // console.log(payment?.data?.paymentUrl);
-
+      if (payment?.data?.success) {
+        toast.success("Redirecting to payment page...", { id: toastId });
+      } else {
+        toast.error("Failed to create payment", { id: toastId });
+      }
+      setShowModal(false);
       window.open(payment?.data?.data?.paymentUrl);
     }
   };
@@ -302,12 +322,44 @@ const MovieDetails = ({ currentUser }: any) => {
 
           <div className="py-5">
             <button
-              onClick={() => handlePurchase(movieDetails?.data)}
+              onClick={() => setShowModal(true)}
               className="px-6 py-3 mt-5 cursor-pointer flex gap-2 items-center rounded-xl font-medium text-white bg-gradient-to-r from-blue-500 to-purple-500 shadow-md hover:opacity-90 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-500/40 text-sm md:text-lg   duration-300"
             >
               Purchase Movie
             </button>
           </div>
+
+          {showModal && (
+            <div className="fixed inset-0 z-50 bg-black/20  backdrop-blur-xl flex items-center justify-center">
+              <div className="bg-[#00031b] rounded-xl shadow-lg p-6 w-80 text-center">
+                <h2 className="text-lg font-semibold mb-4">Choose an option</h2>
+                <div className="flex flex-col gap-4">
+                  <button
+                    onClick={() =>
+                      handleOptionSelect(movieDetails?.data, "BOUGHT")
+                    }
+                    className="py-2 px-4 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                  >
+                    Buy ${movieDetails?.data?.price}
+                  </button>
+                  <button
+                    onClick={() =>
+                      handleOptionSelect(movieDetails?.data, "RENTED")
+                    }
+                    className="py-2 px-4 bg-purple-600 cursor-pointer text-white rounded-lg hover:bg-purple-700 transition"
+                  >
+                    Rent ${movieDetails?.data?.rentprice}
+                  </button>
+                </div>
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="mt-4 text-sm text-gray-500 hover:underline"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
 
           <h2 className="mt-8 text-xl font-semibold text-white">
             Recommended For You

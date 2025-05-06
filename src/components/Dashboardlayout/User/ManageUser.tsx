@@ -18,6 +18,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  password?: string;
   role: "USER" | "ADMIN";
   contactNumber: string;
   status: "ACTIVE" | "INACTIVE";
@@ -27,28 +28,37 @@ export interface User {
 }
 
 const ManageUser = () => {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    setValue,
-    formState: { errors },
-  } = useForm<User>();
+
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
 
+  // Add User Modal States
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const {
+    register: registerAddUser,
+    handleSubmit: handleAddUserSubmit,
+    reset: resetAddUser,
+    formState: { errors: addUserErrors },
+  } = useForm<User>();
+
+
+
   const { data: users, isLoading } = useGetAllUserQuery([
     { name: 'page', value: currentPage },
     { name: 'limit', value: itemsPerPage }
   ]);
+
+  const [createUser] = useCreateUserMutation();
+  const [deleteUser] = useDeleteUserMutation();
+  const [updateUser] = useUpdateUserMutation();
 
   const totalPages = Math.ceil((users?.meta?.total || 0) / itemsPerPage);
 
@@ -56,13 +66,9 @@ const ManageUser = () => {
     setCurrentPage(page);
   };
 
-  const [createUser] = useCreateUserMutation();
-  const [deleteUser] = useDeleteUserMutation();
-  const [updateUser] = useUpdateUserMutation();
-
+  // Add User Modal Functions
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-
     if (file) {
       setProfilePhoto(file);
       const reader = new FileReader();
@@ -75,11 +81,11 @@ const ManageUser = () => {
 
   const clearImage = () => {
     setPreviewImage(null);
-    setValue("profilePhoto", "");
+    setProfilePhoto(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const onSubmit: SubmitHandler<User> = async (data) => {
+  const onSubmitAddUser: SubmitHandler<User> = async (data) => {
     const toastId = toast.loading("Adding User....", { duration: 2000 });
 
     if (!profilePhoto) {
@@ -89,12 +95,19 @@ const ManageUser = () => {
       return;
     }
 
+    if (!data.password) {
+      toast.error("Password is required", {
+        id: toastId,
+      });
+      return;
+    }
+
     const userData = {
       name: data.name,
       email: data.email,
+      password: data.password,
       role: data.role,
       contactNumber: data.contactNumber,
-      status: data.status,
     };
 
     const formData = new FormData();
@@ -102,23 +115,23 @@ const ManageUser = () => {
     formData.append("file", profilePhoto);
 
     try {
-      const res = await createUser(formData).unwrap();
-
-      // Log FormData contents
-      // console.log('Form Data Contents:');
-      // for (let pair of formData.entries()) {
-      //   console.log(pair[0] + ': ' + pair[1]);
-      // }
-
-      toast.success("User added successfully!", { id: toastId });
-      setIsModalOpen(false);
-      reset();
-      clearImage();
+      const res = await createUser(formData);
+      
+      if ("error" in res && res.error) {
+        const errorMessage = (res.error as any)?.data?.message || "An error occurred";
+        toast.error(errorMessage, { id: toastId });
+      } else {
+        toast.success("User added successfully!", { id: toastId });
+        setIsModalOpen(false);
+        resetAddUser();
+        clearImage();
+      }
     } catch (error: any) {
-      toast.error(error.message || "Failed to add user", { id: toastId });
-      setIsModalOpen(false);
-      reset();
-      clearImage();
+      const errorMessage = error.data?.message || "Failed to add user";
+      toast.error(errorMessage, { 
+        id: toastId,
+        duration: 2000
+      });
     }
   };
 
@@ -154,27 +167,6 @@ const ManageUser = () => {
     }
   };
 
-  const handleStatusUpdate = async (
-    userId: string,
-    newStatus: "ACTIVE" | "INACTIVE"
-  ) => {
-    const toastId = toast.loading("Updating User Status...", {
-      duration: 2000,
-    });
-
-    try {
-      const res = await updateUser({
-        id: userId,
-        status: newStatus,
-      }).unwrap();
-      toast.success("User status updated successfully!", { id: toastId });
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update user status", {
-        id: toastId,
-      });
-    }
-  };
-
   const openDeleteModal = (user: User) => {
     setUserToDelete(user);
     setIsDeleteModalOpen(true);
@@ -190,12 +182,12 @@ const ManageUser = () => {
       <div className="max-w-full mx-auto">
         {/* Header Section */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+          <h1 className="lg:text-3xl text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
             User Management
           </h1>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-2 rounded-lg transition-all"
+            className="cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 lg:px-6 py-2 rounded-lg transition-all"
           >
             Add User
           </button>
@@ -279,7 +271,7 @@ const ManageUser = () => {
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="px-4 py-2 rounded-lg bg-[#1a2d6d] text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                className="lg:px-4 px-3 py-2 text-sm lg:text-base rounded-lg bg-[#1a2d6d] text-white disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Previous
               </button>
@@ -287,7 +279,7 @@ const ManageUser = () => {
                 <button
                   key={page}
                   onClick={() => handlePageChange(page)}
-                  className={`px-4 py-2 rounded-lg ${
+                  className={`px-4  py-2 text-sm lg:text-base rounded-lg ${
                     currentPage === page
                       ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white"
                       : "bg-[#1a2d6d] text-white"
@@ -299,7 +291,7 @@ const ManageUser = () => {
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="px-4 py-2 rounded-lg bg-[#1a2d6d] text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                className="lg:px-4 px-3 py-2 text-sm lg:text-base rounded-lg bg-[#1a2d6d] text-white disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Next
               </button>
@@ -314,7 +306,7 @@ const ManageUser = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+              className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 "
             >
               <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
@@ -374,6 +366,159 @@ const ManageUser = () => {
           setUpdateModalOpen={setUpdateModalOpen}
           user={user}
         />
+
+        {/* Add User Modal */}
+        <AnimatePresence>
+          {isModalOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-lg z-50 mx-2"
+            >
+              <motion.div
+                initial={{ scale: 0.95, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl bg-[#000a3a] border border-[#1a2d6d] rounded-xl overflow-hidden"
+              >
+                <form
+                  onSubmit={handleAddUserSubmit(onSubmitAddUser)}
+                  className="p-8 max-h-[90vh] overflow-y-auto"
+                >
+                  <h2 className="lg:text-2xl text-xl font-bold mb-6 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+                    Add New User
+                  </h2>
+
+                  {/* Profile Photo Upload */}
+                  <div className="mb-6">
+                    <div className="border-2 border-dashed border-[#1a2d6d] rounded-xl p-4 text-center">
+                      {previewImage ? (
+                        <div className="relative group">
+                          <img
+                            src={previewImage}
+                            alt="Preview"
+                            className="w-full h-48 object-cover rounded-lg mb-4"
+                          />
+                          <button
+                            type="button"
+                            onClick={clearImage}
+                            className="absolute top-2 right-2 bg-red-500/80 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="bg-purple-600/20 text-purple-400 px-6 py-3 rounded-lg hover:bg-purple-600/30 transition-colors"
+                          >
+                            Upload Profile Photo
+                          </button>
+                          <input
+                            type="file"
+                            ref={fileInputRef}
+                            className="hidden"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Form Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* First Row */}
+                    <div className="space-y-4">
+                      <input
+                        {...registerAddUser("name", { required: true })}
+                        placeholder="Full Name"
+                        className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
+                      />
+                      {addUserErrors.name && (
+                        <p className="text-red-500">Name is required!</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-4">
+                      <input
+                        {...registerAddUser("email", { required: true })}
+                        type="email"
+                        placeholder="Email"
+                        className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
+                      />
+                      {addUserErrors.email && (
+                        <p className="text-red-500">Email is required!</p>
+                      )}
+                    </div>
+
+                    {/* Second Row */}
+                    <div className="space-y-4">
+                      <input
+                        {...registerAddUser("password", { required: true })}
+                        type="password"
+                        placeholder="Password"
+                        className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
+                      />
+                      {addUserErrors.password && (
+                        <p className="text-red-500">Password is required!</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-4">
+                      <input
+                        {...registerAddUser("contactNumber", { required: true })}
+                        placeholder="Contact Number"
+                        className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
+                      />
+                      {addUserErrors.contactNumber && (
+                        <p className="text-red-500">Contact Number is required!</p>
+                      )}
+                    </div>
+
+                    {/* Third Row */}
+                    <div className="space-y-4">
+                      <select
+                        {...registerAddUser("role", { required: true })}
+                        className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
+                      >
+                        <option value="">Select Role</option>
+                        <option value="USER">User</option>
+                        <option value="ADMIN">Admin</option>
+                      </select>
+                      {addUserErrors.role && (
+                        <p className="text-red-500">Role is required!</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Form Buttons */}
+                  <div className="mt-8 flex justify-end gap-4">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsModalOpen(false);
+                        resetAddUser();
+                        clearImage();
+                      }}
+                      className="px-6 py-2 cursor-pointer rounded-lg hover:bg-gray-700 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className=" text-sm lg:text-base bg-gradient-to-r from-blue-500 to-purple-500 cursor-pointer px-4 lg:px-6 py-2 rounded-lg transition-colors"
+                    >
+                      Add User
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

@@ -1,8 +1,8 @@
 export type TPlatform = {
-  createdAt: string;
   id: string;
   platformLogo: string;
   platformName: string;
+  createdAt: string;
   updatedAt: string;
 };
 

@@ -133,12 +133,12 @@ const ManagePlatform = () => {
       <div className="max-w-full mx-auto">
         {/* Header Section */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold  bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
-            Platform Management
+          <h1 className="lg:text-3xl text-2xl font-bold  bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+            Platform
           </h1>
           <button
             onClick={() => setIsModalOpen(true)}
-            className=" cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-2 rounded-lg transition-all"
+            className=" cursor-pointer bg-gradient-to-r text-sm lg:text-base from-blue-500 to-purple-500 text-white px-4 py-2 lg:px-6 lg:py-2 rounded-lg transition-all"
           >
             Add Platform
           </button>
@@ -209,7 +209,7 @@ const ManagePlatform = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 backdrop-blur-lg z-50"
+              className="fixed inset-0 bg-black/50 backdrop-blur-lg z-50 mx-4"
             >
               <motion.div
                 initial={{ scale: 0.95, y: 20 }}
@@ -295,7 +295,7 @@ const ManagePlatform = () => {
                     </button>
                     <button
                       type="submit"
-                      className=" bg-gradient-to-r from-blue-500 to-purple-500  cursor-pointer px-6 py-2 rounded-lg transition-colors"
+                      className=" text-sm lg:text-base bg-gradient-to-r from-blue-500 to-purple-500  cursor-pointer py-1 px-4 lg:px-6 lg:py-2 rounded-lg transition-colors"
                     >
                       Add Platform
                     </button>

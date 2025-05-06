@@ -178,12 +178,12 @@ const ManageContent = () => {
       <div className="max-w-full mx-auto">
         {/* Header Section */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold  bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+          <h1 className=" lg:text-3xl text-2xl  font-bold  bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
             Content Management
           </h1>
           <button
             onClick={() => setIsModalOpen(true)}
-            className=" cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-2 rounded-lg transition-all"
+            className=" cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 lg:px-6 py-2 rounded-lg transition-all"
           >
             Add Content
           </button>
@@ -257,7 +257,7 @@ const ManageContent = () => {
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="px-4 py-2 rounded-lg bg-[#1a2d6d] text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                className="lg:px-4 px-3 py-2 text-sm lg:text-base rounded-lg bg-[#1a2d6d] text-white disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Previous
               </button>
@@ -265,7 +265,7 @@ const ManageContent = () => {
                 <button
                   key={page}
                   onClick={() => handlePageChange(page)}
-                  className={`px-4 py-2 rounded-lg ${
+                  className={`px-4  py-2 text-sm lg:text-base  rounded-lg ${
                     currentPage === page
                       ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white"
                       : "bg-[#1a2d6d] text-white"
@@ -277,7 +277,7 @@ const ManageContent = () => {
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="px-4 py-2 rounded-lg bg-[#1a2d6d] text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                className="lg:px-4 px-3 py-2 text-sm lg:text-base rounded-lg bg-[#1a2d6d] text-white disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Next
               </button>
