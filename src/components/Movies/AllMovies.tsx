@@ -6,8 +6,12 @@ import { useRouter } from "next/navigation";
 import { useGetAllContentQuery } from "../redux/features/content/contentApi";
 import Link from "next/link";
 import { GenreFilter, Movie } from "@/types";
-
-
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { toast } from "sonner";
+import {
+  addToWatchList,
+  watchListSelector,
+} from "../redux/features/watchListSlice";
 
 export const AllMovies = () => {
   const router = useRouter();
@@ -19,7 +23,7 @@ export const AllMovies = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
-
+  const dispatch = useAppDispatch();
   const [genres, setGenres] = useState<GenreFilter[]>([
     { name: "All", active: true },
     { name: "Action", active: false },
@@ -58,7 +62,6 @@ export const AllMovies = () => {
     "Price High to Low",
   ];
 
-   
   const { data, isLoading } = useGetAllContentQuery([{}]);
   const demoMovies: Movie[] = data?.data || [];
 
@@ -175,11 +178,30 @@ export const AllMovies = () => {
   // Calculate pagination
   const totalPages = Math.ceil(filteredMovies.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedMovies = filteredMovies.slice(startIndex, startIndex + itemsPerPage);
+  const paginatedMovies = filteredMovies.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // add to watch list
+  const movieList = useAppSelector(watchListSelector);
+  const handleWatchlist = (data: Movie) => {
+    const isExistInWatchList = movieList.some((item) => item.id === data.id);
+
+    if (isExistInWatchList) {
+      toast.warning("Already Added to Watchlist");
+      return;
+    }
+
+    dispatch(addToWatchList(data));
+    toast.success("Added to Watchlist", {
+      icon: "⭐",
+    });
   };
 
   return (
@@ -272,10 +294,10 @@ export const AllMovies = () => {
               </h2>
               <div className="space-y-4">
                 {filteredMovies.slice(0, 5).map((movie) => (
-                  <Link href={`/movies/${movie.id}`} 
+                  <Link
+                    href={`/movies/${movie.id}`}
                     key={movie.id}
                     className="flex items-center space-x-3 cursor-pointer hover:bg-white/5 rounded-lg p-2 transition-colors"
-                    
                   >
                     <img
                       src={movie.thumbnail}
@@ -389,7 +411,7 @@ export const AllMovies = () => {
             </div>
 
             {/* Movie Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 mb-5 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 mb-5 lg:grid-cols-3 xl:grid-cols-4   gap-3 ">
               {isLoading &&
                 [1, 2, 3, 4, 5, 6, 7, 8].map((index) => (
                   <div
@@ -419,42 +441,55 @@ export const AllMovies = () => {
                   </div>
                 ))}
 
-              {!isLoading && paginatedMovies.map((movie) => (
-                <Link href={`/movies/${movie.id}`}
-                  key={movie.id}
-                  
-                  className="group cursor-pointer transition-all border border-gray-900 rounded-lg duration-300"
-                >
-                  <div className="relative aspect-[2/3] rounded-lg overflow-hidden mb-4">
-                    <img
-                      src={movie.thumbnail}
-                      alt={movie.title}
-                      className="w-full h-full object-cover transition-transform group-hover:scale-110"
-                    />
-                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                      <div className="flex items-center space-x-2">
-                        <img
-                          src={movie.platform.platformLogo}
-                          alt={movie.platform.platformName}
-                          className="h-6 w-auto"
-                        />
-                        <span className="text-sm">{movie.duration}</span>
+              {!isLoading &&
+                paginatedMovies.map((movie) => (
+                  <Link
+                    href={`/movies/${movie.id}`}
+                    key={movie.id}
+                    className="group cursor-pointer transition-all border border-gray-900 rounded-lg duration-300"
+                  >
+                    <div className="relative aspect-[2/3] rounded-lg overflow-hidden mb-4">
+                      <img
+                        src={movie.thumbnail}
+                        alt={movie.title}
+                        className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                        <div className="flex items-center space-x-2">
+                          <img
+                            src={movie.platform.platformLogo}
+                            alt={movie.platform.platformName}
+                            className="h-6 w-auto"
+                          />
+                          <span className="text-sm">{movie.duration}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <h3 className="text-base sm:text-lg px-3 font-semibold  group-hover:text-purple-500 transition-colors line-clamp-1">
-                    {movie.title}
-                  </h3>
-                  <div className="flex items-center justify-between p-3">
-                    <span className="text-sm text-gray-400">
-                      {movie.genre.genreName}
-                    </span>
-                    <span className="text-sm font-semibold">
-                      ${movie.price}
-                    </span>
-                  </div>
-                </Link>
-              ))}
+                    <h3 className="text-base sm:text-lg px-3 font-semibold  group-hover:text-purple-500 transition-colors line-clamp-1">
+                      {movie.title}
+                    </h3>
+                    <div className="flex items-center justify-between p-3">
+                      <span className="text-sm text-gray-400">
+                        {movie.genre.genreName}
+                      </span>
+                      <span className="text-sm font-semibold">
+                        ${movie.price}
+                      </span>
+                    </div>
+                    <div className="p-3">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation(),
+                            e.preventDefault(),
+                            handleWatchlist(movie);
+                        }}
+                        className="pb-2 cursor-pointer w-full py-2 text-sm font-medium bg-white/5 rounded-lg hover:bg-white/10 transition-colors"
+                      >
+                        Add to Watchlist
+                      </button>
+                    </div>
+                  </Link>
+                ))}
             </div>
 
             {/* Pagination Controls */}
@@ -467,21 +502,23 @@ export const AllMovies = () => {
                 >
                   Previous
                 </button>
-                
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <button
-                    key={page}
-                    onClick={() => handlePageChange(page)}
-                    className={`px-4 py-2 rounded-lg border transition-colors ${
-                      currentPage === page
-                        ? 'bg-purple-600 text-white border-purple-600'
-                        : 'bg-[#1C1C3A] text-white border-gray-700 hover:bg-[#2C2C4A]'
-                    }`}
-                  >
-                    {page}
-                  </button>
-                ))}
-                
+
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (page) => (
+                    <button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      className={`px-4 py-2 rounded-lg border transition-colors ${
+                        currentPage === page
+                          ? "bg-purple-600 text-white border-purple-600"
+                          : "bg-[#1C1C3A] text-white border-gray-700 hover:bg-[#2C2C4A]"
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  )
+                )}
+
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
@@ -523,9 +560,9 @@ export const AllMovies = () => {
                   </div>
                 )}
                 {filteredMovies.slice(0, 5).map((movie) => (
-                  <Link href={`/movies/${movie.id}`}
+                  <Link
+                    href={`/movies/${movie.id}`}
                     key={movie.id}
-                     
                     className="flex items-center gap-4 p-3 cursor-pointer hover:bg-white/5 rounded-lg transition-colors"
                   >
                     <div className="w-24 h-32 flex-shrink-0">

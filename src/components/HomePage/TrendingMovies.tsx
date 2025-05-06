@@ -1,9 +1,10 @@
 "use client";
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { PlayIcon } from "@heroicons/react/24/solid";
 import { useGetAllContentQuery } from "../redux/features/content/contentApi";
 import { Movie } from "@/types";
 import Link from "next/link";
+import { useRef } from "react";
 
 interface MovieCardProps {
   title: string;
@@ -24,7 +25,8 @@ const TrendingMovies = () => {
       value: "desc",
     },
   ]);
-
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
   const moviesData = data?.data?.slice(0, 4);
 
   const sectionVariants = {
@@ -73,29 +75,28 @@ const TrendingMovies = () => {
       whileInView="visible"
       viewport={{ once: true, amount: 0.2 }}
       variants={sectionVariants}
-      className="container mx-auto px-4 py-12"
+      className="container mx-auto px-4 py-10"
     >
-      <motion.h2
-        className="text-3xl md:text-4xl font-bold text-white"
-        variants={{
-          hidden: { opacity: 0, x: -50 },
-          visible: {
-            opacity: 1,
-            x: 0,
-            transition: { type: "spring", stiffness: 100 },
-          },
-        }}
-      >
-        Trending Now
-      </motion.h2>
+      <div className="container mx-auto px-4" ref={ref}>
+        <motion.div
+          initial={{ opacity: 0, x: -50 }}
+          animate={isInView ? { opacity: 1, x: 0 } : {}}
+          transition={{ duration: 0.8 }}
+          className="mb-12 flex items-end justify-between"
+        >
+          <h2 className="text-3xl md:text-4xl font-bold text-white">
+          Trending Now
+          </h2>
+          
+        </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
         {
           isLoading &&
           [...Array(4)].map((_, index) => (
             <div
               key={index}
-              className="w-full h-96 bg-gray-700 animate-pulse rounded-xl"
+              className="w-full h-96 bg-gray-700 animate-pulse rounded-3xl"
             ></div>
           ))
         }
@@ -108,11 +109,11 @@ const TrendingMovies = () => {
               <img
                 src={movie?.thumbnail}
                 alt={movie?.title}
-                className="w-full h-96 object-cover rounded-xl shadow-2xl"
+                className="w-full h-96 object-cover rounded-3xl shadow-2xl"
               />
 
               <motion.div
-                className="absolute inset-0 rounded-xl overflow-hidden"
+                className="absolute inset-0 rounded-3xl overflow-hidden"
                 initial="rest"
                 whileHover="hover"
                 variants={overlayVariants}
@@ -132,12 +133,12 @@ const TrendingMovies = () => {
                 >
                   <div className="bg-black/50 backdrop-blur-xs rounded-xl p-3">
                     <div className="flex justify-between items-start mb-3">
-                      <h3 className=" text-lg font-bold text-white">
+                      <h3 className=" text-lg font-bold truncate text-white">
                         {movie.title}
                       </h3>
                       <div className="flex items-center bg-white/10 px-3 py-1 rounded-full">
                         <span className="text-yellow-400 text-sm">
-                          {movie?.averageRating}/5
+                          {movie?.averageRating}/10
                         </span>
                       </div>
                     </div>
@@ -163,6 +164,7 @@ const TrendingMovies = () => {
             </motion.div>
           </Link>
         ))}
+      </div>
       </div>
     </motion.div>
   );
