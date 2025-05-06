@@ -5,7 +5,6 @@ import { useForm, SubmitHandler, FieldValues } from "react-hook-form";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Button } from "../ui/button";
 import { CalendarIcon } from "lucide-react";
-import { Calendar } from "../ui/calendar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Slider } from "../ui/slider";
@@ -118,12 +117,12 @@ const AddDiscountModal = ({
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0 bg-[#0a1235] border-[#1a2d6d]">
-                          <Calendar
+                          {/* <Calendar
                             mode="single"
                             selected={startDate}
                             onSelect={setStartDate}
                             initialFocus
-                          />
+                          /> */}
                         </PopoverContent>
                       </Popover>
                     </div>
@@ -154,13 +153,13 @@ const AddDiscountModal = ({
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0 bg-[#0a1235] border-[#1a2d6d]">
-                          <Calendar
+                          {/* <Calendar
                             mode="single"
                             selected={endDate}
                             onSelect={setEndDate}
                             initialFocus
                             fromDate={startDate}
-                          />
+                          /> */}
                         </PopoverContent>
                       </Popover>
                     </div>
