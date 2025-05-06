@@ -1,0 +1,655 @@
+{
+	"info": {
+		"_postman_id": "46798410-1c05-4ee4-87e1-bf771814048a",
+		"name": "MovieSeries",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "40246647"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Bappy\",\r\n    \"email\" : \"bappy@gmail.com\",\r\n    \"password\": \"123456\",\r\n    \"contactNumber\": \"9823893274\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{local_url2}}/user/register"
+					},
+					"response": []
+				},
+				{
+					"name": "getalluser",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMwYmYyNGYzLTNmYTMtNDUxYy1iZGNjLWU5N2NkM2E1ZmE1MCIsImVtYWlsIjoiYXRoa2lhQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsInN0YXR1cyI6IkFDVElWRSIsImlhdCI6MTc0NjA2OTc5MSwiZXhwIjoxNzQ4NjYxNzkxfQ.U7LnM9Dl0V2QQAVma4-TCNkpbSYICzfzyXzP1veXi3Y",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{local_url2}}/user",
+							"host": [
+								"{{local_url2}}"
+							],
+							"path": [
+								"user"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "role",
+									"value": "USER",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getbyidUser",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{local_url2}}/user/ce0d3220-84cd-4cfd-afe5-bfb3f27ace46"
+					},
+					"response": []
+				},
+				{
+					"name": "deleteUser",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": ""
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateUser",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"contactNumber\": \"01737055870\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{local_url2}}/user/c06f4d73-7a58-4e7f-b111-c9550fd5e528"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Genre",
+			"item": [
+				{
+					"name": "Add Genre",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"genreName\": \"Romance\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{local_url2}}/genre"
+					},
+					"response": []
+				},
+				{
+					"name": "getallgenre",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"bappy@gmail.com\",\r\n    \"password\": \"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{local_url2}}/auth/login"
+					},
+					"response": []
+				},
+				{
+					"name": "passwordReset",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": "{{local_url2}}/auth/refreshtoken"
+					},
+					"response": []
+				},
+				{
+					"name": "RefreshToken",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{ADMINTOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": "{{local_url2}}/auth/refreshtoken"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": "{{local_url2}}/auth/logout"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "UserBlock",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": "{{local_url2}}/admin/e71ea366-ab3a-4c7d-b5a3-84ac9b138754/block"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reviews",
+			"item": [
+				{
+					"name": "get all reviews",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{local_url2}}/reviews"
+					},
+					"response": []
+				},
+				{
+					"name": "get single reviews By ContentID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{local_url2}}/reviews/c2b95d7b-a8c2-4b7c-8742-5233e64c72b5"
+					},
+					"response": []
+				},
+				{
+					"name": "update reviews",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"reviewText\": \"Looking like a wow\",\r\n     \"rating\": 5\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{local_url2}}/reviews/c2b95d7b-a8c2-4b7c-8742-5233e64c72b5"
+					},
+					"response": []
+				},
+				{
+					"name": "delete reviews",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{local_url2}}/reviews/bffde13a-a3d3-4163-af87-d19f4f0be3e1"
+					},
+					"response": []
+				},
+				{
+					"name": "create review",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjgzNjgwMzY1LWRlNzAtNGIwMi05NmU5LWM4YTcxOGJjMDBlOSIsImVtYWlsIjoiYmFwcHlAZ21haWwuY29tIiwicm9sZSI6IlVTRVIiLCJzdGF0dXMiOiJBQ1RJVkUiLCJpYXQiOjE3NDYwNzU3NTYsImV4cCI6MTc0ODY2Nzc1Nn0.bKziCF6eU3MiYNOG7ud9wvDcovMWL_y_QGuDZX6oIuY",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"contentId\":\"9a916cb8-fb14-4675-9c9b-c1080f273ddd\",\r\n     \"userId\":\"522e2009-1040-4eeb-be9f-2e18b6fa1eb2\",\r\n     \"reviewText\":\"Looking like a wowwwwwwowww 22222\",\r\n     \"rating\":8.5,\r\n     \"tags\":\"UNDERRATED\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{local_url2}}/reviews"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Comments",
+			"item": [
+				{
+					"name": "post comment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjgzNjgwMzY1LWRlNzAtNGIwMi05NmU5LWM4YTcxOGJjMDBlOSIsImVtYWlsIjoiYmFwcHlAZ21haWwuY29tIiwicm9sZSI6IlVTRVIiLCJzdGF0dXMiOiJBQ1RJVkUiLCJpYXQiOjE3NDYwNzU3NTYsImV4cCI6MTc0ODY2Nzc1Nn0.bKziCF6eU3MiYNOG7ud9wvDcovMWL_y_QGuDZX6oIuY",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"reviewId\":\"9a21aebe-f49f-4b35-8805-c441386c2642\",\r\n    \"userId\":\"83680365-de70-4b02-96e9-c8a718bc00e9\",\r\n    \"comment\":\"I Like avengers marvel\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{local_url2}}/comment"
+					},
+					"response": []
+				},
+				{
+					"name": "get all comment",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{local_url2}}/comment"
+					},
+					"response": []
+				},
+				{
+					"name": "delete comment",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{local_url2}}/comment/64a8358c-78f1-45e5-9eaf-8003ed484be6"
+					},
+					"response": []
+				},
+				{
+					"name": "update comment",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"comment\":\"I like Marvel Movies.....\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{local_url2}}/comment/c67cb1ae-3b9b-4c52-9d7a-afccaecbd6b0"
+					},
+					"response": []
+				},
+				{
+					"name": "ReplyComment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"reviewId\":\"c8a05a44-fdb3-460e-a1ab-6de9071dfb4c\",\r\n    \"userId\":\"25e36e56-10c8-41a2-afe4-0b47b9abf798\",\r\n    \"parentId\": \"0d501817-4acf-499e-8764-ad0c7f491848\",\r\n    \"comment\":\"Khub valo lagse tai na! jaw bari jaw\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{local_url2}}/comment"
+					},
+					"response": []
+				},
+				{
+					"name": "NestedReplay",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{local_url2}}/comment/nested/c8a05a44-fdb3-460e-a1ab-6de9071dfb4c"
+					},
+					"response": []
+				},
+				{
+					"name": "parrentid",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Like",
+			"item": [
+				{
+					"name": "update like",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \r\n    \"status\":\"DISLIKED\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{local_url2}}/like/7c19d2a6-5146-44e0-8276-518353bbd959"
+					},
+					"response": []
+				},
+				{
+					"name": "add like",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"reviewId\":\"e663715b-c31c-4c73-8787-f7cc8cab61e3\",\r\n    \"userId\":\"25e36e56-10c8-41a2-afe4-0b47b9abf798\",\r\n    \"status\":\"DISLIKED\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{local_url2}}/like"
+					},
+					"response": []
+				},
+				{
+					"name": "reviewidbaselikefind",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Content",
+			"item": [
+				{
+					"name": "AllContent",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Add Content",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "data",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": "{{local_url2}}/content"
+					},
+					"response": []
+				},
+				{
+					"name": "updatecontent",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjI1ZTM2ZTU2LTEwYzgtNDFhMi1hZmU0LTBiNDdiOWFiZjc5OCIsImVtYWlsIjoic29wbmlsQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsInN0YXR1cyI6IkFDVElWRSIsImlhdCI6MTc0NjE2NTQ4MywiZXhwIjoxNzQ4NzU3NDgzfQ.TfFjL9D4kDmvHCKdNi66Kp5PfzS3fUPVsMABJjrAZBo",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "data",
+									"value": "{\n    \"content\": {\n        \"releaseYear\": \"2025\",\n        \"price\": 14.99\n    }\n}",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/projects/Movie-ui/src/assets/images/The_Avengers_(2012_film)_poster.jpg"
+								}
+							]
+						},
+						"url": "{{local_url2}}/content/9a916cb8-fb14-4675-9c9b-c1080f273ddd"
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteContent",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{local_url}}/content/9a916cb8-fb14-4675-9c9b-c1080f273ddd"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Platform",
+			"item": [
+				{
+					"name": "AddPlatform",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "",
+							"query": [
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deletePlatform",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjI1ZTM2ZTU2LTEwYzgtNDFhMi1hZmU0LTBiNDdiOWFiZjc5OCIsImVtYWlsIjoic29wbmlsQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsInN0YXR1cyI6IkFDVElWRSIsImlhdCI6MTc0NjE2NTQ4MywiZXhwIjoxNzQ4NzU3NDgzfQ.TfFjL9D4kDmvHCKdNi66Kp5PfzS3fUPVsMABJjrAZBo",
+								"type": "text"
+							}
+						],
+						"url": "{{local_url2}}/platform/1ba2ba4e-cf03-4b80-8108-bb507c8f480e"
+					},
+					"response": []
+				},
+				{
+					"name": "getallplatform",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "updateplatform",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": "{{local_url2}}/platform/97e440d5-70fb-4796-8d65-a767362c9cb8"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Payment",
+			"item": [
+				{
+					"name": "New Request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjcyYzkxZjVhLTY0OGItNGZkNi1iOGUzLTIzNWY5YjdjZWY1NCIsImVtYWlsIjoiYW1pc29wbmlsQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwic3RhdHVzIjoiQUNUSVZFIiwiaWF0IjoxNzQ2Mzc0MTk1LCJleHAiOjE3NDg5NjYxOTV9.KcCPlWnQojuLHOe2_HbojaOCfEmHj3e_jhc6tKMqxMo",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userId\": \"72c91f5a-648b-4fd6-b8e3-235f9b7cef54\",\r\n    \"contentId\": \"3d890dce-13ac-4659-8ccd-b35889034513\",\r\n    \"status\": \"RENTED\"  // or \"BOUGHT\" depending on what you want to do\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{local_url2}}/payment/init-payment"
+					},
+					"response": []
+				},
+				{
+					"name": "validatePayment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjcyYzkxZjVhLTY0OGItNGZkNi1iOGUzLTIzNWY5YjdjZWY1NCIsImVtYWlsIjoiYW1pc29wbmlsQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwic3RhdHVzIjoiQUNUSVZFIiwiaWF0IjoxNzQ2Mzc0MTk1LCJleHAiOjE3NDg5NjYxOTV9.KcCPlWnQojuLHOe2_HbojaOCfEmHj3e_jhc6tKMqxMo",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tran_id\":\"1408ada9-2cd0-47e8-8a63-7f212536e72a\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{local_url2}}/payment/ipn"
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "my-purchase-history",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}
