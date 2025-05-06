@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { X } from "lucide-react"; // Optional: use any icon library you prefer
+import { usePathname } from "next/navigation";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -8,15 +9,18 @@ interface SidebarProps {
 }
 
 const menuItems = [
-  { name: "Overview", link: "/" },
-  { name: "Content", link: "/content" },
-  { name: "Users", link: "/users" },
-  { name: "Reviews", link: "/reviews" },
-  { name: "Platform & Genre", link: "/platformGenre" },
+ 
+  { name: "Overview", link: "/dashboard" },
+  { name: "Content", link: "/dashboard/content" },
+  { name: "Users", link: "/dashboard/users" },
+  { name: "Reviews", link: "/dashboard/reviews" },
+  { name: "Platform & Genre", link: "/dashboard/platformGenre" },
   { name: "Discount", link: "/discount" },
+ 
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
+  const pathname = usePathname();
   return (
     <aside
       className={`fixed z-40 top-0 left-0 h-full w-64 bg-[#010527]   border-r border-[#010e65] transform transition-transform duration-300 
@@ -35,17 +39,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
 
         {/* Logo Section */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-purple-500">Dashboard</h1>
-          <p className="text-sm text-purple-400/70 mt-1">Premium Analytics</p>
+          <h1 className="text-2xl font-bold  ">Admin Dashboard</h1>
+   
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 space-y-2">
+        <nav className="flex-1 space-y-2 border-t pt-2 border-[#00175f]/50">
           {menuItems?.map((item) => (
             <Link
               key={item?.name}
-              href={`/dashboard/${item.link}`}
-              className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#00175f]/30 transition-colors text-gray-300 hover:text-white"
+              href={`${item.link}`}
+              className={`flex items-center gap-3 p-3 rounded-lg ${pathname === item.link ? "bg-[#00175f]/60":""} hover:bg-[#00175f]/60 transition-colors text-gray-300 hover:text-white`}
             >
               <span className="material-icons-outlined text-purple-400">
                 📊

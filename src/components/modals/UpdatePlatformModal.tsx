@@ -105,7 +105,7 @@ const UpdatePlatformModal = ({
       <motion.div
         initial={{ scale: 0.95, y: 20 }}
         animate={{ scale: 1, y: 0 }}
-        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl bg-[#000a3a] border border-[#1a2d6d] rounded-xl overflow-hidden"
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-xl bg-[#000a3a] border border-[#1a2d6d] rounded-xl overflow-hidden"
       >
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -155,14 +155,14 @@ const UpdatePlatformModal = ({
           </div>
 
           {/* Form Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1  gap-6">
             {/* Left Column */}
-            <div className="space-y-4">
+            <div className="space-y-4 w-full">
               <input
                 {...register("platformName", { required: true })}
                 defaultValue={platform.platformName}
                 placeholder="Platform Name"
-                className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
+                className="w-full bg-[#00031b] px-4 py-2  border border-[#1a2d6d]  rounded-lg focus:outline-none"
               />
               {errors.platformName && (
                 <p className="text-red-500">Platform name is required!</p>

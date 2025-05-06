@@ -1,4 +1,6 @@
 "use client";
+ 
+import { useDashboardStatsQuery } from '@/components/redux/features/admin/adminApi';
 import { useGetAllContentQuery } from '@/components/redux/features/content/contentApi';
 import { useGetAllPaymentsQuery } from '@/components/redux/features/payment/paymentApi';
 import { useGetAllUserQuery } from '@/components/redux/features/user/userApi';
@@ -25,6 +27,7 @@ interface ChartData {
 const groupPayments = (payments: any[], filter: string, now: Date): ChartData[] => {
   const groups: ChartData[] = [];
   const formatDate = (date: Date) => date.toISOString().split('T')[0];
+ 
 
   switch (filter) {
     case '7days':
@@ -118,13 +121,14 @@ const OverviewStats = () => {
   const [chartType, setChartType] = useState<'line' | 'bar'>('line');
   const [displayMode, setDisplayMode] = useState<'earnings' | 'count'>('earnings');
 
-  const { data: users } = useGetAllUserQuery(undefined);
-  const { data: movie } = useGetAllContentQuery([{}]);
+   
   const { data: payments } = useGetAllPaymentsQuery({});
+  const {data} = useDashboardStatsQuery([]);
+  console.log(payments);
+  
+  
 
-  const totalEarnings = useMemo(() =>
-    payments?.data?.reduce((acc: number, payment: any) => acc + (payment.amount || 0), 0) || 0
-  , [payments]);
+   
 
   const generateChartData = useMemo(() => {
     if (!payments?.data) return [];
@@ -156,10 +160,10 @@ const OverviewStats = () => {
   return (
     <div className="p-2 md:p-6 space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard title="Total Users" value={users?.data?.length?.toLocaleString() || '0'} trend="12.5%" icon="👥" color="bg-purple-500/20" />
-        <StatCard title="Total Movies" value={movie?.data?.length?.toLocaleString() || '0'} trend="8.2%" icon="🎬" color="bg-blue-500/20" />
-        <StatCard title="Total Transactions" value={payments?.data?.length?.toLocaleString() || '0'} trend="18.4%" icon="💳" color="bg-green-500/20" />
-        <StatCard title="Total Earnings" value={`$${totalEarnings.toLocaleString()}`} trend="22.3%" icon="💰" color="bg-pink-500/20" />
+        <StatCard title="Total Users" value={data?.data?.totalUser || '0'} trend="12.5%" icon="👥" color="bg-purple-500/20" />
+        <StatCard title="Total Movies" value={data?.data?.totalMovies || '0'} trend="8.2%" icon="🎬" color="bg-blue-500/20" />
+        <StatCard title="Total Transactions" value={data?.data?.totalPayment || '0'} trend="18.4%" icon="💳" color="bg-green-500/20" />
+        <StatCard title="Total Earnings" value={`$${data?.data?.totalEaring?._sum?.amount || '0'}`} trend="22.3%" icon="💰" color="bg-pink-500/20" />
       </div>
 
       <div className="bg-gradient-to-br from-[#000a3a] to-[#000a3a]/50 p-2 md:p-6 rounded-xl border border-[#00175f]/30">
@@ -259,9 +263,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, trend, icon, color })
       <div>
         <h4 className="text-gray-400 text-sm mb-2">{title}</h4>
         <p className="text-2xl font-bold">{value}</p>
-        <span className="text-green-400 text-sm mt-2 inline-flex items-center">
-          ↑ {trend} <span className="text-gray-500 ml-2">vs previous</span>
-        </span>
+        
       </div>
       <div className={`${color} p-3 rounded-lg`}>
         <span className="text-2xl">{icon}</span>
