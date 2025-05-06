@@ -30,6 +30,7 @@ import { addToWatchList, watchListSelector } from "../redux/features/watchListSl
 import { Movie } from "@/types";
 import { verifyToken } from "@/utils/verifyToken";
 import { selectCurrentToken } from "../redux/features/auth/authSlice";
+import { TMovie } from "../types/movie";
 
 interface ReviewFormData {
   rating: number;
@@ -73,7 +74,7 @@ const MovieDetails = () => {
     useGetAllContentQuery(undefined);
   const { data: SingleUser } = useGetUserQuery(user?.id);
 
-  const [recommendedMovies, setRecommendedMovies] = useState<Movie[]>([]);
+  const [recommendedMovies, setRecommendedMovies] = useState<TMovie[]>([]);
   const {
     register,
     handleSubmit,
@@ -91,22 +92,30 @@ const MovieDetails = () => {
       console.log("Current Genre:", currentGenre);
 
       if (currentGenre) {
-        const filteredMovies = allMovies.data
-          .filter((movie: Movie) => {
-            console.log(
-              "Checking movie:",
-              movie.title,
-              "Genre:",
-              movie.genre?.genreName
-            );
-            return (
-              movie.genre?.genreName === currentGenre &&
-              movie.id !== movieDetails.data.id
-            );
-          })
-          .slice(0, 4);
+        // First try to find exact genre matches
+        let filteredMovies = allMovies.data.filter((movie: TMovie) => {
+          return movie.genre?.genreName === currentGenre && movie.id !== movieDetails.data.id;
+        });
 
-        console.log("Filtered Movies:", filteredMovies);
+        // If we don't have enough movies with exact genre match, try to find similar genres
+        if (filteredMovies.length < 4) {
+          const similarGenres = allMovies.data.filter((movie: TMovie) => {
+            // Exclude the current movie and already filtered movies
+            return movie.id !== movieDetails.data.id && 
+                   !filteredMovies.some((fm: TMovie) => fm.id === movie.id) &&
+                   movie.genre?.genreName;
+          });
+
+          // Add similar genre movies until we have 4 recommendations
+          filteredMovies = [
+            ...filteredMovies,
+            ...similarGenres.slice(0, 4 - filteredMovies.length)
+          ];
+        }
+
+        // Ensure we only show 4 recommendations
+        filteredMovies = filteredMovies.slice(0, 4);
+        console.log("Recommended Movies:", filteredMovies);
         setRecommendedMovies(filteredMovies);
       } else {
         console.log("No current genre found");
