@@ -1,4 +1,6 @@
-import { baseApi } from "@/components/redux/api/baseApi";
+import { baseApi } from "../../api/baseApi";
+
+
 
 
 const paymentApi = baseApi.injectEndpoints({
