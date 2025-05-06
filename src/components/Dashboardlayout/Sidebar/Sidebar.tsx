@@ -13,6 +13,7 @@ const menuItems = [
   { name: "Users", link: "/users" },
   { name: "Reviews", link: "/reviews" },
   { name: "Platform & Genre", link: "/platformGenre" },
+  { name: "Discount", link: "/discount" },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
