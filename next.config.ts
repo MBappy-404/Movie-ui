@@ -16,12 +16,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'res.cloudinary.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'm.media-amazon.com',
-        pathname: '/images/**',
+        hostname: '**', // Allow ALL HTTPS image sources
       },
     ],
   },

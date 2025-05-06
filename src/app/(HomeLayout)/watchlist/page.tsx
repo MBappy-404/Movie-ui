@@ -1,4 +1,12 @@
 import WatchList from "@/components/watchList/watchlist";
+import { Metadata } from "next";
+
+
+export const metadata: Metadata = {
+  title: "Watchlist | CineVerse - Keep Track of Your Favorite Movies",
+  description: "Create and manage your personal watchlist on CineVerse. Add movies you're interested in and keep track of upcoming releases and top picks.",
+};
+
 
 const WatchListPage = () => {
   return (
