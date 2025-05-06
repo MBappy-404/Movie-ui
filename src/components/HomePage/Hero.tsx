@@ -87,7 +87,7 @@ const HeroSection = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 1 }}
-            className="text-4xl md:text-7xl font-bold text-white mb-3 md:mb-6 font-['Bebas_Neue'] tracking-wide"
+            className="text-4xl md:text-7xl font-bold text-white mb-3 md:mb-6   tracking-wide"
           >
             Welcome to{" "}
             <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
@@ -99,7 +99,7 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.2 }}
-            className="text-base md:text-2xl font-semibold text-gray-200 mb-4 font-['Open_Sans'] max-w-2xl"
+            className="text-base md:text-2xl font-semibold text-gray-200 mb-4   max-w-2xl"
           >
             Dive into a world of movies, reviews, and trailers
           </motion.p>

@@ -1,6 +1,7 @@
 "use client";
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import Image from "next/image";
+import { useRef } from "react";
 import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
@@ -107,6 +108,8 @@ const textVariants = {
 };
 
 const TopArtists = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
   return (
     <motion.div
       initial="hidden"
@@ -115,16 +118,12 @@ const TopArtists = () => {
       variants={containerVariants}
       className="md:w-[90%] w-[95%] mx-auto pt-32 pb-20"
     >
+       <div className="container mx-auto px-4" ref={ref}>
       <motion.h2
         className="text-3xl md:text-4xl font-bold text-white mb-8"
-        variants={{
-          hidden: { opacity: 0, x: -50 },
-          visible: {
-            opacity: 1,
-            x: 0,
-            transition: { type: "spring", stiffness: 100 },
-          },
-        }}
+        initial={{ opacity: 0, x: -50 }}
+          animate={isInView ? { opacity: 1, x: 0 } : {}}
+          transition={{ duration: 0.8 }}
       >
         Top Artists
       </motion.h2>
@@ -203,7 +202,7 @@ const TopArtists = () => {
       </Swiper>
       <div className=" flex justify-between   ">
         <div className=" md:flex justify-center mb-3">
-          <div className="prevArtist   hover:bg-gradient-to-r -translate-y-[190px]     transition-all duration-300 bg-gray-300/30 backdrop:blur-lg   from-blue-500 to-purple-500 w-28 h-8 rounded-lg z-50 flex items-center justify-center cursor-pointer rotate-90">
+          <div className="prevArtist   hover:bg-gradient-to-r -translate-y-[190px]   -translate-x-5   transition-all duration-300 bg-gray-300/30 backdrop:blur-lg   from-blue-500 to-purple-500 w-28 h-8 rounded-lg z-50 flex items-center justify-center cursor-pointer rotate-90">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="w-4 fill-white"
@@ -213,7 +212,7 @@ const TopArtists = () => {
             </svg>
           </div>
         </div>
-        <div className="nextArtist   hover:bg-gradient-to-r -translate-y-[190px]   transition-all duration-300 bg-gray-300/30 backdrop:blur-lg   from-blue-500 to-purple-500 w-28 h-8 rounded-lg z-50 flex items-center justify-center cursor-pointer -rotate-90">
+        <div className="nextArtist   hover:bg-gradient-to-r -translate-y-[190px] translate-x-5  transition-all duration-300 bg-gray-300/30 backdrop:blur-lg   from-blue-500 to-purple-500 w-28 h-8 rounded-lg z-50 flex items-center justify-center cursor-pointer -rotate-90">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="w-4 fill-white"
@@ -221,6 +220,7 @@ const TopArtists = () => {
           >
             <path d="M11.99997 18.1669a2.38 2.38 0 0 1-1.68266-.69733l-9.52-9.52a2.38 2.38 0 1 1 3.36532-3.36532l7.83734 7.83734 7.83734-7.83734a2.38 2.38 0 1 1 3.36532 3.36532l-9.52 9.52a2.38 2.38 0 0 1-1.68266.69734z" />
           </svg>
+        </div>
         </div>
       </div>
     </motion.div>

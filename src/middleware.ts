@@ -1,22 +1,25 @@
-import { getCurrentUser } from "@/services/AuthServices";
+import { verifyToken } from "@/utils/verifyToken";
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
 type Role = keyof typeof roleBasedPrivateRoutes;
 
 const authRoutes = ["/login", "/register"];
 
 const roleBasedPrivateRoutes = {
- 
   USER: [/^\/user/, /^\/profile/],
   ADMIN: [/^\/dashboard/, /^\/profile/],
 };
 
 export const middleware = async (request: NextRequest) => {
   const { pathname } = request.nextUrl;
+  const accessToken = request.cookies.get("accessToken")?.value;
+  let userInfo = null;
 
-  const userInfo = await getCurrentUser();
+  if (accessToken) {
+    userInfo = verifyToken(accessToken);
+  }
 
- 
   if (!userInfo) {
     if (authRoutes.includes(pathname)) {
       return NextResponse.next();
@@ -37,13 +40,12 @@ export const middleware = async (request: NextRequest) => {
     return NextResponse.next();
   }
   const response = NextResponse.redirect(new URL("/login", request.url));
-  response.cookies.set("accessToken", "", { maxAge: 0 }); // Or your actual token key
+  response.cookies.set("accessToken", "", { maxAge: 0 });
   return response;
 };
 
 export const config = {
   matcher: [
-    '/login',
     '/profile',
     '/dashboard',
     "/dashboard/:page*"

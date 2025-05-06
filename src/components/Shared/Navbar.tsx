@@ -11,30 +11,51 @@ import {
   BookmarkIcon,
   ArrowRightEndOnRectangleIcon,
   QuestionMarkCircleIcon,
+  Square2StackIcon,
 } from "@heroicons/react/24/outline";
-import { useUser } from "../context/UserContext";
-import { logout } from "@/services/AuthServices";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { LucideLayoutDashboard } from "lucide-react";
+import Cookies from 'js-cookie';
+import { toast } from "sonner";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { selectCurrentToken, logout } from "../redux/features/auth/authSlice";
+import { verifyToken } from "@/utils/verifyToken";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const { user, setIsLoading } = useUser();
+ 
   const pathname = usePathname();
+  const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const dispatch = useAppDispatch();
+
+
+  const token = useAppSelector(selectCurrentToken);
+  let user
+  if (token) {
+    user = verifyToken(token)
+  }
+
+  console.log(user)
+
+
 
   const navLinks = [
     { name: "Home", path: "/", icon: HomeModernIcon },
     { name: "Movies", path: "/movies", icon: FilmIcon },
-    { name: "Series", path: "/series", icon: TvIcon },
     { name: "Watchlist", path: "/watchlist", icon: BookmarkIcon },
   ];
 
   const handleLogout = () => {
-    logout();
-    setIsLoading(true);
+    dispatch(logout())
+    toast.success("Logged out successfully");
+    Cookies.remove('accessToken'); // Replace 'accessToken' with the actual cookie name(s) you're using
+    Cookies.remove('refreshToken'); // Replace 'refreshToken' with the actual cookie name(s) you're using
+    router.push("/login");
     setDropdownOpen(false);
   };
 
@@ -75,8 +96,8 @@ const Navbar = () => {
     <nav
       className={`fixed w-full z-[990] ${
         isScrolled
-          ? "backdrop-blur-md bg-gray-900/90"
-          : "bg-gray-900 md:bg-transparent"
+          ? "backdrop-blur-md bg-[#101828]"
+          : "bg-[#101828] md:bg-transparent"
       } transition-all duration-500`}
     >
       <div className="container mx-auto px-4 xl:px-12">
@@ -129,39 +150,47 @@ const Navbar = () => {
 
           {/* Right Section */}
           <div className="flex items-center gap-6">
-            {user && (
-              <div ref={dropdownRef} className="relative">
+              {user && (<div ref={dropdownRef} className="relative">
                 <button
-                  className="p-2 text-gray-300 hover:text-indigo-400 transition-colors"
+                  className="p-2 cursor-pointer text-gray-300 hover:text-indigo-400 transition-colors"
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                 >
-                  <UserCircleIcon className="w-7 h-7" />
+                  <UserCircleIcon className="w-7 h-7 md:w-10 md:h-10" />
                 </button>
 
                 <AnimatePresence>
                   {dropdownOpen && (
                     <motion.div
-                      className="absolute right-0 top-full mt-2 w-48 bg-gray-800 rounded-lg shadow-2xl py-2 border border-gray-700"
+                      className="absolute right-0 top-full mt-2 w-48 md:w-52 h-auto bg-gray-800 rounded-lg shadow-2xl py-2 border border-gray-700"
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
                     >
                       <div className="px-4 py-2 border-b border-gray-700">
-                        <p className="text-sm font-medium text-gray-200 truncate">
-                          {user.email}
+                        <p className="text-sm md:text-base  text-gray-200 truncate">
+                          {user?.email}
                         </p>
                       </div>
                       <Link
                         href="/profile"
-                        className="flex items-center gap-2 px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors"
+                        className="flex text-sm md:text-base items-center gap-2 px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors"
                         onClick={() => setDropdownOpen(false)}
                       >
                         <UserCircleIcon className="w-5 h-5" />
                         Profile
                       </Link>
+  
+                        {user.role === "ADMIN" && (<Link
+                          href="/dashboard"
+                          className="flex text-sm md:text-base items-center gap-2 px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors"
+                          onClick={() => setDropdownOpen(false)}
+                        >
+                          <LucideLayoutDashboard className="w-5 h-5" />
+                          Dashboard
+                        </Link>) }
                       <button
                         onClick={handleLogout}
-                        className="flex items-center gap-2 w-full px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors"
+                        className="flex text-sm md:text-base cursor-pointer items-center gap-2 w-full px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors"
                       >
                         <ArrowRightEndOnRectangleIcon className="w-5 h-5" />
                         Logout
@@ -169,20 +198,16 @@ const Navbar = () => {
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </div>
-            )}
+              </div>)}
 
-            {!user && (
-              <Link href="/login">
+              {!user && (<Link href="/login">
                 <motion.button
-                  className="px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  className="px-4 py-2 cursor-pointer bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all"
+                   
                 >
                   Sign In
                 </motion.button>
-              </Link>
-            )}
+              </Link>)}
 
             <motion.button
               className="md:hidden p-2 text-gray-300 hover:text-indigo-400 transition-colors"

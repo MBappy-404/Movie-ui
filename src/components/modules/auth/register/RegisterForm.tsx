@@ -13,18 +13,19 @@ import { Button } from "@/components/ui/button";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerValidation } from "./registerValidation";
-import { registerUser } from "@/services/AuthServices";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useCreateUserMutation } from "@/components/redux/features/user/userApi";
 
 const RegisterForm = () => {
   const form = useForm({
     resolver: zodResolver(registerValidation),
   });
 
+  const [createUser] = useCreateUserMutation();
 
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirectPath");
@@ -48,16 +49,16 @@ const RegisterForm = () => {
         formData.append("file", profilePhoto);
       }
 
-      const result = await registerUser(formData);
-      if (result?.success) {
-        toast.success(result.message);
+      const result = await createUser(formData);
+      if (result?.data?.success) {
+        toast.success(result?.data?.message);
         if (redirect) {
           router.push('/login');
         } else {
           router.push("/login");
         }
       } else {
-        toast.error(result?.message);
+        toast.error(result?.data?.message);
       }
       return result;
     } catch (error: any) {

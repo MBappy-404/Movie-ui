@@ -4,6 +4,10 @@ import { logout } from "@/components/redux/features/user/userState";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { FaUser, FaSignOutAlt } from "react-icons/fa";
+import { selectCurrentToken } from "@/components/redux/features/auth/authSlice";
+import { verifyToken } from "@/utils/verifyToken";
+import { useGetUserQuery } from "@/components/redux/features/user/userApi";
+import Cookies from 'js-cookie';
 
 interface HeaderProps {
   toggleSidebar: () => void;
@@ -11,10 +15,22 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const { user } = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  
+    const token = useAppSelector(selectCurrentToken);
+    let user :any
+    if (token) {
+      user = verifyToken(token)
+    }
+
+
+
+    const {data: UserData} = useGetUserQuery(user?.id)
+
+    console.log(UserData)
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -32,6 +48,8 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
   const handleLogout = () => {
     dispatch(logout());
     toast.success("Logged out successfully");
+    Cookies.remove('refreshToken'); // Replace 'refreshToken' with the actual cookie name(s) you're using
+    Cookies.remove('accessToken'); // Replace 'accessToken' with the actual cookie name(s) you're using
     router.push("/login");
   };
 
@@ -40,12 +58,14 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
     setIsDropdownOpen(false);
   };
 
+
+
   return (
     <header className="sticky top-0 z-20 bg-[#000a3a]/95 backdrop-blur-sm border-b border-[#00175f]/50 p-4">
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
         <div className="flex-1">
           <h2 className="text-xl font-semibold text-gray-100">Dashboard Overview</h2>
-          <p className="text-sm text-purple-400/70 mt-1">Welcome back, {user?.name || 'Admin'}</p>
+          <p className="text-sm text-purple-400/70 mt-1">Welcome back, {UserData?.data?.name || 'Admin'}</p>
         </div>
 
         <div className="flex items-center gap-4 w-full md:w-auto">
@@ -60,17 +80,17 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
               className="flex items-center gap-2 hover:bg-[#00175f]/30 p-2 rounded-lg transition-colors"
             >
               <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
-                {user?.profilePhoto ? (
+                {UserData?.data?.profilePhoto ? (
                   <img
-                    src={user.profilePhoto}
-                    alt={user.name}
+                    src={UserData?.data?.profilePhoto}
+                    alt={UserData?.data?.name}
                     className="w-full h-full rounded-full object-cover"
                   />
                 ) : (
                   <span className="text-purple-400">👤</span>
                 )}
               </div>
-              <span className="text-gray-300">{user?.name || 'User'}</span>
+              <span className="text-gray-300">{UserData?.data?.name || 'User'}</span>
             </button>
 
             {/* Dropdown Menu */}
