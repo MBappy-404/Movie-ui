@@ -16,6 +16,8 @@ import { TGenre, TGenresOptions } from "@/components/types/genre";
 import { TPlatform, TPlatformsOptions } from "@/components/types/platform";
 import UpdateModal, { Content } from "@/components/modals/UpdateContentModal";
 import LoadingSpinner from "@/components/ui/loading-spinner";
+import AddDiscountModal from "@/components/modals/AddDiscountModal";
+import { MdDiscount } from "react-icons/md";
 
 export interface Movie {
   id: string;
@@ -52,6 +54,8 @@ const ManageContent = () => {
   const [content, setContent] = useState<{} | null>(null);
   const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isAddDiscountModalOpen, setIsAddDiscountModalModalOpen] =
+    useState(false);
   const [contentToDelete, setContentToDelete] = useState<Movie | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
@@ -59,8 +63,8 @@ const ManageContent = () => {
   const { data: genres } = useGetAllGenresQuery(undefined);
   const { data: platforms } = useGetAllPlatformQuery(undefined);
   const { data: contents, isLoading } = useGetAllContentQuery([
-    { name: 'page', value: currentPage },
-    { name: 'limit', value: itemsPerPage }
+    { name: "page", value: currentPage },
+    { name: "limit", value: itemsPerPage },
   ]);
   const [addContent, { data, error }] = useCreateContentMutation();
   const [deleteContent] = useDeleteContentMutation();
@@ -245,13 +249,20 @@ const ManageContent = () => {
                             setContent(movie);
                           }}
                         />
+                        <MdDiscount
+                          className="text-xl"
+                          onClick={() => {
+                            setIsAddDiscountModalModalOpen(true);
+                            setContent(movie);
+                          }}
+                        />
                       </td>
                     </motion.tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            
+
             {/* Pagination Controls */}
             <div className="flex justify-center items-center gap-2 py-4 bg-[#000a3a]">
               <button
@@ -261,19 +272,21 @@ const ManageContent = () => {
               >
                 Previous
               </button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <button
-                  key={page}
-                  onClick={() => handlePageChange(page)}
-                  className={`px-4  py-2 text-sm lg:text-base  rounded-lg ${
-                    currentPage === page
-                      ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white"
-                      : "bg-[#1a2d6d] text-white"
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`px-4  py-2 text-sm lg:text-base  rounded-lg ${
+                      currentPage === page
+                        ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white"
+                        : "bg-[#1a2d6d] text-white"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                )
+              )}
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
@@ -591,6 +604,12 @@ const ManageContent = () => {
             </motion.div>
           )}
         </AnimatePresence>
+
+        <AddDiscountModal
+          isAddDiscountModalOpen={isAddDiscountModalOpen}
+          setIsAddDiscountModalModalOpen={setIsAddDiscountModalModalOpen}
+          content={content}
+        />
       </div>
     </div>
   );
