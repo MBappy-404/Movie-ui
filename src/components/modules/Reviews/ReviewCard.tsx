@@ -9,15 +9,69 @@ import { useAppSelector } from "@/components/redux/hooks";
 import { selectCurrentToken } from "@/components/redux/features/auth/authSlice";
 import { verifyToken } from "@/utils/verifyToken";
 import { TUser } from "@/components/types/user";
+import { ThumbsUpIcon } from "lucide-react";
+import { MdThumbUp } from "react-icons/md";
+import {
+  useAddLikeOrDislikeMutation,
+  useGetLikesOrDislikesCountQuery,
+} from "@/components/redux/features/likes/likesApi";
+import {
+  useDeleteReviewMutation,
+  useUpdateReviewMutation,
+} from "@/components/redux/features/review/reviewApi";
+import { toast } from "sonner";
+import DeletePendingReviewModal from "@/components/modals/DeletePendingReviewModal";
 
 // Separate component for individual review items
 const ReviewItem = ({ item, UserData }: { item: any; UserData: any }) => {
+  const [liked, setLiked] = useState(false);
+  const [addLikeOrDislike] = useAddLikeOrDislikeMutation();
+  const { data: likeOrDislikeCounts, isLoading } =
+    useGetLikesOrDislikesCountQuery({
+      reviewId: item.id,
+    });
   const date = new Date(item.createdAt);
+
+  const likes = likeOrDislikeCounts?.data?.likeCount;
+  const dislikes = likeOrDislikeCounts?.data?.dislikeCount;
+  const IsLikesOrDislikeStatus =
+    likeOrDislikeCounts?.data?.currentUserLikeStatus;
+
   const formattedDate = date.toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
   });
+
+  const handleAddLikeOrDislike = async (passedStatus: string) => {
+    let status;
+
+    if (passedStatus === "LIKED") {
+      status = "LIKED";
+    } else if (passedStatus === "DISLIKED") {
+      status = "DISLIKED";
+    }
+
+    const addLikeOrDislikeData = {
+      userId: UserData.id,
+      reviewId: item.id,
+      status,
+    };
+
+    try {
+      const res = await addLikeOrDislike(addLikeOrDislikeData);
+      console.log(res);
+      if ("error" in res && res.error) {
+        const errorMessage =
+          (res.error as any)?.data?.message || "An error occurred";
+        //console.log(errorMessage);
+      } else {
+        //console.log(res?.data?.message);
+      }
+    } catch (error: any) {
+      //console.log(error.data.message);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-4 border-b border-gray-700 pb-6">
@@ -40,6 +94,44 @@ const ReviewItem = ({ item, UserData }: { item: any; UserData: any }) => {
             {item.user?.name || "Anonymous"}
           </p>
           <p className="mt-2 text-gray-300 text-sm">{item.reviewText}</p>
+          <div className="flex gap-x-5 translate-y-5">
+            <button
+              onClick={() => handleAddLikeOrDislike("LIKED")}
+              // onClick={() => setLiked(!liked)}
+              className=" top-2 left-2  cursor-pointer flex gap-2 items-center   transition"
+            >
+              {IsLikesOrDislikeStatus === "LIKED" ? (
+                <MdThumbUp className="h-6 w-6" />
+              ) : (
+                <ThumbsUpIcon
+                  className="h-6 w-6"
+                  // className={`h-7 w-7 ${
+                  //   liked ? "text-blue-500" : "text-gray-500"
+                  // } hover:scale-110 rotate-180`}
+                />
+              )}
+
+              {isLoading ? <span>Pending..</span> : <span>{likes}</span>}
+            </button>
+            <button
+              onClick={() => handleAddLikeOrDislike("DISLIKED")}
+              // onClick={() => setLiked(!liked)}
+              className=" top-2 cursor-pointer left-2 flex gap-2  items-center transition"
+            >
+              {IsLikesOrDislikeStatus === "DISLIKED" ? (
+                <MdThumbUp className="h-6 w-6 rotate-180" />
+              ) : (
+                <ThumbsUpIcon
+                  className="h-6 w-6 rotate-180 translate-y-1"
+                  // className={`h-7 w-7 ${
+                  //   liked ? "text-blue-500" : "text-gray-500"
+                  // } hover:scale-110 rotate-180`}
+                />
+              )}
+
+              <span>{dislikes}</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -56,17 +148,18 @@ const ReviewCard = ({
   ReviewData: any;
   UserData: any;
 }) => {
-  
-  
-    const token = useAppSelector(selectCurrentToken);
-    let userinfo : any
-    if (token) {
-      userinfo = verifyToken(token)
-    }
-  
-    console.log(userinfo)
+  const token = useAppSelector(selectCurrentToken);
+  let userinfo: any;
+  if (token) {
+    userinfo = verifyToken(token);
+  }
+
+  console.log(userinfo);
   const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
   const [editedText, setEditedText] = useState("");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [reviewToDelete, setReviewToDelete] = useState(null);
+  const [updateReview] = useUpdateReviewMutation();
 
   const publishedReviews = ReviewData?.data?.filter(
     (item: any) => item.status === "PUBLISHED"
@@ -85,22 +178,37 @@ const ReviewCard = ({
     setEditedText("");
   };
 
-  const handleSave = (id: string) => {
+  const handleSave = async (id: string) => {
+    const toastId = toast.loading("Updating Review....", { duration: 2000 });
     // 🔁 Send updated review to backend here
-    console.log("Saving:", id, editedText);
-    setEditingReviewId(null);
+    // console.log("Saving:", id, editedText);
+
+    const updateReviewData = {
+      id,
+      reviewText: editedText,
+    };
+
+    try {
+      const res = await updateReview(updateReviewData).unwrap();
+      toast.success("Review updated successfully!", { id: toastId });
+      setEditingReviewId(null);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update review", { id: toastId });
+      setEditingReviewId(null);
+    }
   };
 
+  const isUser = userinfo && pendingReviews?.length > 0;
   return (
     <div>
-      {!publishedReviews?.length && <p>No reviews found</p>}
-      <div className="bg-gray-900 rounded-lg p-6 mb-5 shadow-md flex flex-col gap-6">
+      {isUser && (
         <h1 className="text-lg font-semibold text-yellow-500">
           Your Pending Reviews: {pendingReviews?.length}{" "}
         </h1>
-        {userinfo &&
-          pendingReviews?.length > 0 &&
-          pendingReviews?.map((item: any) => (
+      )}
+      {isUser && (
+        <div className="bg-gray-900 rounded-lg p-6 mb-5 shadow-md flex flex-col gap-6">
+          {pendingReviews?.map((item: any) => (
             <div key={item.id} className="relative p-4 rounded-md">
               {/* Pending Tag */}
 
@@ -150,6 +258,10 @@ const ReviewCard = ({
                             Edit
                           </button>
                           <button
+                            onClick={() => {
+                              setReviewToDelete(item);
+                              setIsDeleteModalOpen(true);
+                            }}
                             // onClick={() => handleDelete(item.id)}
                             className="text-sm text-red-400 hover:text-red-600"
                           >
@@ -180,8 +292,9 @@ const ReviewCard = ({
               </div>
             </div>
           ))}
-      </div>
-
+        </div>
+      )}
+      {!publishedReviews?.length && <p>No reviews found</p>}
       {publishedReviews?.length > 0 && (
         <div className="bg-gray-900 rounded-lg p-6 shadow-md flex flex-col gap-6">
           {publishedReviews?.map((item: any, index: number) => (
@@ -193,6 +306,13 @@ const ReviewCard = ({
           ))}
         </div>
       )}
+
+      <DeletePendingReviewModal
+        isDeleteModalOpen={isDeleteModalOpen}
+        setIsDeleteModalOpen={setIsDeleteModalOpen}
+        reviewToDelete={reviewToDelete}
+        setReviewToDelete={setReviewToDelete}
+      />
     </div>
   );
 };

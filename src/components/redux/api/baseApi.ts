@@ -8,16 +8,25 @@ const baseQuery = fetchBaseQuery({
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token;
     if (token) {
-        headers.set('authorization', `${token}`)
+      headers.set("authorization", `${token}`);
     }
 
-    return headers
-}
+    return headers;
+  },
 });
 
 export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: baseQuery,
-  tagTypes: ["content", "user", "review", "genres", "comment","platforms","payment"],
+  tagTypes: [
+    "content",
+    "user",
+    "review",
+    "genres",
+    "comment",
+    "platforms",
+    "payment",
+    "likes",
+  ],
   endpoints: () => ({}),
 });
