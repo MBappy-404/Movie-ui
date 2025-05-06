@@ -1,9 +1,7 @@
 "use client";
  
 import { useDashboardStatsQuery } from '@/components/redux/features/admin/adminApi';
-import { useGetAllContentQuery } from '@/components/redux/features/content/contentApi';
 import { useGetAllPaymentsQuery } from '@/components/redux/features/payment/paymentApi';
-import { useGetAllUserQuery } from '@/components/redux/features/user/userApi';
 import { useState, useMemo } from 'react';
 import {
   LineChart, BarChart, Line, Bar,
