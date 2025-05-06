@@ -9,11 +9,14 @@ interface SidebarProps {
 }
 
 const menuItems = [
+ 
   { name: "Overview", link: "/dashboard" },
   { name: "Content", link: "/dashboard/content" },
   { name: "Users", link: "/dashboard/users" },
   { name: "Reviews", link: "/dashboard/reviews" },
   { name: "Platform & Genre", link: "/dashboard/platformGenre" },
+  { name: "Discount", link: "/discount" },
+ 
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
