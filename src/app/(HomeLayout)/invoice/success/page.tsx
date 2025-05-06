@@ -10,47 +10,7 @@ const MovieInvoice = () => {
   const { data } = useGetPaymentWithVerifyQuery(tarnId);
   const paymentData = data?.data;
 
-<<<<<<< HEAD
-  const generateMockData = () => ({
-    invoiceNumber: `CINEFLIX-${Math.floor(1000 + Math.random() * 9000)}`,
-    customerName: "Raj Shekhar",
-    customerEmail: "raj@example.com",
-    items: [
-      {
-        id: "1",
-        title: "Gangs of Wasseypur",
-        format: 'HD' as const,
-        quantity: 2,
-        price: 299,
-        poster: "/path/to/poster1.jpg"
-      },
-      {
-        id: "2",
-        title: "Kabuliwala",
-        format: '4K' as const,
-        quantity: 1,
-        price: 499,
-        poster: "/path/to/poster2.jpg"
-      }
-    ],
-    issueDate: new Date().toLocaleDateString(),
-    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-    paymentStatus: 'pending' as const
-  });
-
-  useEffect(() => {
-    const fetchInvoiceData = () => {
-      setTimeout(() => {
-        setInvoiceData(generateMockData());
-      }, 1500);
-    };
-    fetchInvoiceData();
-  }, []);
-
-  if (!invoiceData) {
-=======
   if (!paymentData) {
->>>>>>> 015de0925662d2a4be933864de73d7a416f55454
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#00031b]">
         <motion.div
