@@ -1,13 +1,7 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
-import React, { useState } from "react";
+import React from "react";
 import { useForm, SubmitHandler, FieldValues } from "react-hook-form";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Button } from "../ui/button";
-import { CalendarIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { Slider } from "../ui/slider";
 import { useCreateDiscountsMutation } from "../redux/features/discount/discountApi";
 import { toast } from "sonner";
 
@@ -98,33 +92,7 @@ const AddDiscountModal = ({
                       <label className="block text-sm font-medium mb-1 text-gray-300">
                         Start Date
                       </label>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full justify-start text-left font-normal bg-[#0a1235] border-[#1a2d6d] hover:bg-[#0a1235]",
-                              !startDate &&
-                                "text-muted-foreground hover:text-white"
-                            )}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {startDate ? (
-                              format(startDate, "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0 bg-[#0a1235] border-[#1a2d6d]">
-                          {/* <Calendar
-                            mode="single"
-                            selected={startDate}
-                            onSelect={setStartDate}
-                            initialFocus
-                          /> */}
-                        </PopoverContent>
-                      </Popover>
+                      popover
                     </div>
                   </div>
 
@@ -135,33 +103,7 @@ const AddDiscountModal = ({
                       <label className="block text-sm font-medium mb-1 text-gray-300">
                         End Date
                       </label>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full justify-start text-left font-normal bg-[#0a1235] border-[#1a2d6d] hover:bg-[#0a1235] hover:text-white",
-                              !endDate && "text-muted-foreground"
-                            )}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {endDate ? (
-                              format(endDate, "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0 bg-[#0a1235] border-[#1a2d6d]">
-                          {/* <Calendar
-                            mode="single"
-                            selected={endDate}
-                            onSelect={setEndDate}
-                            initialFocus
-                            fromDate={startDate}
-                          /> */}
-                        </PopoverContent>
-                      </Popover>
+                      popover
                     </div>
                   </div>
                 </div>
