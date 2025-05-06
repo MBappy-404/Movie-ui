@@ -161,38 +161,55 @@ const ManagePlatform = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {platformsData?.map((platform: Platform, index: number) => (
+                  {platformsData?.map((platform: Platform) => (
                     <motion.tr
-                      key={index + 1}
+                      key={platform.id}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       className="border-t border-[#1a2d6d] hover:bg-[#000a3a]/50 transition-colors"
                     >
-                      <td className="px-6 py-4">{platform.platformName}</td>
-                      <td className="px-6 py-4">
-                        <Image
-                          src={platform.platformLogo!}
-                          alt="Platform Logo"
-                          height={500}
-                          width={500}
-                          className="h-14 w-14 rounded-full"
-                        />
+                      <td className="px-6 py-4 font-medium text-gray-100">
+                        {platform.platformName}
                       </td>
-                      <td className="px-6 py-4 text-2xl flex gap-3">
-                        <MdDeleteOutline
-                          onClick={() => {
-                            setPlatformToDelete(platform);
-                            setIsDeleteModalOpen(true);
-                          }}
-                          className="cursor-pointer hover:text-red-500 transition-colors"
-                        />
-                        <FaPen
-                          className="text-xl cursor-pointer hover:text-blue-500 transition-colors"
-                          onClick={() => {
-                            setUpdatePlatformModalOpen(true);
-                            setPlatform(platform);
-                          }}
-                        />
+                      <td className="px-6 py-4">
+                        <div className="inline-flex">
+                          <Image
+                            src={
+                              platform.platformLogo ??
+                              "/default-platform-logo.png"
+                            }
+                            alt={`${platform.platformName} logo`}
+                            height={40}
+                            width={40}
+                            className="h-10 w-10 rounded-full object-contain"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src =
+                                "/default-platform-logo.png";
+                            }}
+                          />
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3 text-2xl">
+                          <button
+                            onClick={() => {
+                              setPlatformToDelete(platform);
+                              setIsDeleteModalOpen(true);
+                            }}
+                            className="hover:text-red-500 transition-colors cursor-pointer   "
+                          >
+                            <MdDeleteOutline className="w-6 h-6" />
+                          </button>
+                          <button
+                            onClick={() => {
+                              setUpdatePlatformModalOpen(true);
+                              setPlatform(platform);
+                            }}
+                            className="hover:text-blue-500 transition-colors  cursor-pointer   focus:ring-blue-500"
+                          >
+                            <FaPen className="w-5 h-5" />
+                          </button>
+                        </div>
                       </td>
                     </motion.tr>
                   ))}
@@ -202,7 +219,7 @@ const ManagePlatform = () => {
           </div>
         )}
 
-        {/* Add Movie Modal */}
+        {/* Add platform Modal */}
         <AnimatePresence>
           {isModalOpen && (
             <motion.div
@@ -214,7 +231,7 @@ const ManagePlatform = () => {
               <motion.div
                 initial={{ scale: 0.95, y: 20 }}
                 animate={{ scale: 1, y: 0 }}
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl bg-[#000a3a] border border-[#1a2d6d] rounded-xl overflow-hidden"
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-xl bg-[#000a3a] border border-[#1a2d6d] rounded-xl overflow-hidden"
               >
                 <form
                   onSubmit={handleSubmit(onSubmit)}
@@ -264,13 +281,13 @@ const ManagePlatform = () => {
                   </div>
 
                   {/* Form Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1   gap-6">
                     {/* Left Column */}
                     <div className="space-y-4">
                       <input
                         {...register("platformName", { required: true })}
                         placeholder="Platform Name"
-                        className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
+                        className="w-full bg-[#00031b] px-4 py-2  border border-[#1a2d6d]  rounded-lg focus:outline-none"
                       />
                       {errors.platformName && (
                         <p className="text-red-500">
