@@ -96,8 +96,8 @@ const Navbar = () => {
     <nav
       className={`fixed w-full z-[990] ${
         isScrolled
-          ? "backdrop-blur-md bg-gray-900/90"
-          : "bg-gray-900 md:bg-transparent"
+          ? "backdrop-blur-md bg-[#101828]"
+          : "bg-[#101828] md:bg-transparent"
       } transition-all duration-500`}
     >
       <div className="container mx-auto px-4 xl:px-12">
@@ -202,9 +202,8 @@ const Navbar = () => {
 
               {!user && (<Link href="/login">
                 <motion.button
-                  className="px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  className="px-4 py-2 cursor-pointer bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all"
+                   
                 >
                   Sign In
                 </motion.button>

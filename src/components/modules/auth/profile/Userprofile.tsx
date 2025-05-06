@@ -1,21 +1,20 @@
 "use client";
 import { selectCurrentToken } from "@/components/redux/features/auth/authSlice";
-import {
-  useGetPaymentWithVerifyQuery,
-  usePurchaseHistoryQuery,
-} from "@/components/redux/features/payment/paymentApi";
+import { usePurchaseHistoryQuery } from "@/components/redux/features/payment/paymentApi";
 import {
   useGetUserQuery,
   useUpdateUserMutation,
 } from "@/components/redux/features/user/userApi";
 import { useAppSelector } from "@/components/redux/hooks";
-import { Movie } from "@/types";
+
 import { verifyToken } from "@/utils/verifyToken";
 import { ShoppingBagIcon } from "@heroicons/react/24/outline";
+import Image from "next/image";
 import Link from "next/link";
 import { useState, useRef } from "react";
 import React from "react";
 import { toast } from "sonner";
+import LoadingPage from "./profileSkeleton";
 
 interface UserData {
   name: string;
@@ -31,15 +30,6 @@ interface UserData {
   };
 }
 
-interface WatchlistItem {
-  id: number;
-  title: string;
-  poster: string;
-  rating: number;
-  genre: string;
-  progress: number;
-}
-
 interface FormData {
   name: string;
   email: string;
@@ -47,17 +37,15 @@ interface FormData {
 }
 
 const UserProfile = () => {
- 
+  const token = useAppSelector(selectCurrentToken);
+  let userInfo;
+  if (token) {
+    userInfo = verifyToken(token);
+  }
 
-    const token = useAppSelector(selectCurrentToken);
-    let userInfo
-    if (token) {
-      userInfo = verifyToken(token)
-    }
+  const userId = userInfo?.id;
 
-    const userId = userInfo?.id;
-  
-  const { data } = useGetUserQuery(userId);
+  const { data, isLoading } = useGetUserQuery(userId);
   const [updateUser] = useUpdateUserMutation();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -86,25 +74,6 @@ const UserProfile = () => {
       lists: 8,
     },
   });
-
-  const [watchlist, setWatchlist] = useState<WatchlistItem[]>([
-    {
-      id: 1,
-      title: "Inception",
-      poster: "https://via.placeholder.com/300x450",
-      rating: 4.8,
-      genre: "Sci-Fi",
-      progress: 75,
-    },
-    {
-      id: 2,
-      title: "The Dark Knight",
-      poster: "https://via.placeholder.com/300x450",
-      rating: 4.9,
-      genre: "Action",
-      progress: 90,
-    },
-  ]);
 
   // Update formData when user data is loaded
   React.useEffect(() => {
@@ -194,7 +163,18 @@ const UserProfile = () => {
   };
 
   const { data: purchaseHistory } = usePurchaseHistoryQuery([]);
-  console.log(purchaseHistory?.data);
+  const totalBought = purchaseHistory?.data?.filter(
+    (item: any) => item?.purchaseStatus === "BOUGHT"
+  );
+  const totalRented = purchaseHistory?.data?.filter(
+    (item: any) => item?.purchaseStatus === "RENTED"
+  );
+
+  if(isLoading){
+    return (
+      <LoadingPage/>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br pt-28 from-[#00031b] to-[#0a0b2a] py-12  px-2 lg:px-8">
@@ -206,7 +186,10 @@ const UserProfile = () => {
             <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-8">
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-tr from-blue-500 to-purple-500 rounded-full animate-spin-slow blur-2xl opacity-30"></div>
-                <img
+                <Image
+                  width={150}
+                  height={150}
+                  blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTUwIj48ZGVmcz48Y2lyY2xlIGN4PSI1MCIgY3k9Ijc1IiByPSI1MCIgZmlsbD0iI2ZmZmZmZiIvPjwvZGVmcz48Zz48Y2lyY2xlIGN4PSI1MCIgY3k9Ijc1IiByPSI1MCIgZmlsbD0iIzAwMDAwMCIvPjwvZz48L3N2Zz4K"
                   src={previewImage || user?.avatar}
                   alt={formData.name || user?.name}
                   className="w-36 h-36 rounded-full mt-5 md:mt-2 border-4 border-white/10 shadow-xl object-cover"
@@ -297,23 +280,17 @@ const UserProfile = () => {
                 <div className="mt-6 grid grid-cols-3 gap-4 max-w-md">
                   <div className="bg-white/5 p-4  rounded-xl border border-white/10">
                     <div className="text-lg md:text-2xl text-center font-bold text-blue-400">
-                      {purchaseHistory?.data?.length}
+                      {totalBought?.length || 0}
                     </div>
                     <div className="text-sm text-center text-gray-400">
-                      Movies Purchased!
+                      Bought
                     </div>
                   </div>
                   <div className="bg-white/5 p-4 text-center rounded-xl border border-white/10">
                     <div className="text-lg md:text-2xl font-bold text-purple-400">
-                      {user.stats.watching}
+                      {totalRented?.length || 0}
                     </div>
-                    <div className="text-sm text-gray-400">Watching Now</div>
-                  </div>
-                  <div className="bg-white/5 p-4 text-center rounded-xl border border-white/10">
-                    <div className="text-lg md:text-2xl font-bold text-pink-400">
-                      {user.stats.lists}
-                    </div>
-                    <div className="text-sm text-gray-400">Custom Lists</div>
+                    <div className="text-sm text-gray-400">Rented</div>
                   </div>
                 </div>
               </div>
@@ -348,7 +325,7 @@ const UserProfile = () => {
                 onClick={() => setActiveTab("watchlist")}
                 className={`px-6 py-3 rounded-t-xl cursor-pointer font-medium flex items-center gap-2 transition-all ${
                   activeTab === "watchlist"
-                    ? "text-white bg-white/10 border-b-2 border-purple-400"
+                    ? "text-white bg-white/10 border-b-2 border-blue-400"
                     : "text-gray-400 hover:bg-white/5"
                 }`}
               >
@@ -434,27 +411,72 @@ const UserProfile = () => {
                 </div>
               </form>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {purchaseHistory?.data?.map((movie: any) => (
-                  <Link key={movie.id} href={`/movies/${movie?.content?.id}`}>
-                    <div className="group relative bg-white/5 rounded-2xl border border-white/10 overflow-hidden hover:border-white/20 transition-all">
-                      <div className="relative">
-                        <img
-                          src={movie?.content?.thumbnail}
-                          alt={movie.title}
-                          className="w-full h-80 object-cover object-top"
-                        />
-                      </div>
-                      <div className="p-4">
-                        <h3 className="text-lg font-semibold text-gray-100">
-                          {movie?.content?.title}
-                        </h3>
+              <div className="overflow-x-auto mt-10">
+                <table className="min-w-full table-auto border-collapse border border-white/10 rounded-xl overflow-hidden">
+                  <thead className="bg-white/5">
+                    <tr>
+                      <th className="text-left px-6 py-4 text-white font-medium whitespace-nowrap">
+                        Thumbnail
+                      </th>
+                      <th className="text-left px-6 py-4 text-white font-medium whitespace-nowrap">
+                        Name
+                      </th>
+                      <th className="text-left px-6 py-4 text-white font-medium whitespace-nowrap">
+                        Price
+                      </th>
+                      <th className="text-left px-6 py-4 text-white font-medium whitespace-nowrap">
+                        Date
+                      </th>
+                      <th className="text-left px-6 py-4 text-white font-medium whitespace-nowrap">
+                        Type
+                      </th>
+                      <th className="text-left px-6 py-4 text-white font-medium whitespace-nowrap">
+                        Status
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/10 bg-[#060a2d] text-white">
+                    {purchaseHistory?.data?.map((movie: any) => (
+                      <tr key={movie.id} className="">
+                        <td className="px-6 py-4 w-[100px]">
+                          <Image
+                            src={movie?.content?.thumbnail}
+                            alt={movie?.content?.title}
+                            width={100}
+                            height={150}
+                            blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTUwIj48ZGVmcz48Y2lyY2xlIGN4PSI1MCIgY3k9Ijc1IiByPSI1MCIgZmlsbD0iI2ZmZmZmZiIvPjwvZGVmcz48Zz48Y2lyY2xlIGN4PSI1MCIgY3k9Ijc1IiByPSI1MCIgZmlsbD0iIzAwMDAwMCIvPjwvZz48L3N2Zz4K"
+                            className="w-16 h-24 object-cover rounded-md border border-white/10"
+                          />
+                        </td>
+                        <td className="px-6 py-4 font-semibold whitespace-nowrap">
+                          <Link
+                            href={`/movies/${movie?.content?.id}`}
+                            className="hover:text-blue-400 transition-colors"
+                          >
+                            {movie?.content?.title}
+                          </Link>
+                        </td>
 
-                        <p>{movie?.content?.genre?.genreName}</p>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
+                        <td className="px-6 py-4">${movie?.amount}</td>
+                        <td className="px-6 py-4">
+                          {movie?.createdAt?.slice(0, 10)}
+                        </td>
+                        <td className="px-6 py-4">{movie?.purchaseStatus}</td>
+                        <td className="px-6 py-4 capitalize">
+                          <span
+                            className={`px-3 py-1 rounded-full text-sm font-medium ${
+                              movie?.status === "PAID"
+                                ? "bg-green-600/20 text-green-400"
+                                : "bg-red-600/20 text-red-400"
+                            }`}
+                          >
+                            {movie?.status || "Pending"}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>

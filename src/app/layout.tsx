@@ -27,7 +27,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link
-          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Open+Sans:wght@300;400;600&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap"
           rel="stylesheet"
         />
       </head>
@@ -37,9 +37,7 @@ export default function RootLayout({
         data-gr-ext-installed=""
       >
         <div>
-          <ProvidersWrapper>
-            {children}
-          </ProvidersWrapper>
+          <ProvidersWrapper>{children}</ProvidersWrapper>
         </div>
       </body>
     </html>

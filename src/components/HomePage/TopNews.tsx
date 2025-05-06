@@ -1,10 +1,11 @@
 "use client";
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { useRef } from "react";
 
 const topNews = [
   {
@@ -48,6 +49,8 @@ const topNews = [
     category: "Entertainment",
   },
 ];
+
+
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -95,6 +98,8 @@ const textVariants = {
 };
 
 const TopNews = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
   return (
     <motion.div
       initial="hidden"
@@ -103,16 +108,12 @@ const TopNews = () => {
       variants={containerVariants}
       className="pb-20 lg:px-20"
     >
+       <div className="container mx-auto px-4" ref={ref}>
        <motion.h2
         className="text-3xl ml-2 md:ml-0 md:text-4xl font-bold text-white mb-8"
-        variants={{
-          hidden: { opacity: 0, x: -50 },
-          visible: {
-            opacity: 1,
-            x: 0,
-            transition: { type: "spring", stiffness: 100 },
-          },
-        }}
+        initial={{ opacity: 0, x: -50 }}
+          animate={isInView ? { opacity: 1, x: 0 } : {}}
+          transition={{ duration: 0.8 }}
       >
        Top News
       </motion.h2>
@@ -214,6 +215,7 @@ const TopNews = () => {
           </SwiperSlide>
         ))}
       </Swiper>
+      </div>
     </motion.div>
   );
 };
