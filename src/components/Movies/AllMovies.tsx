@@ -225,13 +225,13 @@ export const AllMovies = () => {
               <div className="space-y-2 lg:space-y-3">
                 {genres.map((genre: Genre) => (
                   <div
-                    key={genre.genreName}
-                    onClick={() => handleGenreClick(genre.genreName)}
+                    key={genre?.genreName}
+                    onClick={() => handleGenreClick(genre?.genreName)}
                     className={`cursor-pointer ${
                       selectedGenre === genre.genreName ? "text-purple-500" : "text-gray-400"
                     } hover:text-purple-500 transition-colors`}
                   >
-                    {genre.genreName}
+                    {genre?.genreName}
                   </div>
                 ))}
               </div>
@@ -279,7 +279,7 @@ export const AllMovies = () => {
                     <div>
                       <h3 className="font-semibold">{movie.title}</h3>
                       <p className="text-sm text-gray-400">
-                        {movie.genre.genreName}
+                        {movie?.genre?.genreName}
                       </p>
                     </div>
                   </Link>
@@ -302,8 +302,8 @@ export const AllMovies = () => {
                       onChange={(e) => handleGenreClick(e.target.value)}
                     >
                       {genres.map((genre: Genre) => (
-                        <option key={genre.genreName} value={genre.genreName}>
-                          {genre.genreName}
+                        <option key={genre?.genreName} value={genre?.genreName}>
+                          {genre?.genreName}
                         </option>
                       ))}
                     </select>
@@ -435,7 +435,7 @@ export const AllMovies = () => {
                     </h3>
                     <div className="flex items-center justify-between p-3">
                       <span className="text-sm text-gray-400">
-                        {movie.genre.genreName}
+                        {movie?.genre?.genreName}
                       </span>
                       <span className="text-sm font-semibold">
                         ${movie.price}
@@ -542,7 +542,7 @@ export const AllMovies = () => {
                         {movie.title}
                       </h3>
                       <p className="text-gray-400 text-sm mb-2">
-                        {movie.genre.genreName}
+                        {movie?.genre?.genreName}
                       </p>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">

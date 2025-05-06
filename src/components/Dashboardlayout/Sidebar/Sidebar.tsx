@@ -15,7 +15,7 @@ const menuItems = [
   { name: "Users", link: "/dashboard/users" },
   { name: "Reviews", link: "/dashboard/reviews" },
   { name: "Platform & Genre", link: "/dashboard/platformGenre" },
-  { name: "Discount", link: "/discount" },
+  { name: "Discount", link: "/dashboard/discount" },
  
 ];
 

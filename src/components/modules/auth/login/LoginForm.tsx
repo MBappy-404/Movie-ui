@@ -59,10 +59,10 @@ const LoginForm = () => {
         token: res?.data?.accessToken
       }))
       router.push(redirect || "/");
-      toast.success('Logged in', { id: toastId });
-    } catch (error) {
-      console.log(error);
-      toast.error('Something went wrong', { id: toastId });
+      console.log(res)
+      toast.success(res.message, { id: toastId });
+    } catch (error : any) {
+      toast.error(error.data.message, { id: toastId });
 
     }
   };
