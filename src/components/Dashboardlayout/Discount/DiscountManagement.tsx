@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MdDeleteOutline } from "react-icons/md";
 import { FaPen } from "react-icons/fa";
 import LoadingSpinner from "@/components/LoadingSpinner";
-import { format } from "date-fns";
 
 const DiscountManagement = () => {
   const { data: discounts, isLoading } = useGetAllDiscountsQuery(undefined);
@@ -51,10 +50,10 @@ const DiscountManagement = () => {
                     >
                       <td className="px-6 py-4">{discount?.content?.title}</td>
                       <td className="px-6 py-4">
-                        {format(new Date(discount?.startDate), "dd MMMM, yyyy")}
+                        {discount?.startDate}
                       </td>
                       <td className="px-6 py-4">
-                        {format(new Date(discount?.endDate), "dd MMMM, yyyy")}
+                        {discount?.startDate}
                       </td>
                       <td className="px-6 py-4">{discount?.percentage}%</td>
                       <td className="px-6 py-4">
