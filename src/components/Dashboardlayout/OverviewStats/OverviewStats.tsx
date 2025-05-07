@@ -163,7 +163,7 @@ const OverviewStats = () => {
         <StatCard title="Total Users" value={data?.data?.totalUser || '0'} trend="12.5%" icon="👥" color="bg-purple-500/20" />
         <StatCard title="Total Movies" value={data?.data?.totalMovies || '0'} trend="8.2%" icon="🎬" color="bg-blue-500/20" />
         <StatCard title="Total Transactions" value={data?.data?.totalPayment || '0'} trend="18.4%" icon="💳" color="bg-green-500/20" />
-        <StatCard title="Total Earnings" value={`$${data?.data?.totalEaring?._sum?.amount || '0'}`} trend="22.3%" icon="💰" color="bg-pink-500/20" />
+        <StatCard title="Total Earnings" value={`$${data?.data?.totalEaring?._sum?.amount.toFixed(2)  || '0'}`} trend="22.3%" icon="💰" color="bg-pink-500/20" />
       </div>
 
       <div className="bg-gradient-to-br from-[#000a3a] to-[#000a3a]/50 p-2 md:p-6 rounded-xl border border-[#00175f]/30">
