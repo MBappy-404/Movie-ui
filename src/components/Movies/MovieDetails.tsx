@@ -253,8 +253,8 @@ const MovieDetails = () => {
             {movieDetails?.data?.title}
           </h1>
 
-          <div className="text-sm md:text-lg text-gray-400 mb-2 flex md:flex-row lg:flex-row flex-col gap-1 lg:items-center ">
-            <div className="flex gap-1">
+          <div className="text-sm md:text-lg text-gray-400 mb-2 flex  lg:flex-row flex-col gap-1 lg:items-center ">
+            <div className="flex lg:flex-row gap-1">
             <Rating
               style={{ maxWidth: 80 }}
               value={movieDetails?.data?.averageRating}
@@ -268,7 +268,7 @@ const MovieDetails = () => {
             </div>
             </div>
             
-            <div className="flex gap-1">
+            <div className="flex lg:flex-row gap-1">
             ⏱️{" "}
             <p>{movieDetails?.data?.duration} |{" "}</p>
             <span className="flex gap-1">
