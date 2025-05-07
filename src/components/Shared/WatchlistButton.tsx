@@ -29,7 +29,7 @@ const WatchlistButton = ({ data } :any) => {
     
     <button
       onClick={()=> handleToggleWatchlist(data)}
-      className={`px-4 py-2 rounded-xl font-semibold shadow-md transition-all ${
+      className={`px-4 py-2 rounded-full font-semibold shadow-md transition-all ${
         isExistInWatchList ? 'cursor-pointer rounded-xl text-white bg-red-500 shadow-md hover:opacity-90 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-red-500/40 text-sm duration-300' : 'cursor-pointer rounded-xl text-white bg-gradient-to-r from-blue-500 to-purple-500 shadow-md hover:opacity-90 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-500/40 text-sm duration-300'
       }`}
     >
