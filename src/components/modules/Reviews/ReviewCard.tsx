@@ -43,6 +43,7 @@ const ReviewItem = ({ item, UserData }: { item: any; UserData: any }) => {
     day: "numeric",
   });
 
+
   const handleAddLikeOrDislike = async (passedStatus: string) => {
     let status;
 
@@ -86,13 +87,17 @@ const ReviewItem = ({ item, UserData }: { item: any; UserData: any }) => {
           />
         </div>
         <div className="flex-grow">
-          <div className="flex items-center gap-2">
-            <Rating style={{ maxWidth: 80 }} value={item.rating} readOnly />
-            <p className="text-sm text-gray-400">{formattedDate}</p>
+          <div className="flex flex-col items-start gap-1 w-full">
+            <Rating
+              items={10}
+              value={item.rating}
+              readOnly
+              style={{ maxWidth: 120, width: "100%" }}
+              className="w-[100px] sm:w-[120px]"
+            />
+            <span className="font-bold text-white">{item.user?.name || "Anonymous"}</span>
+            <span className="text-sm text-gray-300">{formattedDate}</span>
           </div>
-          <p className="font-semibold text-white mt-1">
-            {item.user?.name || "Anonymous"}
-          </p>
           <p className="mt-2 text-gray-300 text-sm">{item.reviewText}</p>
           <div className="flex gap-x-5 translate-y-5">
             <button
@@ -105,9 +110,9 @@ const ReviewItem = ({ item, UserData }: { item: any; UserData: any }) => {
               ) : (
                 <ThumbsUpIcon
                   className="h-6 w-6"
-                  // className={`h-7 w-7 ${
-                  //   liked ? "text-blue-500" : "text-gray-500"
-                  // } hover:scale-110 rotate-180`}
+                // className={`h-7 w-7 ${
+                //   liked ? "text-blue-500" : "text-gray-500"
+                // } hover:scale-110 rotate-180`}
                 />
               )}
 
@@ -123,9 +128,9 @@ const ReviewItem = ({ item, UserData }: { item: any; UserData: any }) => {
               ) : (
                 <ThumbsUpIcon
                   className="h-6 w-6 rotate-180 translate-y-1"
-                  // className={`h-7 w-7 ${
-                  //   liked ? "text-blue-500" : "text-gray-500"
-                  // } hover:scale-110 rotate-180`}
+                // className={`h-7 w-7 ${
+                //   liked ? "text-blue-500" : "text-gray-500"
+                // } hover:scale-110 rotate-180`}
                 />
               )}
 
@@ -224,12 +229,22 @@ const ReviewCard = ({
                   />
                 </div>
                 <div className="flex-grow">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-col items-start gap-1 w-full">
                     <Rating
-                      style={{ maxWidth: 80 }}
+                      items={10}
                       value={item.rating}
                       readOnly
+                      style={{ maxWidth: 120, width: "100%" }}
+                      className="w-[100px] sm:w-[120px]"
                     />
+                    <span className="font-bold text-white">{item.user?.name || "Anonymous"}</span>
+                    <span className="text-sm text-gray-300">
+                      {new Date(item.createdAt).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </span>
                   </div>
                   <div className="bg-gray-800 p-3 rounded-xl mt-2 max-w-[300px] md:max-w-[400px] whitespace-pre-wrap break-all relative">
                     {/* Action Buttons */}

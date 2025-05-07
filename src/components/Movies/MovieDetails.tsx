@@ -35,6 +35,8 @@ import { verifyToken } from "@/utils/verifyToken";
 import { selectCurrentToken } from "../redux/features/auth/authSlice";
 import { TMovie } from "../types/movie";
 import WatchlistButton from "../Shared/WatchlistButton";
+import { RatioIcon, Star, StarIcon } from "lucide-react";
+import { Md18UpRating } from "react-icons/md";
 
 interface ReviewFormData {
   rating: number;
@@ -204,6 +206,7 @@ const MovieDetails = () => {
     }
   };
 
+
   return (
     <div className="min-h-screen container mx-auto text-white p-6 pt-24">
       {/* 🎬 Trial Video Section */}
@@ -211,10 +214,10 @@ const MovieDetails = () => {
       <div className="w-full  mb-10 hidden md:block">
         <div className="relative w-full   rounded-xl overflow-hidden">
           {typeof movieDetails?.data?.contentBanner === "string" &&
-          movieDetails.data.contentBanner.trim() !== "" &&
-          (movieDetails.data.contentBanner.startsWith("http") ||
-            movieDetails.data.contentBanner.startsWith("https") ||
-            movieDetails.data.contentBanner.startsWith("/")) ? (
+            movieDetails.data.contentBanner.trim() !== "" &&
+            (movieDetails.data.contentBanner.startsWith("http") ||
+              movieDetails.data.contentBanner.startsWith("https") ||
+              movieDetails.data.contentBanner.startsWith("/")) ? (
             <Image
               src={movieDetails.data.contentBanner}
               alt="Banner"
@@ -255,34 +258,31 @@ const MovieDetails = () => {
 
           <div className="text-sm md:text-lg text-gray-400 mb-2 flex  lg:flex-row flex-col gap-1 lg:items-center ">
             <div className="flex lg:flex-row gap-1">
-            <Rating
-              style={{ maxWidth: 80 }}
-              value={movieDetails?.data?.averageRating}
-              onChange={movieDetails?.data?.averageRating}
-              readOnly
-            />{" "}
-            <p>{movieDetails?.data?.averageRating} | {" "}</p>
-            <div className="flex gap-1">
-            📅
-            <p>{movieDetails?.data?.releaseYear} | </p>
+              <div className="flex items-center gap-1">
+              <Rating items={1} value={1} style={{ maxWidth: 20 }}/>
+              <p>{movieDetails?.data?.averageRating}/10 | {" "}</p>
+              </div>
+              <div className="flex gap-1">
+                📅
+                <p>{movieDetails?.data?.releaseYear} | </p>
+              </div>
             </div>
-            </div>
-            
+
             <div className="flex lg:flex-row gap-1">
-            ⏱️{" "}
-            <p>{movieDetails?.data?.duration} |{" "}</p>
-            <span className="flex gap-1">
-              <Image
-                src={movieDetails?.data?.platform?.platformLogo}
-                width={20}
-                height={20}
-                alt="sds"
-              />
-               {movieDetails?.data?.platform?.platformName}
-            </span>{" "}
+              ⏱️{" "}
+              <p>{movieDetails?.data?.duration} |{" "}</p>
+              <span className="flex gap-1">
+                <Image
+                  src={movieDetails?.data?.platform?.platformLogo}
+                  width={20}
+                  height={20}
+                  alt="sds"
+                />
+                {movieDetails?.data?.platform?.platformName}
+              </span>{" "}
             </div>
-            
-           
+
+
           </div>
 
           <p className="mb-4 text-sm md:text-lg text-gray-300">
@@ -323,58 +323,62 @@ const MovieDetails = () => {
               </p>
             )}
 
-{(() => {
-  const discount = movieDetails?.data?.discount;
-  const price = movieDetails?.data?.price;
+            {(() => {
+              const discount = movieDetails?.data?.discount;
+              const price = movieDetails?.data?.price;
 
-  if (!discount || !price) return null;
+              if (!discount || !price) return null;
 
-  const today = new Date();
-  const startDate = new Date(discount.startDate);
-  const endDate = new Date(discount.endDate);
+              const today = new Date();
+              const startDate = new Date(discount.startDate);
+              const endDate = new Date(discount.endDate);
 
-  // Normalize all dates to 00:00 so we can compare only the date
-  today.setHours(0, 0, 0, 0);
-  startDate.setHours(0, 0, 0, 0);
-  endDate.setHours(0, 0, 0, 0);
+              // Normalize all dates to 00:00 so we can compare only the date
+              today.setHours(0, 0, 0, 0);
+              startDate.setHours(0, 0, 0, 0);
+              endDate.setHours(0, 0, 0, 0);
 
-  const isDiscountActive =
-    today.getTime() === startDate.getTime() || // aaj start
-    today.getTime() === endDate.getTime() ||   // aaj end
-    today.getTime() < endDate.getTime();       // aaj end er age
+              const isDiscountActive =
+                today.getTime() === startDate.getTime() || // aaj start
+                today.getTime() === endDate.getTime() ||   // aaj end
+                today.getTime() < endDate.getTime();       // aaj end er age
 
-  return (
-    <>
-      {isDiscountActive && (
-        <p className="text-sm md:text-lg text-gray-400">
-          Discount Left:
-          <span className="text-white ml-1">
-            {discount.endDate?.slice(0, 10)}
-          </span>
-        </p>
-      )}
 
-      <p className="text-sm md:text-lg font-semibold text-gray-400">
-        One Time Purchase:
-        {discount.isActive && isDiscountActive ? (
-          <>
-            <span className="text-white font-bold ml-2 text-xl">
-              ${(
-                price -
-                (price * discount.percentage) / 100
-              ).toFixed(2)}
-            </span>
-            <del className="ml-2 text-red-400">${price}</del>
-          </>
-        ) : (
-          <span className="text-white font-bold ml-2 text-xl">
-            ${price}
-          </span>
-        )}
-      </p>
-    </>
-  );
-})()}
+
+
+
+              return (
+                <>
+                  {isDiscountActive && (
+                    <p className="text-sm md:text-lg text-gray-400">
+                      Discount Left:
+                      <span className="text-white ml-1">
+                        {discount.endDate?.slice(0, 10)}
+                      </span>
+                    </p>
+                  )}
+
+                  <p className="text-sm md:text-lg font-semibold text-gray-400">
+                    One Time Purchase:
+                    {discount.isActive && isDiscountActive ? (
+                      <>
+                        <span className="text-white font-bold ml-2 text-xl">
+                          ${(
+                            price -
+                            (price * discount.percentage) / 100
+                          ).toFixed(2)}
+                        </span>
+                        <del className="ml-2 text-red-400">${price}</del>
+                      </>
+                    ) : (
+                      <span className="text-white font-bold ml-2 text-xl">
+                        ${price}
+                      </span>
+                    )}
+                  </p>
+                </>
+              );
+            })()}
 
 
 
@@ -420,13 +424,13 @@ const MovieDetails = () => {
                     Buy On Time{" "}
                     <span>
                       {movieDetails?.data?.price &&
-                      movieDetails?.data?.discount
+                        movieDetails?.data?.discount
                         ? (
-                            movieDetails.data.price -
-                            (movieDetails.data.price *
-                              movieDetails.data.discount?.percentage) /
-                              100
-                          ).toFixed(2)
+                          movieDetails.data.price -
+                          (movieDetails.data.price *
+                            movieDetails.data.discount?.percentage) /
+                          100
+                        ).toFixed(2)
                         : movieDetails?.data?.price}
                     </span>{" "}
                     USD
@@ -502,13 +506,20 @@ const MovieDetails = () => {
 
           <h2 className="mt-10 text-xl font-semibold">Add a review</h2>
           <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
-            {/* Rating Component */}
-            <Rating
-              style={{ maxWidth: 180 }}
-              value={rating}
-              onChange={setRating}
-            />
 
+
+            {/* Rating Component */}
+            <div className="flex items-center gap-1">
+              <Rating
+                items={10}
+                style={{ maxWidth: 200 }}
+                value={rating}
+                onChange={setRating}
+                halfFillMode="box"
+                transition="colors"
+              />
+              <span className="text-yellow-400">{rating}/10</span>
+            </div>
             {/* Review Textarea */}
             <textarea
               className="w-full mt-4 p-2 outline-none focus:border-blue-500 transition-all duration-300  bg-gray-800 border border-gray-600 rounded"
