@@ -15,6 +15,7 @@ export const Providers = ({ children }: { children: ReactNode }) => {
           {children}
           <Toaster
             position="top-center"
+            duration={2000}
             richColors
           />
         </>
