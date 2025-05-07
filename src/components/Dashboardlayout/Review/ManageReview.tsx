@@ -1,13 +1,15 @@
-"use client"
+"use client";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useGetAllReviewQuery, useUpdateReviewMutation, useDeleteReviewMutation } from "@/components/redux/features/review/reviewApi";
+import {
+  useGetAllReviewQuery,
+  useUpdateReviewMutation,
+  useDeleteReviewMutation,
+} from "@/components/redux/features/review/reviewApi";
 import { MdDeleteOutline } from "react-icons/md";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { toast } from "sonner";
 import { Review, ReviewStatus } from "@/components/types/review";
-
-
 
 const ManageReview = () => {
   const { data: reviews, isLoading, error } = useGetAllReviewQuery(undefined);
@@ -16,18 +18,22 @@ const ManageReview = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [reviewToDelete, setReviewToDelete] = useState<Review | null>(null);
 
-  const handleStatusChange = async (reviewId: string, newStatus: ReviewStatus) => {
+  const handleStatusChange = async (
+    reviewId: string,
+    newStatus: ReviewStatus
+  ) => {
     try {
       await updateReview({
         id: reviewId,
-        status: newStatus
+        status: newStatus,
       }).unwrap();
       toast.success("Review status updated successfully");
     } catch (error: any) {
       // Handle specific error message from API
-      const errorMessage = error?.data?.message || "Failed to update review status";
+      const errorMessage =
+        error?.data?.message || "Failed to update review status";
       toast.error(errorMessage);
-      console.error('Error updating review:', error);
+      console.error("Error updating review:", error);
     }
   };
 
@@ -40,7 +46,7 @@ const ManageReview = () => {
     } catch (error: any) {
       const errorMessage = error?.data?.message || "Failed to delete review";
       toast.error(errorMessage);
-      console.error('Error deleting review:', error);
+      console.error("Error deleting review:", error);
     }
   };
 
@@ -56,9 +62,9 @@ const ManageReview = () => {
 
   const getStatusColor = (status: ReviewStatus) => {
     switch (status) {
-      case 'PUBLISHED':
+      case "PUBLISHED":
         return "border-green-500/50 text-green-400";
-      case 'PENDING':
+      case "PENDING":
         return "border-yellow-500/50 text-yellow-400";
       default:
         return "border-gray-500/50 text-gray-400";
@@ -68,20 +74,26 @@ const ManageReview = () => {
   const renderStatusOptions = (currentStatus: ReviewStatus) => {
     return (
       <>
-        <option value="PUBLISHED" className="bg-[#000a3a] text-green-400">Published</option>
-        <option value="PENDING" className="bg-[#000a3a] text-yellow-400">Pending</option>
+        <option value="PUBLISHED" className="bg-[#000a3a] text-green-400">
+          Published
+        </option>
+        <option value="PENDING" className="bg-[#000a3a] text-yellow-400">
+          Pending
+        </option>
       </>
     );
   };
 
   // Handle error state
   if (error) {
-    console.error('Error fetching reviews:', error);
+    console.error("Error fetching reviews:", error);
     toast.error("Failed to fetch reviews. Please try again later.");
     return (
       <div className="min-h-screen bg-[#00031b] p-2 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-red-500 mb-2">Error Loading Reviews</h2>
+          <h2 className="text-2xl font-bold text-red-500 mb-2">
+            Error Loading Reviews
+          </h2>
           <p className="text-gray-400">Please try refreshing the page</p>
         </div>
       </div>
@@ -91,14 +103,16 @@ const ManageReview = () => {
   const reviewsList = reviews?.data || [];
 
   // Filter reviews to only show PENDING status
-  const pendingReviews = reviewsList.filter((review: Review) => review.status === 'PENDING');
+  const pendingReviews = reviewsList.filter(
+    (review: Review) => review.status === "PENDING"
+  );
 
   return (
-    <div className="min-h-screen bg-[#00031b] p-2">
+    <div className="min-h-screen bg-[#00031b]">
       <div className="max-w-full mx-auto">
         {/* Header Section */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="lg:text-3xl text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+          <h1 className="lg:text-3xl text-xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
             Review Management
           </h1>
         </div>
@@ -137,11 +151,15 @@ const ManageReview = () => {
                       <td className="px-6 py-4">
                         <div>
                           <p className="font-medium">{review.user.name}</p>
-                          <p className="text-sm text-gray-400">{review.user.email}</p>
+                          <p className="text-sm text-gray-400">
+                            {review.user.email}
+                          </p>
                         </div>
                       </td>
                       <td className="px-6 py-4">{review.content.title}</td>
-                      <td className="px-6 py-4 max-w-md truncate">{review.reviewText}</td>
+                      <td className="px-6 py-4 max-w-md truncate">
+                        {review.reviewText}
+                      </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-1">
                           <span className="text-yellow-400">★</span>
@@ -151,8 +169,15 @@ const ManageReview = () => {
                       <td className="px-6 py-4">
                         <select
                           value={review.status}
-                          onChange={(e) => handleStatusChange(review.id, e.target.value as ReviewStatus)}
-                          className={`px-3 py-1 rounded-full text-sm bg-transparent border ${getStatusColor(review.status)} focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                          onChange={(e) =>
+                            handleStatusChange(
+                              review.id,
+                              e.target.value as ReviewStatus
+                            )
+                          }
+                          className={`px-3 py-1 rounded-full text-sm bg-transparent border ${getStatusColor(
+                            review.status
+                          )} focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
                         >
                           {renderStatusOptions(review.status)}
                         </select>
@@ -201,7 +226,8 @@ const ManageReview = () => {
                   transition={{ delay: 0.2 }}
                   className="text-gray-300 mb-6"
                 >
-                  Are you sure you want to delete this review? This action cannot be undone.
+                  Are you sure you want to delete this review? This action
+                  cannot be undone.
                 </motion.p>
                 <motion.div
                   initial={{ y: 20, opacity: 0 }}

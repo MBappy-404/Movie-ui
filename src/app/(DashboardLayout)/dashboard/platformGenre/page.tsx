@@ -7,7 +7,7 @@ const PlatformAndGenre = () => {
       <div className="flex-[60%]">
         <ManagePlatform />
       </div>
-      <div className="flex-[40%]">
+      <div className="flex-[40%] mt-10 md:mt-0">
         <ManageGenre />
       </div>
     </div>
