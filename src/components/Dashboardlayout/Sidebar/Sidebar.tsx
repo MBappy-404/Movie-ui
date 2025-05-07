@@ -2,6 +2,8 @@ import React from "react";
 import Link from "next/link";
 import { X } from "lucide-react"; // Optional: use any icon library you prefer
 import { usePathname } from "next/navigation";
+import { MdCategory, MdDiscount, MdMovie, MdRateReview, MdSpaceDashboard } from "react-icons/md";
+import { FaUsers } from "react-icons/fa";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -9,12 +11,12 @@ interface SidebarProps {
 }
 
 const menuItems = [
-  { name: "Overview", link: "/dashboard" },
-  { name: "Content", link: "/dashboard/content" },
-  { name: "Users", link: "/dashboard/users" },
-  { name: "Reviews", link: "/dashboard/reviews" },
-  { name: "Platform & Genre", link: "/dashboard/platformGenre" },
-  { name: "Discount", link: "/dashboard/discount" },
+  { name: "Overview", icon:<MdSpaceDashboard />, link: "/dashboard" },
+  { name: "Content", icon: <MdMovie />,link: "/dashboard/content" },
+  { name: "Users", icon:<FaUsers />,link: "/dashboard/users" },
+  { name: "Reviews", icon:<MdRateReview />,link: "/dashboard/reviews" },
+  { name: "Platform & Genre", icon:<MdCategory />,link: "/dashboard/platformGenre" },
+  { name: "Discount", icon:<MdDiscount />, link: "/dashboard/discount" },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
@@ -49,8 +51,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
               href={`${item.link}`}
               className={`flex items-center gap-3 p-3 rounded-lg ${pathname === item.link ? "bg-[#00175f]/60":""} hover:bg-[#00175f]/60 transition-colors text-gray-300 hover:text-white`}
             >
-              <span className="material-icons-outlined text-purple-400">
-                📊
+              <span className="material-icons-outlined ">
+              {item?.icon}
               </span>
               {item?.name}
             </Link>

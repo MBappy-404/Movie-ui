@@ -60,7 +60,7 @@ const ReviewItem = ({ item, UserData }: { item: any; UserData: any }) => {
 
     try {
       const res = await addLikeOrDislike(addLikeOrDislikeData);
-      console.log(res);
+      // console.log(res);
       if ("error" in res && res.error) {
         const errorMessage =
           (res.error as any)?.data?.message || "An error occurred";
@@ -154,7 +154,7 @@ const ReviewCard = ({
     userinfo = verifyToken(token);
   }
 
-  console.log(userinfo);
+  // console.log(userinfo);
   const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
   const [editedText, setEditedText] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -253,7 +253,7 @@ const ReviewCard = ({
                         <>
                           <button
                             onClick={() => handleEdit(item)}
-                            className="text-sm text-blue-400 hover:text-blue-600"
+                            className="text-sm text-blue-400 hover:text-blue-600 cursor-pointer"
                           >
                             Edit
                           </button>
@@ -263,7 +263,7 @@ const ReviewCard = ({
                               setIsDeleteModalOpen(true);
                             }}
                             // onClick={() => handleDelete(item.id)}
-                            className="text-sm text-red-400 hover:text-red-600"
+                            className="text-sm text-red-400 hover:text-red-600 cursor-pointer"
                           >
                             Delete
                           </button>

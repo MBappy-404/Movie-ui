@@ -89,7 +89,7 @@ const MovieDetails = () => {
   useEffect(() => {
     if (allMovies?.data && movieDetails?.data) {
       const currentGenre = movieDetails.data.genre?.genreName;
-      console.log("Current Genre:", currentGenre);
+      // console.log("Current Genre:", currentGenre);
 
       if (currentGenre) {
         // First try to find exact genre matches
@@ -115,14 +115,14 @@ const MovieDetails = () => {
 
         // Ensure we only show 4 recommendations
         filteredMovies = filteredMovies.slice(0, 4);
-        console.log("Recommended Movies:", filteredMovies);
+        // console.log("Recommended Movies:", filteredMovies);
         setRecommendedMovies(filteredMovies);
       } else {
-        console.log("No current genre found");
+        // console.log("No current genre found");
         setRecommendedMovies([]);
       }
     } else {
-      console.log("No movies data available");
+      // console.log("No movies data available");
       setRecommendedMovies([]);
     }
   }, [allMovies, movieDetails]);

@@ -124,7 +124,7 @@ const OverviewStats = () => {
    
   const { data: payments } = useGetAllPaymentsQuery({});
   const {data} = useDashboardStatsQuery([]);
-  console.log(payments);
+  // console.log(payments);
   
   
 

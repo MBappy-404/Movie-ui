@@ -1,27 +1,13 @@
 "use client";
 import { motion, useInView } from "framer-motion";
 import { PlayIcon } from "@heroicons/react/24/solid";
-import { useGetAllContentQuery } from "../redux/features/content/contentApi";
-import { Movie } from "@/types";
+import { useGetActiveDiscountQuery } from "../redux/features/discount/discountApi";
 import Link from "next/link";
 import { useRef } from "react";
-
-interface MovieCardProps {
-  title: string;
-  rating: number;
-  description: string;
-  imageUrl: string;
-  genre: string;
-  year: number;
-  duration: string;
-}
+import { IDiscount } from "../types/discount";
 
 const EditorsPicks = () => {
-  const { data, isLoading } = useGetAllContentQuery([
-    { name: "sortBy", value: "reviews" },
-    { name: "sortOrder", value: "desc" },
-    { name: "limit", value: "4" },
-  ]);
+  const { data, isLoading } = useGetActiveDiscountQuery(undefined);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const moviesData = data?.data?.slice(0, 4);
@@ -72,7 +58,7 @@ const EditorsPicks = () => {
       whileInView="visible"
       viewport={{ once: true, amount: 0.2 }}
       variants={sectionVariants}
-      className="container mx-auto px-4 py-10"
+      className="container mx-auto px-4 pb-10 mb-10"
     >
       <div className="container mx-auto px-4" ref={ref}>
         <motion.div
@@ -82,7 +68,7 @@ const EditorsPicks = () => {
           className="mb-12 flex items-end justify-between"
         >
           <h2 className="text-3xl md:text-4xl font-bold text-white">
-          Editor's Picks
+            Editor&apos;s Picks
           </h2>
         </motion.div>
 
@@ -94,18 +80,34 @@ const EditorsPicks = () => {
                 className="w-full h-96 bg-gray-700 animate-pulse rounded-xl"
               ></div>
             ))}
-          {moviesData?.map((movie: Movie) => (
-            <Link href={`/movies/${movie?.id}`} key={movie?.id}>
+
+          {moviesData?.map((movie: IDiscount) => (
+            <Link href={`/movies/${movie?.content?.id}`} key={movie?.content?.id}>
               <motion.div
                 className="relative group cursor-pointer"
                 variants={cardVariants}
               >
+                {/* Discount Badge */}
+                {movie?.percentage && (
+                  <div
+                    className={`absolute top-3 ${movie?.isActive ? "right-3" : "left-3"
+                      } bg-white/10 px-3 py-1 rounded-full flex items-center backdrop-blur-sm z-10`}
+                  >
+                    <span className="text-yellow-400 text-sm font-semibold">
+                      {movie?.percentage}% OFF
+                    </span>
+                    <span className="ml-2 text-white text-xs"></span>
+                  </div>
+                )}
+
+                {/* Thumbnail */}
                 <img
-                  src={movie?.thumbnail}
-                  alt={movie?.title}
+                  src={movie?.content?.thumbnail}
+                  alt={movie?.content?.title}
                   className="w-full h-96 object-cover rounded-xl shadow-2xl"
                 />
 
+                {/* Overlay on Hover */}
                 <motion.div
                   className="absolute inset-0 rounded-xl overflow-hidden"
                   initial="rest"
@@ -127,30 +129,25 @@ const EditorsPicks = () => {
                   >
                     <div className="bg-black/50 backdrop-blur-xs rounded-xl p-3">
                       <div className="flex justify-between items-start mb-3">
-                        <h3 className=" text-lg truncate font-bold text-white">
-                          {movie.title}
+                        <h3 className="text-lg truncate font-bold text-white">
+                          {movie?.content?.title}
                         </h3>
-                        <div className="flex items-center bg-white/10 px-3 py-1 rounded-full">
-                          <span className="text-yellow-400 text-sm">
-                            {movie?.averageRating}/10
-                          </span>
-                        </div>
                       </div>
 
                       <div className="flex items-center gap-4 mb-4">
                         <span className="text-blue-400 text-sm">
-                          {movie?.releaseYear}
+                          {movie?.content?.releaseYear}
                         </span>
                         <span className="text-gray-300 text-sm">
-                          {movie?.genre?.genreName}
+                          {movie?.content?.genre?.genreName}
                         </span>
                         <span className="text-gray-300 text-sm">
-                          {movie.duration}
+                          {movie?.content?.duration}
                         </span>
                       </div>
 
                       <p className="text-gray-300 text-sm line-clamp-2">
-                        {movie.synopsis}
+                        {movie?.content?.synopsis}
                       </p>
                     </div>
                   </motion.div>

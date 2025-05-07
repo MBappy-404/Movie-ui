@@ -30,7 +30,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
 
     const {data: UserData} = useGetUserQuery(user?.id)
 
-    console.log(UserData)
+    // console.log(UserData)
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

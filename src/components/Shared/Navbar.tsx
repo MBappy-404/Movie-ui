@@ -40,7 +40,6 @@ const Navbar = () => {
     user = verifyToken(token)
   }
 
-  console.log(user)
 
 
 

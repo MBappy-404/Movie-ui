@@ -248,11 +248,11 @@ const ManageUser = () => {
                       <td className="px-6 py-4 text-2xl">
                         <div className="flex gap-4">
                           <MdDeleteOutline
-                            className="cursor-pointer hover:text-red-500 transition-colors"
+                            className="cursor-pointer hover:text-red-500  text-2xl transition-colors "
                             onClick={() => openDeleteModal(user)}
                           />
                           <FaPen
-                            className="cursor-pointer hover:text-blue-500 transition-colors"
+                            className="cursor-pointer hover:text-blue-500  text-xl transition-colors"
                             onClick={() => {
                               setUpdateModalOpen(true);
                               setUser(user);
@@ -342,7 +342,7 @@ const ManageUser = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={closeDeleteModal}
-                    className="px-4 py-2 text-gray-300 hover:text-white transition-colors"
+                    className="px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer"
                   >
                     Cancel
                   </motion.button>
@@ -350,7 +350,7 @@ const ManageUser = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handleUserDelete(userToDelete.id)}
-                    className="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors"
+                    className=" hover:bg-red-600 px-4 py-2 rounded-lg transition-colors cursor-pointer"
                   >
                     Delete
                   </motion.button>

@@ -340,20 +340,39 @@ const ManagePlatform = () => {
               className="fixed inset-0 bg-black/50 backdrop-blur-lg z-50"
             >
               <motion.div
-                initial={{ scale: 0.95, y: 20 }}
-                animate={{ scale: 1, y: 0 }}
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ type: "spring", duration: 0.5 }}
                 className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-[#000a3a] border border-[#1a2d6d] rounded-xl overflow-hidden p-6"
               >
-                <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+                <motion.h2
+                  initial={{ y: -20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.1 }}
+
+                  className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
                   Delete Platform
-                </h2>
-                <p className="text-gray-300 mb-6">
+                </motion.h2>
+                <motion.p
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+
+                  className="text-gray-300 mb-6">
                   Are you sure you want to delete the platform "
                   {platformToDelete.platformName}"? This action cannot be
                   undone.
-                </p>
-                <div className="flex justify-end gap-4">
-                  <button
+                </motion.p>
+                <motion.div
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+
+                  className="flex justify-end gap-4">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => {
                       setIsDeleteModalOpen(false);
                       setPlatformToDelete(null);
@@ -361,14 +380,16 @@ const ManagePlatform = () => {
                     className="px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
                   >
                     Cancel
-                  </button>
-                  <button
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => handlePlatformDelete(platformToDelete.id)}
-                    className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg transition-colors"
+                    className="hover:bg-red-600 px-4 py-2 rounded-lg transition-colors cursor-pointer"
                   >
                     Delete
-                  </button>
-                </div>
+                  </motion.button>
+                </motion.div>
               </motion.div>
             </motion.div>
           )}

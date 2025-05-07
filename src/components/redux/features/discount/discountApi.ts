@@ -10,6 +10,13 @@ const discountApi = baseApi.injectEndpoints({
       }),
       providesTags: ["discounts"],
     }),
+    getActiveDiscount: builder.query({
+      query: ()=> ({
+        url: "/discount/active",
+        method: "GET",
+      }),
+    }),
+
     createDiscounts: builder.mutation({
       query: (data) => ({
         url: "/discount",
@@ -18,23 +25,23 @@ const discountApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["discounts"],
     }),
-    // updateGenre: builder.mutation({
-    //   query: ({ genreIdId, data }) => ({
-    //     url: `/genre/${genreIdId}`,
-    //     method: "PATCH",
-    //     body: data,
-    //   }),
-    //   invalidatesTags: ["genres"],
-    // }),
-    // deleteGenre: builder.mutation({
-    //   query: (genreId) => ({
-    //     url: `/genre/${genreId}`,
-    //     method: "DELETE",
-    //   }),
-    //   invalidatesTags: ["genres"],
-    // }),
+    updateDiscount: builder.mutation({
+      query: ({ discountId, data }) => ({
+        url: `/discount/${discountId}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["discounts"],
+    }),
+    deleteDiscount: builder.mutation({
+      query: (discountId) => ({
+        url: `/discount/${discountId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["discounts"],
+    }),
   }),
 });
 
-export const { useCreateDiscountsMutation, useGetAllDiscountsQuery } =
+export const { useCreateDiscountsMutation, useGetAllDiscountsQuery, useGetActiveDiscountQuery, useDeleteDiscountMutation, useUpdateDiscountMutation } =
   discountApi;

@@ -2,8 +2,8 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { toast } from "sonner";
-import { Review } from "@/components/Dashboardlayout/Review/ManageReview";
 import { useUpdateReviewMutation } from "@/components/redux/features/review/reviewApi";
+import { Review } from "../types/review";
 
 interface UpdateReviewModalProps {
   isUpdateModalOpen: boolean;

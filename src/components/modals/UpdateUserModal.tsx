@@ -115,7 +115,7 @@ const UpdateUserModal = ({ isUpdateModalOpen, setUpdateModalOpen, user }: Update
         className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl bg-[#000a3a] border border-[#1a2d6d] rounded-xl overflow-hidden"
       >
         <form onSubmit={handleSubmit(onSubmit)} className="p-8 max-h-[90vh] overflow-y-auto">
-          <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+          <h2 className="lg:text-2xl text-xl font-bold mb-6 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
             Update User
           </h2>
 
@@ -228,13 +228,13 @@ const UpdateUserModal = ({ isUpdateModalOpen, setUpdateModalOpen, user }: Update
                 reset();
                 clearImage();
               }}
-              className="px-6 py-2 cursor-pointer rounded-lg hover:bg-gray-700 transition-colors"
+              className="px-4 lg:px-6 py-2 text-sm lg:text-base cursor-pointer rounded-lg hover:bg-gray-700 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="bg-gradient-to-r from-blue-500 to-purple-500 cursor-pointer px-6 py-2 rounded-lg transition-colors"
+              className="bg-gradient-to-r from-blue-500 to-purple-500 cursor-pointer text-sm lg:text-base px-4 lg:px-6 py-2 rounded-lg transition-colors"
             >
               Update User
             </button>

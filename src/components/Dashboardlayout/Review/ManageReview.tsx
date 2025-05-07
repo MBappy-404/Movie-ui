@@ -5,28 +5,9 @@ import { useGetAllReviewQuery, useUpdateReviewMutation, useDeleteReviewMutation 
 import { MdDeleteOutline } from "react-icons/md";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { toast } from "sonner";
+import { Review, ReviewStatus } from "@/components/types/review";
 
-type ReviewStatus = 'PUBLISHED' | 'PENDING';
 
-export interface Review {
-  id: string;
-  userId: string;
-  contentId: string;
-  reviewText: string;
-  rating: number;
-  spoiler: boolean;
-  status: ReviewStatus;
-  tags: string;
-  createdAt: string;
-  updatedAt: string;
-  user: {
-    name: string;
-    email: string;
-  };
-  content: {
-    title: string;
-  };
-}
 
 const ManageReview = () => {
   const { data: reviews, isLoading, error } = useGetAllReviewQuery(undefined);
@@ -117,7 +98,7 @@ const ManageReview = () => {
       <div className="max-w-full mx-auto">
         {/* Header Section */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+          <h1 className="lg:text-3xl text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
             Review Management
           </h1>
         </div>
