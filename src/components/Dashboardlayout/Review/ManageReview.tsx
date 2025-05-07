@@ -17,7 +17,7 @@ const ManageReview = () => {
   const [deleteReview] = useDeleteReviewMutation();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [reviewToDelete, setReviewToDelete] = useState<Review | null>(null);
-  
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -37,7 +37,7 @@ const ManageReview = () => {
       const errorMessage =
         error?.data?.message || "Failed to update review status";
       toast.error(errorMessage);
-      console.error("Error updating review:", error);
+      // console.error("Error updating review:", error);
     }
   };
 
@@ -50,7 +50,7 @@ const ManageReview = () => {
     } catch (error: any) {
       const errorMessage = error?.data?.message || "Failed to delete review";
       toast.error(errorMessage);
-      console.error("Error deleting review:", error);
+      // console.error("Error deleting review:", error);
     }
   };
 
@@ -90,7 +90,7 @@ const ManageReview = () => {
 
   // Handle error state
   if (error) {
-    console.error("Error fetching reviews:", error);
+    // console.error("Error fetching reviews:", error);
     toast.error("Failed to fetch reviews. Please try again later.");
     return (
       <div className="min-h-screen bg-[#00031b] p-2 flex items-center justify-center">
@@ -132,7 +132,7 @@ const ManageReview = () => {
           <p className="text-white text-5xl font-bold text-center">
             <LoadingSpinner />
           </p>
-        ) : (
+        ) : reviewsList.length > 0 ? (
           <>
             <div className="rounded-xl border border-[#1a2d6d] overflow-hidden">
               <div className="overflow-x-auto">
@@ -221,17 +221,16 @@ const ManageReview = () => {
               >
                 Previous
               </button>
-              
+
               <div className="flex gap-2">
                 {[...Array(totalPages)].map((_, index) => (
                   <button
                     key={index + 1}
                     onClick={() => handlePageChange(index + 1)}
-                    className={`px-4 py-2 rounded-lg ${
-                      currentPage === index + 1
+                    className={`px-4 py-2 rounded-lg ${currentPage === index + 1
                         ? "bg-gradient-to-r from-blue-500 to-purple-400"
                         : "bg-[#000a3a] text-white hover:bg-[#001366]"
-                    } transition-colors`}
+                      } transition-colors`}
                   >
                     {index + 1}
                   </button>
@@ -247,7 +246,9 @@ const ManageReview = () => {
               </button>
             </div>
           </>
-        )}
+        ) : <div className="text-center py-8">
+          <p className="text-gray-400 text-lg">No pending reviews found</p>
+        </div>}
 
         {/* Delete Confirmation Modal */}
         <AnimatePresence>

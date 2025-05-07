@@ -28,7 +28,7 @@ const DeletePendingReviewModal = ({
     } catch (error: any) {
       const errorMessage = error?.data?.message || "Failed to delete review";
       toast.error(errorMessage, { id: toastId });
-      console.error("Error deleting review:", error);
+      // console.error("Error deleting review:", error);
     }
   };
 
