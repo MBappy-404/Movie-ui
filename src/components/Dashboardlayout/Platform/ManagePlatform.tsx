@@ -129,16 +129,16 @@ const ManagePlatform = () => {
   };
 
   return (
-    <div className="bg-[#00031b] p-2">
+    <div className="bg-[#00031b]">
       <div className="max-w-full mx-auto">
         {/* Header Section */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="lg:text-3xl text-2xl font-bold  bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+          <h1 className="lg:text-3xl text-xl font-bold  bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
             Platform
           </h1>
           <button
             onClick={() => setIsModalOpen(true)}
-            className=" cursor-pointer bg-gradient-to-r text-sm lg:text-base from-blue-500 to-purple-500 text-white px-4 py-2 lg:px-6 lg:py-2 rounded-lg transition-all"
+            className=" cursor-pointer bg-gradient-to-r text-sm lg:text-base from-blue-500 to-purple-500 text-white px-2 py-2 lg:px-6 lg:py-2 rounded-lg transition-all"
           >
             Add Platform
           </button>
@@ -350,16 +350,16 @@ const ManagePlatform = () => {
                   initial={{ y: -20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.1 }}
-
-                  className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+                  className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent"
+                >
                   Delete Platform
                 </motion.h2>
                 <motion.p
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.2 }}
-
-                  className="text-gray-300 mb-6">
+                  className="text-gray-300 mb-6"
+                >
                   Are you sure you want to delete the platform "
                   {platformToDelete.platformName}"? This action cannot be
                   undone.
@@ -368,8 +368,8 @@ const ManagePlatform = () => {
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.3 }}
-
-                  className="flex justify-end gap-4">
+                  className="flex justify-end gap-4"
+                >
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}

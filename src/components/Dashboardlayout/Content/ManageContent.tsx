@@ -105,7 +105,6 @@ const ManageContent = () => {
   const onSubmit: SubmitHandler<Movie> = async (data) => {
     console.log(data);
 
-
     const toastId = toast.loading("Adding Content....", { duration: 2000 });
 
     if (!thumbnail) {
@@ -179,16 +178,16 @@ const ManageContent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#00031b] p-2">
+    <div className="min-h-screen bg-[#00031b]">
       <div className="max-w-full mx-auto">
         {/* Header Section */}
-        <div className="flex justify-between items-center mb-8">
-          <h1 className=" lg:text-3xl text-2xl  font-bold  bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+        <div className="flex justify-between items-center gap-3 mb-8">
+          <h1 className="md:text-3xl text-xl  font-bold  bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
             Content Management
           </h1>
           <button
             onClick={() => setIsModalOpen(true)}
-            className=" cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 lg:px-6 py-2 rounded-lg transition-all"
+            className="cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white text-sm px-2 lg:px-6 py-2 rounded-lg transition-all"
           >
             Add Content
           </button>
@@ -227,10 +226,11 @@ const ManageContent = () => {
                       <td className="px-6 py-4">${movie.price}</td>
                       <td className="px-6 py-4">
                         <span
-                          className={`px-2 py-1 rounded-full text-sm border ${movie.isAvailable
-                            ? "border-green-500/20 text-green-400"
-                            : "border-red-500/20 text-red-400"
-                            }`}
+                          className={`px-2 py-1 rounded-full text-sm border ${
+                            movie.isAvailable
+                              ? "border-green-500/20 text-green-400"
+                              : "border-red-500/20 text-red-400"
+                          }`}
                         >
                           {movie.isAvailable ? "Available" : "Not Available"}
                         </span>
@@ -278,10 +278,11 @@ const ManageContent = () => {
                   <button
                     key={page}
                     onClick={() => handlePageChange(page)}
-                    className={`px-4  py-2 text-sm lg:text-base  rounded-lg ${currentPage === page
-                      ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white"
-                      : "bg-[#1a2d6d] text-white"
-                      }`}
+                    className={`px-4  py-2 text-sm lg:text-base  rounded-lg ${
+                      currentPage === page
+                        ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white"
+                        : "bg-[#1a2d6d] text-white"
+                    }`}
                   >
                     {page}
                   </button>
@@ -518,7 +519,6 @@ const ManageContent = () => {
                   </div>
 
                   {/* Bottom Section */}
-                  
 
                   {/* Bottom Section */}
                   <div className="mt-6 space-y-4">
@@ -531,8 +531,6 @@ const ManageContent = () => {
                       <p className="text-red-500">Synopsis is required!</p>
                     )}
                   </div>
-
-                  
 
                   {/* Form Buttons */}
                   <div className="mt-8 flex justify-end gap-4">
@@ -587,15 +585,16 @@ const ManageContent = () => {
                   initial={{ y: -20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.1 }}
-
-                  className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+                  className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent"
+                >
                   Delete Content
                 </motion.h2>
                 <motion.p
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.2 }}
-                  className="text-gray-300 mb-6">
+                  className="text-gray-300 mb-6"
+                >
                   Are you sure you want to delete the content "
                   {contentToDelete.title}"? This action cannot be undone.
                 </motion.p>
@@ -603,7 +602,8 @@ const ManageContent = () => {
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="flex justify-end gap-4">
+                  className="flex justify-end gap-4"
+                >
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}

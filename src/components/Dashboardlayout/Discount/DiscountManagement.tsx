@@ -1,6 +1,9 @@
 "use client";
 
-import { useDeleteDiscountMutation, useGetAllDiscountsQuery } from "@/components/redux/features/discount/discountApi";
+import {
+  useDeleteDiscountMutation,
+  useGetAllDiscountsQuery,
+} from "@/components/redux/features/discount/discountApi";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MdDeleteOutline } from "react-icons/md";
@@ -16,21 +19,21 @@ const DiscountManagement = () => {
   const discountData = discounts?.data;
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [discount, setDiscount] = useState<any | null>(null);
-  const [isUpdateDiscountModalOpen, setUpdateDiscountModalOpen] = useState(false);
-  const [discountToDelete, setDiscountToDelete] = useState<IDiscount | null>(null);
+  const [isUpdateDiscountModalOpen, setUpdateDiscountModalOpen] =
+    useState(false);
+  const [discountToDelete, setDiscountToDelete] = useState<IDiscount | null>(
+    null
+  );
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = date.toLocaleString('en-US', { month: 'long' });
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = date.toLocaleString("en-US", { month: "long" });
     const year = date.getFullYear();
     return `${day} ${month} ${year}`;
   };
 
-
   const handleDelete = async (discount: IDiscount) => {
-
-
     try {
       await deleteDiscount(discount.id).unwrap();
       toast.success(`Discount deleted successfully`);
@@ -39,7 +42,7 @@ const DiscountManagement = () => {
     } catch (error: any) {
       const errorMessage = error?.data?.message || "Failed to delete discount";
       toast.error(errorMessage);
-      console.error('Error deleting discount:', error);
+      console.error("Error deleting discount:", error);
     }
   };
 
@@ -53,13 +56,12 @@ const DiscountManagement = () => {
     setDiscountToDelete(null);
   };
 
-
   return (
-    <div className="min-h-screen bg-[#00031b] p-2">
+    <div className="min-h-screen bg-[#00031b]">
       <div className="max-w-full mx-auto">
         {/* Header Section */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className=" lg:text-3xl text-2xl  font-bold  bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+          <h1 className=" lg:text-3xl text-xl  font-bold  bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
             Discount Management
           </h1>
         </div>
@@ -75,12 +77,24 @@ const DiscountManagement = () => {
               <table className="w-full">
                 <thead className="bg-[#000a3a]">
                   <tr>
-                    <th className="px-6 py-4 text-left">Content Title</th>
-                    <th className="px-6 py-4 text-left">Start Data</th>
-                    <th className="px-6 py-4 text-left">End Date</th>
-                    <th className="pl-6 py-4 text-left">Discount Percentage</th>
-                    <th className="px-6 py-4 text-left">Status</th>
-                    <th className="px-6 py-4 text-left">Actions</th>
+                    <th className="px-6 py-4 text-left text-sm md:text-base">
+                      Content Title
+                    </th>
+                    <th className="px-6 py-4 text-left text-sm md:text-base">
+                      Start Data
+                    </th>
+                    <th className="px-6 py-4 text-left text-sm md:text-base">
+                      End Date
+                    </th>
+                    <th className="pl-6 py-4 text-left text-sm md:text-base">
+                      Discount Percentage
+                    </th>
+                    <th className="px-6 py-4 text-left text-sm md:text-base">
+                      Status
+                    </th>
+                    <th className="px-6 py-4 text-left text-sm md:text-base">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -99,12 +113,13 @@ const DiscountManagement = () => {
                         {formatDate(discount?.endDate)}
                       </td>
                       <td className="px-6 py-4 ">{discount?.percentage}%</td>
-                      <td className="px-6 py-4 " >
+                      <td className="px-6 py-4 ">
                         <span
-                          className={`px-2 py-1 rounded-full text-sm border ${discount.isActive
-                            ? "border-green-500/20 text-green-400"
-                            : "border-red-500/20 text-red-400"
-                            }`}
+                          className={`px-2 py-1 rounded-full text-sm border ${
+                            discount.isActive
+                              ? "border-green-500/20 text-green-400"
+                              : "border-red-500/20 text-red-400"
+                          }`}
                         >
                           {discount.isActive ? "ACTIVE" : "DEACTIVE"}
                         </span>
@@ -163,12 +178,12 @@ const DiscountManagement = () => {
           </div>
         )}
 
-          {/* Update Genre Modal */}
-          <UpdateDiscountModal
-            isUpdateModalOpen={isUpdateDiscountModalOpen}
-            setIsUpdateModalOpen={setUpdateDiscountModalOpen}
-            discount={discount}
-          />
+        {/* Update Genre Modal */}
+        <UpdateDiscountModal
+          isUpdateModalOpen={isUpdateDiscountModalOpen}
+          setIsUpdateModalOpen={setUpdateDiscountModalOpen}
+          discount={discount}
+        />
 
         {/* Delete Confirmation Modal */}
         <AnimatePresence>
@@ -200,7 +215,8 @@ const DiscountManagement = () => {
                   transition={{ delay: 0.2 }}
                   className="text-gray-300 mb-6"
                 >
-                  Are you sure you want to delete this discount? This action cannot be undone.
+                  Are you sure you want to delete this discount? This action
+                  cannot be undone.
                 </motion.p>
                 <motion.div
                   initial={{ y: 20, opacity: 0 }}
@@ -229,8 +245,6 @@ const DiscountManagement = () => {
             </motion.div>
           )}
         </AnimatePresence>
-
-
       </div>
     </div>
   );

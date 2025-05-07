@@ -28,8 +28,6 @@ export interface User {
 }
 
 const ManageUser = () => {
-
-  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -49,11 +47,9 @@ const ManageUser = () => {
     formState: { errors: addUserErrors },
   } = useForm<User>();
 
-
-
   const { data: users, isLoading } = useGetAllUserQuery([
-    { name: 'page', value: currentPage },
-    { name: 'limit', value: itemsPerPage }
+    { name: "page", value: currentPage },
+    { name: "limit", value: itemsPerPage },
   ]);
 
   const [createUser] = useCreateUserMutation();
@@ -116,9 +112,10 @@ const ManageUser = () => {
 
     try {
       const res = await createUser(formData);
-      
+
       if ("error" in res && res.error) {
-        const errorMessage = (res.error as any)?.data?.message || "An error occurred";
+        const errorMessage =
+          (res.error as any)?.data?.message || "An error occurred";
         toast.error(errorMessage, { id: toastId });
       } else {
         toast.success("User added successfully!", { id: toastId });
@@ -128,9 +125,9 @@ const ManageUser = () => {
       }
     } catch (error: any) {
       const errorMessage = error.data?.message || "Failed to add user";
-      toast.error(errorMessage, { 
+      toast.error(errorMessage, {
         id: toastId,
-        duration: 2000
+        duration: 2000,
       });
     }
   };
@@ -178,16 +175,16 @@ const ManageUser = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#00031b] p-2">
+    <div className="min-h-screen bg-[#00031b]">
       <div className="max-w-full mx-auto">
         {/* Header Section */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="lg:text-3xl text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+          <h1 className="md:text-3xl text-xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
             User Management
           </h1>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 lg:px-6 py-2 rounded-lg transition-all"
+            className="cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white px-2 text-sm lg:text-base lg:px-6 py-2 rounded-lg transition-all"
           >
             Add User
           </button>
@@ -265,7 +262,7 @@ const ManageUser = () => {
                 </tbody>
               </table>
             </div>
-            
+
             {/* Pagination Controls */}
             <div className="flex justify-center items-center gap-2 py-4 bg-[#000a3a]">
               <button
@@ -275,19 +272,21 @@ const ManageUser = () => {
               >
                 Previous
               </button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <button
-                  key={page}
-                  onClick={() => handlePageChange(page)}
-                  className={`px-4  py-2 text-sm lg:text-base rounded-lg ${
-                    currentPage === page
-                      ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white"
-                      : "bg-[#1a2d6d] text-white"
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`px-4  py-2 text-sm lg:text-base rounded-lg ${
+                      currentPage === page
+                        ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white"
+                        : "bg-[#1a2d6d] text-white"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                )
+              )}
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
@@ -469,12 +468,16 @@ const ManageUser = () => {
 
                     <div className="space-y-4">
                       <input
-                        {...registerAddUser("contactNumber", { required: true })}
+                        {...registerAddUser("contactNumber", {
+                          required: true,
+                        })}
                         placeholder="Contact Number"
                         className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
                       />
                       {addUserErrors.contactNumber && (
-                        <p className="text-red-500">Contact Number is required!</p>
+                        <p className="text-red-500">
+                          Contact Number is required!
+                        </p>
                       )}
                     </div>
 

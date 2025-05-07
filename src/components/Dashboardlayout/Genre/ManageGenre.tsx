@@ -81,7 +81,7 @@ const ManageGenre = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#00031b] p-2">
+    <div className="min-h-screen bg-[#00031b]">
       <div className="max-w-full mx-auto">
         {/* Header Section */}
         <div className="flex justify-between items-center mb-8">
@@ -90,7 +90,7 @@ const ManageGenre = () => {
           </h1>
           <button
             onClick={() => setIsModalOpen(true)}
-            className=" cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-1 lg:px-6 lg:py-2 rounded-lg transition-all"
+            className=" cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white px-2 py-1 lg:px-6 lg:py-2 rounded-lg transition-all"
           >
             Add Genre
           </button>
@@ -122,7 +122,7 @@ const ManageGenre = () => {
                       <td className="px-6 py-4">{genre.genreName}</td>
                       <td className="px-6 py-4 text-2xl flex gap-3">
                         <MdDeleteOutline
-                        className="cursor-pointer hover:text-red-500 transition-colors"
+                          className="cursor-pointer hover:text-red-500 transition-colors"
                           onClick={() => {
                             setGenreToDelete(genre);
                             setIsDeleteModalOpen(true);
@@ -228,14 +228,16 @@ const ManageGenre = () => {
                   initial={{ y: -20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.1 }}
-                  className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+                  className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent"
+                >
                   Delete Genre
                 </motion.h2>
                 <motion.p
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.2 }}
-                  className="text-gray-300 mb-6">
+                  className="text-gray-300 mb-6"
+                >
                   Are you sure you want to delete the genre "
                   {genreToDelete.genreName}"? This action cannot be undone.
                 </motion.p>
@@ -243,7 +245,8 @@ const ManageGenre = () => {
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="flex justify-end gap-4">
+                  className="flex justify-end gap-4"
+                >
                   <motion.button
                     onClick={() => {
                       setIsDeleteModalOpen(false);
