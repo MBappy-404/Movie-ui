@@ -253,26 +253,37 @@ const MovieDetails = () => {
             {movieDetails?.data?.title}
           </h1>
 
-          <p className="text-sm md:text-lg text-gray-400 mb-2 flex gap-1 items-center">
+          <div className="text-sm md:text-lg text-gray-400 mb-2 flex md:flex-row lg:flex-row flex-col gap-1 lg:items-center ">
+            <div className="flex gap-1">
             <Rating
               style={{ maxWidth: 80 }}
               value={movieDetails?.data?.averageRating}
               onChange={movieDetails?.data?.averageRating}
               readOnly
             />{" "}
-            {movieDetails?.data?.averageRating} | 📅{" "}
-            {movieDetails?.data?.releaseYear} | ⏱️{" "}
-            {movieDetails?.data?.duration} |{" "}
-            <span>
+            <p>{movieDetails?.data?.averageRating} | {" "}</p>
+            <div className="flex gap-1">
+            📅
+            <p>{movieDetails?.data?.releaseYear} | </p>
+            </div>
+            </div>
+            
+            <div className="flex gap-1">
+            ⏱️{" "}
+            <p>{movieDetails?.data?.duration} |{" "}</p>
+            <span className="flex gap-1">
               <Image
                 src={movieDetails?.data?.platform?.platformLogo}
                 width={20}
                 height={20}
                 alt="sds"
               />
+               {movieDetails?.data?.platform?.platformName}
             </span>{" "}
-            {movieDetails?.data?.platform?.platformName}
-          </p>
+            </div>
+            
+           
+          </div>
 
           <p className="mb-4 text-sm md:text-lg text-gray-300">
             {movieDetails?.data?.genre?.genreName}
