@@ -23,6 +23,8 @@ import { useLoginMutation } from "@/components/redux/features/auth/authApi";
 import { verifyToken } from "@/utils/verifyToken";
 import { TUser } from "@/components/types/user";
 import Cookies from 'js-cookie';
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 const LoginForm = () => {
   const searchParams = useSearchParams();
@@ -61,7 +63,7 @@ const LoginForm = () => {
       router.push(redirect || "/");
       // console.log(res)
       toast.success(res.message, { id: toastId });
-    } catch (error : any) {
+    } catch (error: any) {
       toast.error(error.data.message, { id: toastId });
 
     }
@@ -107,20 +109,34 @@ const LoginForm = () => {
             <FormField
               control={form.control}
               name="password"
-              render={({ field }) => (
-                <FormItem className="mt-4">
-                  <Label className="text-white">Password</Label>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      type="password"
-                      value={field.value || ""}
-                      className="bg-gray-800 text-white "
-                    />
-                  </FormControl>
-                  <FormMessage className="text-red-400" />
-                </FormItem>
-              )}
+              render={({ field }) => {
+                const [showPassword, setShowPassword] = useState(false);
+
+                return (
+                  <FormItem className="mt-4 relative">
+                    <Label className="text-white">Password</Label>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          {...field}
+                          type={showPassword ? "text" : "password"}
+                          value={field.value || ""}
+                          className="bg-gray-800 text-white pr-10"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword((prev) => !prev)}
+                          className="absolute inset-y-0 right-2 flex items-center text-gray-400 hover:text-white"
+                          tabIndex={-1}
+                        >
+                          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                      </div>
+                    </FormControl>
+                    <FormMessage className="text-red-400" />
+                  </FormItem>
+                );
+              }}
             />
 
             <motion.div>

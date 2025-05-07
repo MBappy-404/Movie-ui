@@ -19,6 +19,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCreateUserMutation } from "@/components/redux/features/user/userApi";
+import { Eye, EyeOff } from "lucide-react";
 
 const RegisterForm = () => {
   const form = useForm({
@@ -130,20 +131,34 @@ const RegisterForm = () => {
               <FormField
                 control={form.control}
                 name="password"
-                render={({ field }) => (
-                  <FormItem className="mt-4 md:w-1/2">
-                    <Label className="text-white">Password</Label>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="password"
-                        value={field.value || ""}
-                        className="bg-gray-800 text-white"
-                      />
-                    </FormControl>
-                    <FormMessage className="text-red-400" />
-                  </FormItem>
-                )}
+                render={({ field }) => {
+                  const [showPassword, setShowPassword] = useState(false);
+
+                  return (
+                    <FormItem className="mt-4 relative">
+                      <Label className="text-white">Password</Label>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            {...field}
+                            type={showPassword ? "text" : "password"}
+                            value={field.value || ""}
+                            className="bg-gray-800 text-white pr-10"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword((prev) => !prev)}
+                            className="absolute inset-y-0 right-2 flex items-center text-gray-400 hover:text-white"
+                            tabIndex={-1}
+                          >
+                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                          </button>
+                        </div>
+                      </FormControl>
+                      <FormMessage className="text-red-400" />
+                    </FormItem>
+                  );
+                }}
               />
 
               <FormField

@@ -15,10 +15,18 @@ export interface IContent {
     actress: string
     spoilerWarning: string
     synopsis: string
-    isAvailable: boolean
+    ContentLinks: IContentLinks | any
+    isAvailable: boolean | string
     platform: Platform
     genre: Genre
     createdAt: string
     updatedAt: string
   }
   
+  export interface IContentLinks {
+    id: string
+    contentId: string
+    contentLink: string
+    createdAt: string
+    updatedAt: string
+  }

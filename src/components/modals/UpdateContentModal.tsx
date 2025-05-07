@@ -20,6 +20,7 @@ export interface Content {
   director: string;
   duration: string;
   producer: string;
+  spoilerWarning: string
   actor: string;
   actress: string;
   rentprice: string;
@@ -155,6 +156,7 @@ const UpdateContentModal = ({
         rentprice: content.rentprice || "",
         genreId: content.genreId || "",
         platformId: content.platformId || "",
+        spoilerWarning: content.spoilerWarning || "",
         isAvailable: content.isAvailable,
         contentBanner: content.contentBanner || "",
         contentLink: content.id || "",

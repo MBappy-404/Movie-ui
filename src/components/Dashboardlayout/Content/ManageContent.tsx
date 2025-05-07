@@ -409,7 +409,7 @@ const ManageContent = () => {
 
                       <input
                         {...register("contentLink", { required: true })}
-                        placeholder="contentLink"
+                        placeholder="Content Video Link"
                         className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
                       />
                       {errors.contentLink && (
@@ -417,7 +417,7 @@ const ManageContent = () => {
                       )}
                       <input
                         {...register("contentBanner", { required: true })}
-                        placeholder="contentBanner"
+                        placeholder="Content Banner Link"
                         className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
                       />
                       {errors.contentLink && (
@@ -513,8 +513,21 @@ const ManageContent = () => {
                       {errors.platformId && (
                         <p className="text-red-500">Platform is required!</p>
                       )}
+                      <div className=" mt-2 space-y-4">
+                    <input
+                      {...register("spoilerWarning", { required: true })}
+                      placeholder="Spoiler Warning"
+                      className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500 "
+                    />
+                    {errors.synopsis && (
+                      <p className="text-red-500">Spollar Warning is required!</p>
+                    )}
+                  </div>
                     </div>
                   </div>
+
+                  {/* Bottom Section */}
+                  
 
                   {/* Bottom Section */}
                   <div className="mt-6 space-y-4">
@@ -527,6 +540,8 @@ const ManageContent = () => {
                       <p className="text-red-500">Synopsis is required!</p>
                     )}
                   </div>
+
+                  
 
                   {/* Form Buttons */}
                   <div className="mt-8 flex justify-end gap-4">
