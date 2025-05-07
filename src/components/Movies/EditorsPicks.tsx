@@ -81,7 +81,7 @@ const EditorsPicks = () => {
             ))}
 
           {moviesData?.map((movie: IDiscount) => (
-            <Link className="block -mt-10" href={`/movies/${movie?.content?.id}`} key={movie?.content?.id}>
+            <Link className="block" href={`/movies/${movie?.content?.id}`} key={movie?.content?.id}>
               <motion.div
                 className="relative group cursor-pointer"
                 variants={cardVariants}
