@@ -26,11 +26,14 @@ import ReviewCard from "../modules/Reviews/ReviewCard";
 import { useCreatePaymentMutation } from "../redux/features/payment/paymentApi";
 
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { addToWatchList, watchListSelector } from "../redux/features/watchListSlice";
+import {
+  addToWatchList,
+  watchListSelector,
+} from "../redux/features/watchListSlice";
 import { Movie } from "@/types";
 import { verifyToken } from "@/utils/verifyToken";
 import { selectCurrentToken } from "../redux/features/auth/authSlice";
-import { TMovie } from "../types/movie"
+import { TMovie } from "../types/movie";
 import WatchlistButton from "../Shared/WatchlistButton";
 
 interface ReviewFormData {
@@ -45,33 +48,32 @@ const MovieDetails = () => {
 
   const movieList = useAppSelector(watchListSelector);
 
+  // const dispatch = useAppDispatch();
 
+  // const handleWatchlist = (data: Movie) => {
+  //   const isExistInWatchList = movieList.some((item) => item.id === data.id);
 
-  const dispatch = useAppDispatch();
+  //   if (isExistInWatchList) {
+  //     toast.warning("Already Added to Watchlist");
+  //     return;
+  //   }
 
-  const handleWatchlist = (data: Movie) => {
-    const isExistInWatchList = movieList.some((item) => item.id === data.id);
-
-    if (isExistInWatchList) {
-      toast.warning("Already Added to Watchlist");
-      return;
-    }
-
-    dispatch(addToWatchList(data));
-    toast.success("Added to Watchlist", {
-      icon: "⭐",
-    });
-  };
+  //   dispatch(addToWatchList(data));
+  //   toast.success("Added to Watchlist", {
+  //     icon: "⭐",
+  //   });
+  // };
 
   const router = useRouter();
   const { id } = useParams();
   const token = useAppSelector(selectCurrentToken);
-  let user: any
+  let user: any;
   if (token) {
-    user = verifyToken(token)
+    user = verifyToken(token);
   }
 
   const { data: movieDetails, isLoading } = useGetContentQuery(id);
+  console.log(movieDetails);
 
   const { data: allMovies, isLoading: isMoviesLoading } =
     useGetAllContentQuery(undefined);
@@ -97,22 +99,27 @@ const MovieDetails = () => {
       if (currentGenre) {
         // First try to find exact genre matches
         let filteredMovies = allMovies?.data?.filter((movie: TMovie) => {
-          return movie?.genre?.genreName === currentGenre && movie?.id !== movieDetails?.data?.id;
+          return (
+            movie?.genre?.genreName === currentGenre &&
+            movie?.id !== movieDetails?.data?.id
+          );
         });
 
         // If we don't have enough movies with exact genre match, try to find similar genres
         if (filteredMovies.length < 4) {
           const similarGenres = allMovies?.data?.filter((movie: TMovie) => {
             // Exclude the current movie and already filtered movies
-            return movie.id !== movieDetails?.data?.id &&
+            return (
+              movie.id !== movieDetails?.data?.id &&
               !filteredMovies?.some((fm: TMovie) => fm.id === movie?.id) &&
-              movie.genre?.genreName;
+              movie.genre?.genreName
+            );
           });
 
           // Add similar genre movies until we have 4 recommendations
           filteredMovies = [
             ...filteredMovies,
-            ...similarGenres.slice(0, 4 - filteredMovies.length)
+            ...similarGenres.slice(0, 4 - filteredMovies.length),
           ];
         }
 
@@ -203,9 +210,11 @@ const MovieDetails = () => {
 
       <div className="w-full  mb-10 hidden md:block">
         <div className="relative w-full   rounded-xl overflow-hidden">
-          {typeof movieDetails?.data?.contentBanner === 'string' &&
-            movieDetails.data.contentBanner.trim() !== '' &&
-            (movieDetails.data.contentBanner.startsWith('http') || movieDetails.data.contentBanner.startsWith('https') || movieDetails.data.contentBanner.startsWith('/')) ? (
+          {typeof movieDetails?.data?.contentBanner === "string" &&
+          movieDetails.data.contentBanner.trim() !== "" &&
+          (movieDetails.data.contentBanner.startsWith("http") ||
+            movieDetails.data.contentBanner.startsWith("https") ||
+            movieDetails.data.contentBanner.startsWith("/")) ? (
             <Image
               src={movieDetails.data.contentBanner}
               alt="Banner"
@@ -231,7 +240,7 @@ const MovieDetails = () => {
             className="rounded-xl"
           />
           <div className="flex justify-center mt-4 ">
-            <WatchlistButton data={movieDetails.data}/>
+            <WatchlistButton data={movieDetails.data} />
           </div>
         </motion.div>
 
@@ -302,13 +311,62 @@ const MovieDetails = () => {
                 </span>
               </p>
             )}
-            <p className="text-sm md:text-lg font-semibold text-gray-400">
-              One Time Purchase :
-              <span className="text-white text-xl">
-                {" "}
-                ${movieDetails?.data?.price}
-              </span>
-            </p>
+
+{(() => {
+  const discount = movieDetails?.data?.discount;
+  const price = movieDetails?.data?.price;
+
+  if (!discount || !price) return null;
+
+  const today = new Date();
+  const startDate = new Date(discount.startDate);
+  const endDate = new Date(discount.endDate);
+
+  // Normalize all dates to 00:00 so we can compare only the date
+  today.setHours(0, 0, 0, 0);
+  startDate.setHours(0, 0, 0, 0);
+  endDate.setHours(0, 0, 0, 0);
+
+  const isDiscountActive =
+    today.getTime() === startDate.getTime() || // aaj start
+    today.getTime() === endDate.getTime() ||   // aaj end
+    today.getTime() < endDate.getTime();       // aaj end er age
+
+  return (
+    <>
+      {isDiscountActive && (
+        <p className="text-sm md:text-lg text-gray-400">
+          Discount Left:
+          <span className="text-white ml-1">
+            {discount.endDate?.slice(0, 10)}
+          </span>
+        </p>
+      )}
+
+      <p className="text-sm md:text-lg font-semibold text-gray-400">
+        One Time Purchase:
+        {discount.percentage && isDiscountActive ? (
+          <>
+            <span className="text-white font-bold ml-2 text-xl">
+              ${(
+                price -
+                (price * discount.percentage) / 100
+              ).toFixed(2)}
+            </span>
+            <del className="ml-2 text-red-400">${price}</del>
+          </>
+        ) : (
+          <span className="text-white font-bold ml-2 text-xl">
+            ${price}
+          </span>
+        )}
+      </p>
+    </>
+  );
+})()}
+
+
+
             <p className="text-sm md:text-lg font-semibold text-gray-400">
               Rental Price:
               <span className="text-white text-xl">
@@ -329,8 +387,18 @@ const MovieDetails = () => {
 
           {showModal && (
             <div className="fixed inset-0 z-50 bg-black/20  backdrop-blur-xl flex items-center justify-center">
-              <div className="bg-[#00031b] rounded-xl shadow-lg p-6 w-80 text-center">
-                <h2 className="text-lg font-semibold mb-4">Choose an option</h2>
+              <div className="bg-gray-800 rounded-xl shadow-lg p-6 w-80 text-center">
+                {movieDetails?.data?.discount?.isActive && (
+                  <div className="bg-red-500 absolute  -translate-y-9  text-white px-3 rounded-full">
+                    <span className=" ml-2">
+                      {movieDetails?.data?.discount?.percentage}% Off For On
+                      Time Purchase
+                    </span>
+                  </div>
+                )}
+                <h2 className="text-lg md:text-2xl font-semibold mb-4">
+                  Choose an option
+                </h2>
                 <div className="flex flex-col gap-4">
                   <button
                     onClick={() =>
@@ -338,7 +406,19 @@ const MovieDetails = () => {
                     }
                     className="py-2 px-4 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
                   >
-                    Buy ${movieDetails?.data?.price}
+                    Buy On Time{" "}
+                    <span>
+                      {movieDetails?.data?.price &&
+                      movieDetails?.data?.discount
+                        ? (
+                            movieDetails.data.price -
+                            (movieDetails.data.price *
+                              movieDetails.data.discount?.percentage) /
+                              100
+                          ).toFixed(2)
+                        : movieDetails?.data?.price}
+                    </span>{" "}
+                    USD
                   </button>
                   <button
                     onClick={() =>
@@ -346,14 +426,14 @@ const MovieDetails = () => {
                     }
                     className="py-2 px-4 bg-purple-600 cursor-pointer text-white rounded-lg hover:bg-purple-700 transition"
                   >
-                    Rent ${movieDetails?.data?.rentprice}
+                    Rent {movieDetails?.data?.rentprice} USD
                   </button>
                 </div>
                 <button
                   onClick={() => setShowModal(false)}
-                  className="mt-4 text-sm text-gray-500 hover:underline"
+                  className="mt-4 text-lg cursor-pointer text-gray-500 hover:underline"
                 >
-                  Cancel
+                  Not Now
                 </button>
               </div>
             </div>

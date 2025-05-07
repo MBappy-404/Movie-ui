@@ -175,7 +175,7 @@ const NewReleases = () => {
                             />
                           </div>
                           <span className="text-sm font-semibold text-yellow-500">
-                            {movie?.averageRating}/10
+                            {movie?.averageRating?.toFixed(1)}/10
                           </span>
                         </motion.div>
 
