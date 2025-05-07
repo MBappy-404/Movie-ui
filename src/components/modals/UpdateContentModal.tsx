@@ -156,7 +156,6 @@ const UpdateContentModal = ({
         rentprice: content.rentprice || "",
         genreId: content.genreId || "",
         platformId: content.platformId || "",
-        spoilerWarning: content.spoilerWarning || "",
         isAvailable: content.isAvailable,
         contentBanner: content.contentBanner || "",
         contentLink: content.id || "",

@@ -31,7 +31,6 @@ export interface Movie {
   producer: string;
   actor: string;
   actress: string;
-  spoilerWarning: boolean;
   synopsis: string;
   genreId: string;
   platformId: string;
@@ -104,7 +103,9 @@ const ManageContent = () => {
   };
 
   const onSubmit: SubmitHandler<Movie> = async (data) => {
-    //console.log(data);
+    console.log(data);
+
+
     const toastId = toast.loading("Adding Content....", { duration: 2000 });
 
     if (!thumbnail) {
@@ -513,16 +514,6 @@ const ManageContent = () => {
                       {errors.platformId && (
                         <p className="text-red-500">Platform is required!</p>
                       )}
-                      <div className=" mt-2 space-y-4">
-                    <input
-                      {...register("spoilerWarning", { required: true })}
-                      placeholder="Spoiler Warning"
-                      className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500 "
-                    />
-                    {errors.synopsis && (
-                      <p className="text-red-500">Spollar Warning is required!</p>
-                    )}
-                  </div>
                     </div>
                   </div>
 

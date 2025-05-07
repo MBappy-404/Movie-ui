@@ -30,7 +30,8 @@ import { addToWatchList, watchListSelector } from "../redux/features/watchListSl
 import { Movie } from "@/types";
 import { verifyToken } from "@/utils/verifyToken";
 import { selectCurrentToken } from "../redux/features/auth/authSlice";
-import { TMovie } from "../types/movie";
+import { TMovie } from "../types/movie"
+import WatchlistButton from "../Shared/WatchlistButton";
 
 interface ReviewFormData {
   rating: number;
@@ -43,6 +44,8 @@ const MovieDetails = () => {
   const [showModal, setShowModal] = useState(false);
 
   const movieList = useAppSelector(watchListSelector);
+
+
 
   const dispatch = useAppDispatch();
 
@@ -227,20 +230,8 @@ const MovieDetails = () => {
             height={400}
             className="rounded-xl"
           />
-          <div className="flex justify-between mt-4">
-            <button className="text-sm text-gray-400 hover:text-white cursor-pointer">
-              👍 0 likes
-            </button>
-            <button className="text-sm text-gray-400 hover:text-white cursor-pointer">
-              🔗 Share
-            </button>
-
-            <button
-              onClick={() => handleWatchlist(movieDetails?.data)}
-              className="text-sm text-gray-400 hover:text-white cursor-pointer"
-            >
-              ⭐ Watchlist
-            </button>
+          <div className="flex justify-center mt-4 ">
+            <WatchlistButton data={movieDetails.data}/>
           </div>
         </motion.div>
 
