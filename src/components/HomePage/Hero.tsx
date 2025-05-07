@@ -90,9 +90,9 @@ const HeroSection = () => {
             className="text-4xl md:text-7xl font-bold text-white mb-3 md:mb-6   tracking-wide"
           >
             Welcome to{" "}
-            <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+            <h4 className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent font-bold">
               CineVerse
-            </span>
+            </h4>
           </motion.h1>
 
           <motion.p

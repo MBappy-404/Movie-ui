@@ -31,9 +31,9 @@ const WatchList = () => {
   };
 
   return (
-    <div className="bg-gradient-to-br bg-[#00031b] min-h-screen p-6 text-white">
+    <div className="bg-gradient-to-br bg-[#00031b] min-h-screen p-2 md:p-6 text-white">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">🎬 My Watchlist</h1>
+        <h1 className="text-lg md:text-3xl font-bold">🎬 My Watchlist</h1>
         {movieList.length > 0 && (
           <button
           

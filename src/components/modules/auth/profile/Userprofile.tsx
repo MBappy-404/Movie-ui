@@ -277,7 +277,7 @@ const UserProfile = () => {
                 </p>
 
                 {/* Stats Grid */}
-                <div className="mt-6 grid grid-cols-3 gap-4 max-w-md">
+                <div className="mt-6 grid grid-cols-2 gap-4 max-w-sm">
                   <div className="bg-white/5 p-4  rounded-xl border border-white/10">
                     <div className="text-lg md:text-2xl text-center font-bold text-blue-400">
                       {totalBought?.length || 0}
@@ -300,7 +300,7 @@ const UserProfile = () => {
             <div className="flex gap-4 border-b border-white/10 pb-2 mb-8">
               <button
                 onClick={() => setActiveTab("profile")}
-                className={`px-6 py-3 rounded-t-xl font-medium cursor-pointer flex items-center gap-2 transition-all ${
+                className={`px-6 py-3 rounded-t-xl text-sm md:text-base font-medium cursor-pointer flex items-center gap-2 transition-all ${
                   activeTab === "profile"
                     ? "text-white bg-white/10 border-b-2 border-blue-400"
                     : "text-gray-400 hover:bg-white/5"
@@ -323,7 +323,7 @@ const UserProfile = () => {
               </button>
               <button
                 onClick={() => setActiveTab("watchlist")}
-                className={`px-6 py-3 rounded-t-xl cursor-pointer font-medium flex items-center gap-2 transition-all ${
+                className={`px-6 text-sm md:text-base py-3 rounded-t-xl cursor-pointer font-medium flex items-center gap-2 transition-all ${
                   activeTab === "watchlist"
                     ? "text-white bg-white/10 border-b-2 border-blue-400"
                     : "text-gray-400 hover:bg-white/5"
@@ -388,13 +388,13 @@ const UserProfile = () => {
                       <button
                         type="button"
                         onClick={() => setIsEditing(false)}
-                        className="px-6 py-2.5 text-white bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors"
+                        className="px-6 py-2.5 text-white  text-white bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors"
                       >
                         Cancel
                       </button>
                       <button
                         type="submit"
-                        className="px-6 py-2.5 cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl hover:opacity-90 transition-opacity"
+                        className="px-6 py-2.5 text-white  cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl hover:opacity-90 transition-opacity"
                       >
                         Save Changes
                       </button>
@@ -403,7 +403,7 @@ const UserProfile = () => {
                     <button
                       type="button"
                       onClick={() => setIsEditing(true)}
-                      className="px-6 py-2.5 bg-gradient-to-r cursor-pointer from-blue-500 to-purple-500 rounded-xl hover:opacity-90 transition-opacity"
+                      className="px-6 py-2.5 text-white  bg-gradient-to-r cursor-pointer from-blue-500 to-purple-500 rounded-xl hover:opacity-90 transition-opacity"
                     >
                       Edit Profile
                     </button>
