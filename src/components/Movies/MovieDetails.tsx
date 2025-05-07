@@ -345,7 +345,7 @@ const MovieDetails = () => {
 
       <p className="text-sm md:text-lg font-semibold text-gray-400">
         One Time Purchase:
-        {discount.percentage && isDiscountActive ? (
+        {discount.isActive && isDiscountActive ? (
           <>
             <span className="text-white font-bold ml-2 text-xl">
               ${(
