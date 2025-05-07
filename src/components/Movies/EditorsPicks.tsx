@@ -13,10 +13,10 @@ const EditorsPicks = () => {
   const moviesData = data?.data?.slice(0, 4);
 
   const sectionVariants = {
-    hidden: { opacity: 0, y: 50 },
+    hidden: { opacity: 0, y: 40 },
     visible: {
       opacity: 1,
-      y: 20,
+      y: 10,
       transition: {
         duration: 0.8,
         ease: "easeOut",
@@ -81,7 +81,7 @@ const EditorsPicks = () => {
             ))}
 
           {moviesData?.map((movie: IDiscount) => (
-            <Link href={`/movies/${movie?.content?.id}`} key={movie?.content?.id}>
+            <Link className="block -mt-10" href={`/movies/${movie?.content?.id}`} key={movie?.content?.id}>
               <motion.div
                 className="relative group cursor-pointer"
                 variants={cardVariants}

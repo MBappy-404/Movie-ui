@@ -11,9 +11,9 @@ const HomePage = () => {
   return (
     <div>
       <HeroSection />
+      <EditorsPicks />
       <TrendingMovies />
       <NewReleases />
-      <EditorsPicks />
       <HomeBanner />
       <TopArtists />
       <TopNews />

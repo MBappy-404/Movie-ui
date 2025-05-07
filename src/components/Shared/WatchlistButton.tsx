@@ -25,8 +25,6 @@ const WatchlistButton = ({ data } :any) => {
   const isExistInWatchList = movieList.some((item) => item.id === data.id);
 
   return (
-
-    
     <button
       onClick={()=> handleToggleWatchlist(data)}
       className={`px-4 py-2 rounded-full font-semibold shadow-md transition-all ${
