@@ -226,12 +226,12 @@ const ManageContent = () => {
                       <td className="px-6 py-4">${movie.price}</td>
                       <td className="px-6 py-4">
                         <span
-                          className={`px-2 py-1 rounded-full text-sm ${movie.isAvailable
-                            ? "bg-green-500/20 text-green-400"
-                            : "bg-red-500/20 text-red-400"
+                          className={`px-2 py-1 rounded-full text-sm border ${movie.isAvailable
+                            ? "border-green-500/20 text-green-400"
+                            : "border-red-500/20 text-red-400"
                             }`}
                         >
-                          {movie.isAvailable ? "Available" : "Unavailable"}
+                          {movie.isAvailable ? "Available" : "Not Available"}
                         </span>
                       </td>
                       <td className="px-6 py-4  text-2xl flex gap-3">

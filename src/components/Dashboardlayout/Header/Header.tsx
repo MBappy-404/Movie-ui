@@ -8,6 +8,8 @@ import { selectCurrentToken } from "@/components/redux/features/auth/authSlice";
 import { verifyToken } from "@/utils/verifyToken";
 import { useGetUserQuery } from "@/components/redux/features/user/userApi";
 import Cookies from 'js-cookie';
+import Link from "next/link";
+import { Home } from "lucide-react";
 
 interface HeaderProps {
   toggleSidebar: () => void;
@@ -96,6 +98,12 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
             {/* Dropdown Menu */}
             {isDropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-[#000a3a] border border-[#00175f] rounded-lg shadow-lg py-2">
+                <Link href={'/'}
+                  className="w-full px-3 py-2 text-left text-gray-300 hover:bg-[#00175f]/30 transition-colors flex items-center gap-2"
+                >
+                  <Home className="text-white" />
+                  Home
+                </Link>
                 <button
                   onClick={handleProfileClick}
                   className="w-full px-4 py-2 text-left text-gray-300 hover:bg-[#00175f]/30 transition-colors flex items-center gap-2"

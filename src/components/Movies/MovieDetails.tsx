@@ -88,22 +88,22 @@ const MovieDetails = () => {
 
   useEffect(() => {
     if (allMovies?.data && movieDetails?.data) {
-      const currentGenre = movieDetails.data.genre?.genreName;
+      const currentGenre = movieDetails?.data?.genre?.genreName;
       // console.log("Current Genre:", currentGenre);
 
       if (currentGenre) {
         // First try to find exact genre matches
-        let filteredMovies = allMovies.data.filter((movie: TMovie) => {
-          return movie.genre?.genreName === currentGenre && movie.id !== movieDetails.data.id;
+        let filteredMovies = allMovies?.data?.filter((movie: TMovie) => {
+          return movie?.genre?.genreName === currentGenre && movie?.id !== movieDetails?.data?.id;
         });
 
         // If we don't have enough movies with exact genre match, try to find similar genres
         if (filteredMovies.length < 4) {
-          const similarGenres = allMovies.data.filter((movie: TMovie) => {
+          const similarGenres = allMovies?.data?.filter((movie: TMovie) => {
             // Exclude the current movie and already filtered movies
-            return movie.id !== movieDetails.data.id && 
-                   !filteredMovies.some((fm: TMovie) => fm.id === movie.id) &&
-                   movie.genre?.genreName;
+            return movie.id !== movieDetails?.data?.id &&
+              !filteredMovies?.some((fm: TMovie) => fm.id === movie?.id) &&
+              movie.genre?.genreName;
           });
 
           // Add similar genre movies until we have 4 recommendations
@@ -128,10 +128,6 @@ const MovieDetails = () => {
   }, [allMovies, movieDetails]);
 
   const [rating, setRating] = useState(0);
-  const [isChecked, setIsChecked] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const videoUrl =
-    "https://customer-342mt1gy0ibqe0dl.cloudflarestream.com/e5fe3013604cf504ace84b84d91b1f5a/downloads/default.mp4";
 
   if (isLoading) {
     return <MovieDetailsSkeleton />;
@@ -163,8 +159,6 @@ const MovieDetails = () => {
         });
         reset();
         setRating(0);
-        setIsChecked(false);
-        setSubmitted(true);
       } else {
         toast.error(res?.message || "Failed to add review", { id: toastId });
       }
@@ -206,13 +200,17 @@ const MovieDetails = () => {
 
       <div className="w-full  mb-10 hidden md:block">
         <div className="relative w-full   rounded-xl overflow-hidden">
-          <Image
-            src={movieDetails?.data?.contentBanner}
-            alt="Banner"
-            width={600}
-            height={400}
-            className="w-full h-full object-cover rounded-xl"
-          />
+          {typeof movieDetails?.data?.contentBanner === 'string' &&
+            movieDetails.data.contentBanner.trim() !== '' &&
+            (movieDetails.data.contentBanner.startsWith('http') || movieDetails.data.contentBanner.startsWith('https') || movieDetails.data.contentBanner.startsWith('/')) ? (
+            <Image
+              src={movieDetails.data.contentBanner}
+              alt="Banner"
+              width={600}
+              height={400}
+              className="w-full h-full object-cover rounded-xl"
+            />
+          ) : null}
         </div>
       </div>
 

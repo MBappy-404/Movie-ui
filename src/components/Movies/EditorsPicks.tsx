@@ -16,7 +16,7 @@ const EditorsPicks = () => {
     hidden: { opacity: 0, y: 50 },
     visible: {
       opacity: 1,
-      y: 0,
+      y: 20,
       transition: {
         duration: 0.8,
         ease: "easeOut",
@@ -62,8 +62,7 @@ const EditorsPicks = () => {
     >
       <div className="container mx-auto px-4" ref={ref}>
         <motion.div
-          initial={{ opacity: 0, x: -50 }}
-          animate={isInView ? { opacity: 1, x: 0 } : {}}
+
           transition={{ duration: 0.8 }}
           className="mb-12 flex items-end justify-between"
         >
@@ -91,12 +90,12 @@ const EditorsPicks = () => {
                 {movie?.percentage && (
                   <div
                     className={`absolute top-3 ${movie?.isActive ? "right-3" : "left-3"
-                      } bg-white/10 px-3 py-1 rounded-full flex items-center backdrop-blur-sm z-10`}
+                      } bg-red-600 px-4 py-1 rounded-full flex items-center justify-center backdrop-blur-sm z-10`}
                   >
-                    <span className="text-yellow-400 text-sm font-semibold">
+                    <span className="text-white text-[12px] font-semibold">
                       {movie?.percentage}% OFF
                     </span>
-                    <span className="ml-2 text-white text-xs"></span>
+                    <span className=" text-white text-xs"></span>
                   </div>
                 )}
 

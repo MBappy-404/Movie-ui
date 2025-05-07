@@ -101,12 +101,12 @@ const DiscountManagement = () => {
                       <td className="px-6 py-4 ">{discount?.percentage}%</td>
                       <td className="px-6 py-4 " >
                         <span
-                          className={`px-2 py-1 rounded-full text-sm ${discount.isActive
-                            ? "bg-green-500/20 text-green-400"
-                            : "bg-red-500/20 text-red-400"
+                          className={`px-2 py-1 rounded-full text-sm border ${discount.isActive
+                            ? "border-green-500/20 text-green-400"
+                            : "border-red-500/20 text-red-400"
                             }`}
                         >
-                          {discount.isActive ? "Active" : "Deactivate"}
+                          {discount.isActive ? "ACTIVE" : "DEACTIVE"}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-2xl flex gap-3">
