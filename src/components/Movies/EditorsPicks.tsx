@@ -10,7 +10,7 @@ const EditorsPicks = () => {
   const { data, isLoading } = useGetActiveDiscountQuery(undefined);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const moviesData = data?.data?.slice(0, 4);
+  const moviesData = data?.data
 
   const sectionVariants = {
     hidden: { opacity: 0, y: 40 },
