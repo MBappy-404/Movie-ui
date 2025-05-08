@@ -4,9 +4,10 @@ import { toast } from "sonner";
 
 interface deletePendingReviewModalProps {
   isDeleteModalOpen: boolean;
-  setIsDeleteModalOpen: any;
-  reviewToDelete: any | null;
-  setReviewToDelete: any;
+  setIsDeleteModalOpen: (isOpen: boolean) => void;
+  reviewToDelete: any;
+  setReviewToDelete: (review: any) => void;
+  onDelete: (id: string) => Promise<void>;
 }
 
 const DeletePendingReviewModal = ({
@@ -14,23 +15,15 @@ const DeletePendingReviewModal = ({
   setIsDeleteModalOpen,
   reviewToDelete,
   setReviewToDelete,
+  onDelete,
 }: deletePendingReviewModalProps) => {
-  const [deleteReview] = useDeleteReviewMutation();
-
-  const handlePendingReviewDelete = async (reviewId: string) => {
-    const toastId = toast.loading("Deleting Review....", { duration: 2000 });
-
-    try {
-      await deleteReview(reviewId).unwrap();
-      toast.success("Review is deleted successfully", { id: toastId });
-      setIsDeleteModalOpen(false);
-      setReviewToDelete(null);
-    } catch (error: any) {
-      const errorMessage = error?.data?.message || "Failed to delete review";
-      toast.error(errorMessage, { id: toastId });
-      // console.error("Error deleting review:", error);
+  const handlePendingReviewDelete = async () => {
+    if (reviewToDelete?.id) {
+      await onDelete(reviewToDelete.id);
     }
   };
+
+  if (!isDeleteModalOpen || !reviewToDelete) return null;
 
   return (
     <div>
@@ -53,25 +46,24 @@ const DeletePendingReviewModal = ({
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.1 }}
-
-                className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+                className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent"
+              >
                 Delete Pending Review
               </motion.h2>
               <motion.p
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2 }}
-
-                className="text-gray-300 mb-6">
-                Are you sure you want to delete the content your pending
-                review"? This action cannot be undone.
+                className="text-gray-300 mb-6"
+              >
+                Are you sure you want to delete your pending review? This action cannot be undone.
               </motion.p>
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.3 }}
-
-                className="flex justify-end gap-4">
+                className="flex justify-end gap-4"
+              >
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -86,7 +78,7 @@ const DeletePendingReviewModal = ({
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => handlePendingReviewDelete(reviewToDelete.id)}
+                  onClick={handlePendingReviewDelete}
                   className="hover:bg-red-600 px-4 py-2 rounded-lg transition-colors cursor-pointer"
                 >
                   Delete

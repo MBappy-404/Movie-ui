@@ -74,11 +74,12 @@ const MovieDetails = () => {
     user = verifyToken(token);
   }
 
-  const { data: movieDetails, isLoading } = useGetContentQuery(id);
+  const { data: movieDetails, isLoading, refetch: refetchMovieDetails } = useGetContentQuery(id);
 
   const { data: allMovies, isLoading: isMoviesLoading } =
     useGetAllContentQuery(undefined);
   const { data: SingleUser } = useGetUserQuery(user?.id);
+  const { data: reviews, refetch: refetchReviews } = useGetAllReviewByContentIdQuery(id);
 
   const [recommendedMovies, setRecommendedMovies] = useState<TMovie[]>([]);
   const {
@@ -159,7 +160,7 @@ const MovieDetails = () => {
         reviewText: data.reviewText,
         contentId: movieDetails.data.id,
         userId: user.id,
-        tags: data.tags || "CLASSIC", // Provide a default value if tags is undefined
+        tags: data.tags || "CLASSIC",
       };
 
       const res = await addReview(reviewData).unwrap();
@@ -170,6 +171,7 @@ const MovieDetails = () => {
         });
         reset();
         setRating(0);
+        refetchMovieDetails();
       } else {
         toast.error(res?.message || "Failed to add review", { id: toastId });
       }
@@ -258,8 +260,8 @@ const MovieDetails = () => {
           <div className="text-sm md:text-lg text-gray-400 mb-2 flex  lg:flex-row flex-col gap-1 lg:items-center ">
             <div className="flex lg:flex-row gap-1">
               <div className="flex items-center gap-1">
-              <Rating items={1} value={1} style={{ maxWidth: 20 }}/>
-              <p>{movieDetails?.data?.averageRating}/10 | {" "}</p>
+                <Rating items={1} value={1} style={{ maxWidth: 20 }} />
+                <p>{movieDetails?.data?.averageRating}/10 | {" "}</p>
               </div>
               <div className="flex gap-1">
                 📅
@@ -503,49 +505,49 @@ const MovieDetails = () => {
             ))}
           </div>
 
-          {user ? <><h2 className="mt-10 text-xl font-semibold">Add a review</h2>
-          <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
+          <h2 className="mt-10 text-xl font-semibold">Add a review</h2>
+            <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
 
 
-            {/* Rating Component */}
-            <div className="flex items-center gap-1">
-              <Rating
-                items={10}
-                style={{ maxWidth: 200 }}
-                value={rating}
-                onChange={setRating}
-                halfFillMode="box"
-                transition="colors"
+              {/* Rating Component */}
+              <div className="flex items-center gap-1">
+                <Rating
+                  items={10}
+                  style={{ maxWidth: 200 }}
+                  value={rating}
+                  onChange={setRating}
+                  halfFillMode="box"
+                  transition="colors"
+                />
+                <span className="text-yellow-400">{rating}/10</span>
+              </div>
+              {/* Review Textarea */}
+              <textarea
+                className="w-full mt-4 p-2 outline-none focus:border-blue-500 transition-all duration-300  bg-gray-800 border border-gray-600 rounded"
+                rows={4}
+                placeholder="Your review *"
+                {...register("reviewText", { required: "Review is required" })}
               />
-              <span className="text-yellow-400">{rating}/10</span>
-            </div>
-            {/* Review Textarea */}
-            <textarea
-              className="w-full mt-4 p-2 outline-none focus:border-blue-500 transition-all duration-300  bg-gray-800 border border-gray-600 rounded"
-              rows={4}
-              placeholder="Your review *"
-              {...register("reviewText", { required: "Review is required" })}
-            />
-            <select
-              className="mt-4 p-2 text-white border border-gray-500 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
-              {...register("tags")}
-            >
-              <option className="bg-slate-900 text-white" value="CLASSIC">
-                CLASSIC
-              </option>
-              <option className="bg-slate-900 text-white" value="UNDERRATED">
-                UNDERRATED
-              </option>
-            </select>
-            {errors.reviewText && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.reviewText.message}
-              </p>
-            )}
+              <select
+                className="mt-4 p-2 text-white border border-gray-500 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
+                {...register("tags")}
+              >
+                <option className="bg-slate-900 text-white" value="CLASSIC">
+                  CLASSIC
+                </option>
+                <option className="bg-slate-900 text-white" value="UNDERRATED">
+                  UNDERRATED
+                </option>
+              </select>
+              {errors.reviewText && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.reviewText.message}
+                </p>
+              )}
 
-            {/* Checkbox for saving info */}
+              {/* Checkbox for saving info */}
 
-            {/* <div className="mt-4">
+              {/* <div className="mt-4">
  
               <label className="text-sm">
                 <input
@@ -560,22 +562,25 @@ const MovieDetails = () => {
  
             </div> */}
 
-            {/* Submit Button */}
-            <br />
-            <button
-              type="submit"
-              disabled={!user?.id || !SingleUser?.data?.id || rating === 0}
-              className="mt-4 px-10 py-3 cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-lg shadow-lg hover:-translate-y-1 hover:shadow-blue-500/40 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {!SingleUser?.data?.id ? "Loading user data..." : "Submit"}
-            </button>
-          </form></>:<></>}
+              {/* Submit Button */}
+              <br />
+              <button
+                type="submit"
+                disabled={!user?.id || !SingleUser?.data?.id || rating === 0}
+                className="mt-4 px-10 py-3 cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-lg shadow-lg hover:-translate-y-1 hover:shadow-blue-500/40 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {!SingleUser?.data?.id ? "Loading user data..." : "Submit"}
+              </button>
+            </form>
 
           {/* Display Submitted Review */}
           <div className="mt-10">
             <h2 className="text-xl font-semibold mb-4">User Reviews</h2>
-
-            <ReviewCard ReviewData={movieDetails?.data?.reviews} UserData={SingleUser?.data} />
+            <ReviewCard 
+              ReviewData={movieDetails.data.reviews} 
+              UserData={user?.id ? SingleUser?.data : null}
+              onReviewUpdate={refetchMovieDetails}
+            />
           </div>
         </motion.div>
       </div>

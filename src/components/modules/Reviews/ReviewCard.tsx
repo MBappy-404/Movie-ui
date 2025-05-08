@@ -3,7 +3,7 @@
 import { useGetUserQuery } from "@/components/redux/features/user/userApi";
 import { Rating } from "@smastrom/react-rating";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Comments from "../Comment/Comments";
 import { useAppSelector } from "@/components/redux/hooks";
 import { selectCurrentToken } from "@/components/redux/features/auth/authSlice";
@@ -24,12 +24,18 @@ import DeletePendingReviewModal from "@/components/modals/DeletePendingReviewMod
 
 // Separate component for individual review items
 const ReviewItem = ({ item, UserData }: { item: any; UserData: any }) => {
+
+
+
   const [liked, setLiked] = useState(false);
   const [addLikeOrDislike] = useAddLikeOrDislikeMutation();
   const { data: likeOrDislikeCounts, isLoading } =
     useGetLikesOrDislikesCountQuery({
       reviewId: item.id,
     });
+
+
+
   const date = new Date(item.createdAt);
 
   const likes = likeOrDislikeCounts?.data?.likeCount;
@@ -136,7 +142,7 @@ const ReviewItem = ({ item, UserData }: { item: any; UserData: any }) => {
 
               <span>{dislikes}</span>
             </button>
-          </div>): <></>}
+          </div>) : <></>}
         </div>
       </div>
 
@@ -149,9 +155,11 @@ const ReviewItem = ({ item, UserData }: { item: any; UserData: any }) => {
 const ReviewCard = ({
   ReviewData,
   UserData,
+  onReviewUpdate,
 }: {
   ReviewData: any;
   UserData: any;
+  onReviewUpdate?: () => void;
 }) => {
   const token = useAppSelector(selectCurrentToken);
   let userinfo: any;
@@ -166,8 +174,7 @@ const ReviewCard = ({
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [reviewToDelete, setReviewToDelete] = useState(null);
   const [updateReview] = useUpdateReviewMutation();
-
-  console.log(ReviewData)
+  const [deleteReview] = useDeleteReviewMutation();
 
   const publishedReviews = ReviewData?.filter(
     (item: any) => item.status === "PUBLISHED"
@@ -188,8 +195,6 @@ const ReviewCard = ({
 
   const handleSave = async (id: string) => {
     const toastId = toast.loading("Updating Review....", { duration: 2000 });
-    // 🔁 Send updated review to backend here
-    // console.log("Saving:", id, editedText);
 
     const updateReviewData = {
       id,
@@ -197,12 +202,26 @@ const ReviewCard = ({
     };
 
     try {
-      const res = await updateReview(updateReviewData).unwrap();
+      await updateReview(updateReviewData).unwrap();
       toast.success("Review updated successfully!", { id: toastId });
       setEditingReviewId(null);
+      onReviewUpdate?.(); // Call the callback to refetch data
     } catch (error: any) {
       toast.error(error.message || "Failed to update review", { id: toastId });
       setEditingReviewId(null);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    const toastId = toast.loading("Deleting review...", { duration: 2000 });
+    try {
+      await deleteReview(id).unwrap();
+      toast.success("Review deleted successfully!", { id: toastId });
+      setIsDeleteModalOpen(false);
+      setReviewToDelete(null);
+      onReviewUpdate?.(); // Call the callback to refetch data
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to delete review", { id: toastId });
     }
   };
 
@@ -280,7 +299,6 @@ const ReviewCard = ({
                               setReviewToDelete(item);
                               setIsDeleteModalOpen(true);
                             }}
-                            // onClick={() => handleDelete(item.id)}
                             className="text-sm text-red-400 hover:text-red-600 cursor-pointer"
                           >
                             Delete
@@ -330,6 +348,7 @@ const ReviewCard = ({
         setIsDeleteModalOpen={setIsDeleteModalOpen}
         reviewToDelete={reviewToDelete}
         setReviewToDelete={setReviewToDelete}
+        onDelete={handleDelete}
       />
     </div>
   );
