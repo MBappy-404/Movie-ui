@@ -75,7 +75,6 @@ const MovieDetails = () => {
   }
 
   const { data: movieDetails, isLoading } = useGetContentQuery(id);
-  console.log(movieDetails);
 
   const { data: allMovies, isLoading: isMoviesLoading } =
     useGetAllContentQuery(undefined);
@@ -91,7 +90,7 @@ const MovieDetails = () => {
   const [addReview] = useCreateReviewMutation();
   const contentId = movieDetails?.data.id;
 
-  const { data: allReview } = useGetAllReviewByContentIdQuery(contentId);
+  // const { data: allReview } = useGetAllReviewByContentIdQuery(contentId);
 
   useEffect(() => {
     if (allMovies?.data && movieDetails?.data) {
@@ -504,7 +503,7 @@ const MovieDetails = () => {
             ))}
           </div>
 
-          <h2 className="mt-10 text-xl font-semibold">Add a review</h2>
+          {user ? <><h2 className="mt-10 text-xl font-semibold">Add a review</h2>
           <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
 
 
@@ -570,13 +569,13 @@ const MovieDetails = () => {
             >
               {!SingleUser?.data?.id ? "Loading user data..." : "Submit"}
             </button>
-          </form>
+          </form></>:<></>}
 
           {/* Display Submitted Review */}
           <div className="mt-10">
             <h2 className="text-xl font-semibold mb-4">User Reviews</h2>
 
-            <ReviewCard ReviewData={allReview} UserData={SingleUser?.data} />
+            <ReviewCard ReviewData={movieDetails?.data?.reviews} UserData={SingleUser?.data} />
           </div>
         </motion.div>
       </div>

@@ -99,7 +99,7 @@ const ReviewItem = ({ item, UserData }: { item: any; UserData: any }) => {
             <span className="text-sm text-gray-300">{formattedDate}</span>
           </div>
           <p className="mt-2 text-gray-300 text-sm">{item.reviewText}</p>
-          <div className="flex gap-x-5 translate-y-5">
+          {UserData ? (<div className="flex gap-x-5 translate-y-5">
             <button
               onClick={() => handleAddLikeOrDislike("LIKED")}
               // onClick={() => setLiked(!liked)}
@@ -136,7 +136,7 @@ const ReviewItem = ({ item, UserData }: { item: any; UserData: any }) => {
 
               <span>{dislikes}</span>
             </button>
-          </div>
+          </div>): <></>}
         </div>
       </div>
 
@@ -159,6 +159,7 @@ const ReviewCard = ({
     userinfo = verifyToken(token);
   }
 
+
   // console.log(userinfo);
   const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
   const [editedText, setEditedText] = useState("");
@@ -166,10 +167,12 @@ const ReviewCard = ({
   const [reviewToDelete, setReviewToDelete] = useState(null);
   const [updateReview] = useUpdateReviewMutation();
 
-  const publishedReviews = ReviewData?.data?.filter(
+  console.log(ReviewData)
+
+  const publishedReviews = ReviewData?.filter(
     (item: any) => item.status === "PUBLISHED"
   );
-  const pendingReviews = ReviewData?.data?.filter(
+  const pendingReviews = ReviewData?.filter(
     (item: any) => item.status === "PENDING" && item?.userId === userinfo?.id
   );
 

@@ -45,7 +45,7 @@ const Footer = () => {
             <h3 className="text-xl font-bold text-indigo-400">CineVerse</h3>
             <p className="text-gray-400">
               Your ultimate destination for premium streaming experiences. 
-              Discover thousands of movies and TV shows in stunning quality.
+              Discover thousands of movies and TV show's in stunning quality.
             </p>
           </motion.div>
 
