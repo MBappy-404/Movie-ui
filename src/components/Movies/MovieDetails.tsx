@@ -505,7 +505,8 @@ const MovieDetails = () => {
             ))}
           </div>
 
-          <h2 className="mt-10 text-xl font-semibold">Add a review</h2>
+          {SingleUser?.data ? <>
+            <h2 className="mt-10 text-xl font-semibold">Add a review</h2>
             <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
 
 
@@ -572,6 +573,7 @@ const MovieDetails = () => {
                 {!SingleUser?.data?.id ? "Loading user data..." : "Submit"}
               </button>
             </form>
+          </>: <></>}
 
           {/* Display Submitted Review */}
           <div className="mt-10">
