@@ -3,7 +3,7 @@
 import { useGetUserQuery } from "@/components/redux/features/user/userApi";
 import { Rating } from "@smastrom/react-rating";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Comments from "../Comment/Comments";
 import { useAppSelector } from "@/components/redux/hooks";
 import { selectCurrentToken } from "@/components/redux/features/auth/authSlice";
@@ -24,12 +24,18 @@ import DeletePendingReviewModal from "@/components/modals/DeletePendingReviewMod
 
 // Separate component for individual review items
 const ReviewItem = ({ item, UserData }: { item: any; UserData: any }) => {
+
+
+
   const [liked, setLiked] = useState(false);
   const [addLikeOrDislike] = useAddLikeOrDislikeMutation();
   const { data: likeOrDislikeCounts, isLoading } =
     useGetLikesOrDislikesCountQuery({
       reviewId: item.id,
     });
+
+
+
   const date = new Date(item.createdAt);
 
   const likes = likeOrDislikeCounts?.data?.likeCount;
@@ -42,6 +48,7 @@ const ReviewItem = ({ item, UserData }: { item: any; UserData: any }) => {
     month: "long",
     day: "numeric",
   });
+
 
   const handleAddLikeOrDislike = async (passedStatus: string) => {
     let status;
@@ -86,15 +93,19 @@ const ReviewItem = ({ item, UserData }: { item: any; UserData: any }) => {
           />
         </div>
         <div className="flex-grow">
-          <div className="flex items-center gap-2">
-            <Rating style={{ maxWidth: 80 }} value={item.rating} readOnly />
-            <p className="text-sm text-gray-400">{formattedDate}</p>
+          <div className="flex flex-col items-start gap-1 w-full">
+            <Rating
+              items={10}
+              value={item.rating}
+              readOnly
+              style={{ maxWidth: 120, width: "100%" }}
+              className="w-[100px] sm:w-[120px]"
+            />
+            <span className="font-bold text-white">{item.user?.name || "Anonymous"}</span>
+            <span className="text-sm text-gray-300">{formattedDate}</span>
           </div>
-          <p className="font-semibold text-white mt-1">
-            {item.user?.name || "Anonymous"}
-          </p>
           <p className="mt-2 text-gray-300 text-sm">{item.reviewText}</p>
-          <div className="flex gap-x-5 translate-y-5">
+          {UserData ? (<div className="flex gap-x-5 translate-y-5">
             <button
               onClick={() => handleAddLikeOrDislike("LIKED")}
               // onClick={() => setLiked(!liked)}
@@ -105,9 +116,9 @@ const ReviewItem = ({ item, UserData }: { item: any; UserData: any }) => {
               ) : (
                 <ThumbsUpIcon
                   className="h-6 w-6"
-                  // className={`h-7 w-7 ${
-                  //   liked ? "text-blue-500" : "text-gray-500"
-                  // } hover:scale-110 rotate-180`}
+                // className={`h-7 w-7 ${
+                //   liked ? "text-blue-500" : "text-gray-500"
+                // } hover:scale-110 rotate-180`}
                 />
               )}
 
@@ -123,15 +134,15 @@ const ReviewItem = ({ item, UserData }: { item: any; UserData: any }) => {
               ) : (
                 <ThumbsUpIcon
                   className="h-6 w-6 rotate-180 translate-y-1"
-                  // className={`h-7 w-7 ${
-                  //   liked ? "text-blue-500" : "text-gray-500"
-                  // } hover:scale-110 rotate-180`}
+                // className={`h-7 w-7 ${
+                //   liked ? "text-blue-500" : "text-gray-500"
+                // } hover:scale-110 rotate-180`}
                 />
               )}
 
               <span>{dislikes}</span>
             </button>
-          </div>
+          </div>) : <></>}
         </div>
       </div>
 
@@ -144,9 +155,11 @@ const ReviewItem = ({ item, UserData }: { item: any; UserData: any }) => {
 const ReviewCard = ({
   ReviewData,
   UserData,
+  onReviewUpdate,
 }: {
   ReviewData: any;
   UserData: any;
+  onReviewUpdate?: () => void;
 }) => {
   const token = useAppSelector(selectCurrentToken);
   let userinfo: any;
@@ -154,17 +167,19 @@ const ReviewCard = ({
     userinfo = verifyToken(token);
   }
 
+
   // console.log(userinfo);
   const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
   const [editedText, setEditedText] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [reviewToDelete, setReviewToDelete] = useState(null);
   const [updateReview] = useUpdateReviewMutation();
+  const [deleteReview] = useDeleteReviewMutation();
 
-  const publishedReviews = ReviewData?.data?.filter(
+  const publishedReviews = ReviewData?.filter(
     (item: any) => item.status === "PUBLISHED"
   );
-  const pendingReviews = ReviewData?.data?.filter(
+  const pendingReviews = ReviewData?.filter(
     (item: any) => item.status === "PENDING" && item?.userId === userinfo?.id
   );
 
@@ -180,8 +195,6 @@ const ReviewCard = ({
 
   const handleSave = async (id: string) => {
     const toastId = toast.loading("Updating Review....", { duration: 2000 });
-    // 🔁 Send updated review to backend here
-    // console.log("Saving:", id, editedText);
 
     const updateReviewData = {
       id,
@@ -189,12 +202,26 @@ const ReviewCard = ({
     };
 
     try {
-      const res = await updateReview(updateReviewData).unwrap();
+      await updateReview(updateReviewData).unwrap();
       toast.success("Review updated successfully!", { id: toastId });
       setEditingReviewId(null);
+      onReviewUpdate?.(); // Call the callback to refetch data
     } catch (error: any) {
       toast.error(error.message || "Failed to update review", { id: toastId });
       setEditingReviewId(null);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    const toastId = toast.loading("Deleting review...", { duration: 2000 });
+    try {
+      await deleteReview(id).unwrap();
+      toast.success("Review deleted successfully!", { id: toastId });
+      setIsDeleteModalOpen(false);
+      setReviewToDelete(null);
+      onReviewUpdate?.(); // Call the callback to refetch data
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to delete review", { id: toastId });
     }
   };
 
@@ -224,12 +251,22 @@ const ReviewCard = ({
                   />
                 </div>
                 <div className="flex-grow">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-col items-start gap-1 w-full">
                     <Rating
-                      style={{ maxWidth: 80 }}
+                      items={10}
                       value={item.rating}
                       readOnly
+                      style={{ maxWidth: 120, width: "100%" }}
+                      className="w-[100px] sm:w-[120px]"
                     />
+                    <span className="font-bold text-white">{item.user?.name || "Anonymous"}</span>
+                    <span className="text-sm text-gray-300">
+                      {new Date(item.createdAt).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </span>
                   </div>
                   <div className="bg-gray-800 p-3 rounded-xl mt-2 max-w-[300px] md:max-w-[400px] whitespace-pre-wrap break-all relative">
                     {/* Action Buttons */}
@@ -262,7 +299,6 @@ const ReviewCard = ({
                               setReviewToDelete(item);
                               setIsDeleteModalOpen(true);
                             }}
-                            // onClick={() => handleDelete(item.id)}
                             className="text-sm text-red-400 hover:text-red-600 cursor-pointer"
                           >
                             Delete
@@ -312,6 +348,7 @@ const ReviewCard = ({
         setIsDeleteModalOpen={setIsDeleteModalOpen}
         reviewToDelete={reviewToDelete}
         setReviewToDelete={setReviewToDelete}
+        onDelete={handleDelete}
       />
     </div>
   );

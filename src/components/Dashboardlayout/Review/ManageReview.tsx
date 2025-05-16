@@ -18,6 +18,10 @@ const ManageReview = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [reviewToDelete, setReviewToDelete] = useState<Review | null>(null);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
   const handleStatusChange = async (
     reviewId: string,
     newStatus: ReviewStatus
@@ -33,7 +37,7 @@ const ManageReview = () => {
       const errorMessage =
         error?.data?.message || "Failed to update review status";
       toast.error(errorMessage);
-      console.error("Error updating review:", error);
+      // console.error("Error updating review:", error);
     }
   };
 
@@ -46,7 +50,7 @@ const ManageReview = () => {
     } catch (error: any) {
       const errorMessage = error?.data?.message || "Failed to delete review";
       toast.error(errorMessage);
-      console.error("Error deleting review:", error);
+      // console.error("Error deleting review:", error);
     }
   };
 
@@ -86,7 +90,7 @@ const ManageReview = () => {
 
   // Handle error state
   if (error) {
-    console.error("Error fetching reviews:", error);
+    // console.error("Error fetching reviews:", error);
     toast.error("Failed to fetch reviews. Please try again later.");
     return (
       <div className="min-h-screen bg-[#00031b] p-2 flex items-center justify-center">
@@ -102,10 +106,16 @@ const ManageReview = () => {
 
   const reviewsList = reviews?.data || [];
 
-  // Filter reviews to only show PENDING status
-  const pendingReviews = reviewsList.filter(
-    (review: Review) => review.status === "PENDING"
-  );
+  // Calculate pagination
+  const totalPages = Math.ceil(reviewsList.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentReviews = reviewsList.slice(startIndex, endIndex);
+
+  // Handle page change
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
 
   return (
     <div className="min-h-screen bg-[#00031b]">
@@ -122,79 +132,123 @@ const ManageReview = () => {
           <p className="text-white text-5xl font-bold text-center">
             <LoadingSpinner />
           </p>
-        ) : pendingReviews.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-gray-400 text-lg">No pending reviews found</p>
-          </div>
-        ) : (
-          <div className="rounded-xl border border-[#1a2d6d] overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-[#000a3a]">
-                  <tr>
-                    <th className="px-6 py-4 text-left">User</th>
-                    <th className="px-6 py-4 text-left">Content</th>
-                    <th className="px-6 py-4 text-left">Review</th>
-                    <th className="px-6 py-4 text-left">Rating</th>
-                    <th className="px-6 py-4 text-left">Status</th>
-                    <th className="px-6 py-4 text-left">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {pendingReviews.map((review: Review) => (
-                    <motion.tr
-                      key={review.id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="border-t border-[#1a2d6d] hover:bg-[#000a3a]/50 transition-colors"
-                    >
-                      <td className="px-6 py-4">
-                        <div>
-                          <p className="font-medium">{review.user.name}</p>
-                          <p className="text-sm text-gray-400">
-                            {review.user.email}
-                          </p>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">{review.content.title}</td>
-                      <td className="px-6 py-4 max-w-md truncate">
-                        {review.reviewText}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-1">
-                          <span className="text-yellow-400">★</span>
-                          <span>{review.rating}/5</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <select
-                          value={review.status}
-                          onChange={(e) =>
-                            handleStatusChange(
-                              review.id,
-                              e.target.value as ReviewStatus
-                            )
-                          }
-                          className={`px-3 py-1 rounded-full text-sm bg-transparent border ${getStatusColor(
-                            review.status
-                          )} focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
-                        >
-                          {renderStatusOptions(review.status)}
-                        </select>
-                      </td>
-                      <td className="px-6 py-4 text-2xl">
-                        <MdDeleteOutline
-                          className="cursor-pointer hover:text-red-500 transition-colors"
-                          onClick={() => openDeleteModal(review)}
-                        />
-                      </td>
-                    </motion.tr>
-                  ))}
-                </tbody>
-              </table>
+        ) : reviewsList.length > 0 ? (
+          <>
+            <div className="rounded-xl border border-[#1a2d6d] overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-[#000a3a]">
+                    <tr>
+                      <th className="px-6 py-4 text-left">User</th>
+                      <th className="px-6 py-4 text-left">Content</th>
+                      <th className="px-6 py-4 text-left">Review</th>
+                      <th className="px-6 py-4 text-left">Rating</th>
+                      <th className="px-6 py-4 text-left">Status</th>
+                      <th className="px-6 py-4 text-left">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {currentReviews.map((review: Review) => (
+                      <motion.tr
+                        key={review.id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="border-t border-[#1a2d6d] hover:bg-[#000a3a]/50 transition-colors"
+                      >
+                        <td className="px-6 py-4">
+                          <div>
+                            <p className="font-medium">{review.user.name}</p>
+                            <p className="text-sm text-gray-400">
+                              {review.user.email}
+                            </p>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">{review.content.title}</td>
+                        <td className="px-6 py-4 max-w-md truncate">
+                          {review.reviewText}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-1">
+                            <span className="text-yellow-400 text-xl">★</span>
+                            <span>{review.rating}/10</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          {review.status === "PENDING" ? (
+                            <select
+                              value={review.status}
+                              onChange={(e) =>
+                                handleStatusChange(
+                                  review.id,
+                                  e.target.value as ReviewStatus
+                                )
+                              }
+                              className={`px-3 py-1 rounded-full text-sm bg-transparent border ${getStatusColor(
+                                review.status
+                              )} focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                            >
+                              {renderStatusOptions(review.status)}
+                            </select>
+                          ) : (
+                            <p
+                              className={`text-sm rounded-full bg-transparent border ${getStatusColor(
+                                review.status
+                              )} focus:outline-none focus:ring-2 w-fit px-3 py-1 text-center focus:ring-blue-500/50`}
+                            >
+                              PUBLISHED
+                            </p>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-2xl">
+                          <MdDeleteOutline
+                            className="cursor-pointer hover:text-red-500 transition-colors"
+                            onClick={() => openDeleteModal(review)}
+                          />
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
-        )}
+
+            {/* Pagination Controls */}
+            <div className="flex justify-center items-center gap-2 mt-6">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="px-4 py-2 rounded-lg bg-[#000a3a] text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#001366] transition-colors"
+              >
+                Previous
+              </button>
+
+              <div className="flex gap-2">
+                {[...Array(totalPages)].map((_, index) => (
+                  <button
+                    key={index + 1}
+                    onClick={() => handlePageChange(index + 1)}
+                    className={`px-4 py-2 rounded-lg ${currentPage === index + 1
+                        ? "bg-gradient-to-r from-blue-500 to-purple-400"
+                        : "bg-[#000a3a] text-white hover:bg-[#001366]"
+                      } transition-colors`}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 rounded-lg bg-[#000a3a] text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#001366] transition-colors"
+              >
+                Next
+              </button>
+            </div>
+          </>
+        ) : <div className="text-center py-8">
+          <p className="text-gray-400 text-lg">No pending reviews found</p>
+        </div>}
 
         {/* Delete Confirmation Modal */}
         <AnimatePresence>

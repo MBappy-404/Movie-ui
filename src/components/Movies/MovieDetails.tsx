@@ -35,6 +35,8 @@ import { verifyToken } from "@/utils/verifyToken";
 import { selectCurrentToken } from "../redux/features/auth/authSlice";
 import { TMovie } from "../types/movie";
 import WatchlistButton from "../Shared/WatchlistButton";
+import { RatioIcon, Star, StarIcon } from "lucide-react";
+import { Md18UpRating } from "react-icons/md";
 
 interface ReviewFormData {
   rating: number;
@@ -72,12 +74,12 @@ const MovieDetails = () => {
     user = verifyToken(token);
   }
 
-  const { data: movieDetails, isLoading } = useGetContentQuery(id);
-  console.log(movieDetails);
+  const { data: movieDetails, isLoading, refetch: refetchMovieDetails } = useGetContentQuery(id);
 
   const { data: allMovies, isLoading: isMoviesLoading } =
     useGetAllContentQuery(undefined);
   const { data: SingleUser } = useGetUserQuery(user?.id);
+  const { data: reviews, refetch: refetchReviews } = useGetAllReviewByContentIdQuery(id);
 
   const [recommendedMovies, setRecommendedMovies] = useState<TMovie[]>([]);
   const {
@@ -89,7 +91,7 @@ const MovieDetails = () => {
   const [addReview] = useCreateReviewMutation();
   const contentId = movieDetails?.data.id;
 
-  const { data: allReview } = useGetAllReviewByContentIdQuery(contentId);
+  // const { data: allReview } = useGetAllReviewByContentIdQuery(contentId);
 
   useEffect(() => {
     if (allMovies?.data && movieDetails?.data) {
@@ -158,7 +160,7 @@ const MovieDetails = () => {
         reviewText: data.reviewText,
         contentId: movieDetails.data.id,
         userId: user.id,
-        tags: data.tags || "CLASSIC", // Provide a default value if tags is undefined
+        tags: data.tags || "CLASSIC",
       };
 
       const res = await addReview(reviewData).unwrap();
@@ -169,6 +171,7 @@ const MovieDetails = () => {
         });
         reset();
         setRating(0);
+        refetchMovieDetails();
       } else {
         toast.error(res?.message || "Failed to add review", { id: toastId });
       }
@@ -204,6 +207,7 @@ const MovieDetails = () => {
     }
   };
 
+
   return (
     <div className="min-h-screen container mx-auto text-white p-6 pt-24">
       {/* 🎬 Trial Video Section */}
@@ -211,10 +215,10 @@ const MovieDetails = () => {
       <div className="w-full  mb-10 hidden md:block">
         <div className="relative w-full   rounded-xl overflow-hidden">
           {typeof movieDetails?.data?.contentBanner === "string" &&
-          movieDetails.data.contentBanner.trim() !== "" &&
-          (movieDetails.data.contentBanner.startsWith("http") ||
-            movieDetails.data.contentBanner.startsWith("https") ||
-            movieDetails.data.contentBanner.startsWith("/")) ? (
+            movieDetails.data.contentBanner.trim() !== "" &&
+            (movieDetails.data.contentBanner.startsWith("http") ||
+              movieDetails.data.contentBanner.startsWith("https") ||
+              movieDetails.data.contentBanner.startsWith("/")) ? (
             <Image
               src={movieDetails.data.contentBanner}
               alt="Banner"
@@ -255,34 +259,31 @@ const MovieDetails = () => {
 
           <div className="text-sm md:text-lg text-gray-400 mb-2 flex  lg:flex-row flex-col gap-1 lg:items-center ">
             <div className="flex lg:flex-row gap-1">
-            <Rating
-              style={{ maxWidth: 80 }}
-              value={movieDetails?.data?.averageRating}
-              onChange={movieDetails?.data?.averageRating}
-              readOnly
-            />{" "}
-            <p>{movieDetails?.data?.averageRating} | {" "}</p>
-            <div className="flex gap-1">
-            📅
-            <p>{movieDetails?.data?.releaseYear} | </p>
+              <div className="flex items-center gap-1">
+                <Rating items={1} value={1} style={{ maxWidth: 20 }} />
+                <p>{movieDetails?.data?.averageRating}/10 | {" "}</p>
+              </div>
+              <div className="flex gap-1">
+                📅
+                <p>{movieDetails?.data?.releaseYear} | </p>
+              </div>
             </div>
-            </div>
-            
+
             <div className="flex lg:flex-row gap-1">
-            ⏱️{" "}
-            <p>{movieDetails?.data?.duration} |{" "}</p>
-            <span className="flex gap-1">
-              <Image
-                src={movieDetails?.data?.platform?.platformLogo}
-                width={20}
-                height={20}
-                alt="sds"
-              />
-               {movieDetails?.data?.platform?.platformName}
-            </span>{" "}
+              ⏱️{" "}
+              <p>{movieDetails?.data?.duration} |{" "}</p>
+              <span className="flex gap-1">
+                <Image
+                  src={movieDetails?.data?.platform?.platformLogo}
+                  width={20}
+                  height={20}
+                  alt="sds"
+                />
+                {movieDetails?.data?.platform?.platformName}
+              </span>{" "}
             </div>
-            
-           
+
+
           </div>
 
           <p className="mb-4 text-sm md:text-lg text-gray-300">
@@ -323,58 +324,62 @@ const MovieDetails = () => {
               </p>
             )}
 
-{(() => {
-  const discount = movieDetails?.data?.discount;
-  const price = movieDetails?.data?.price;
+            {(() => {
+              const discount = movieDetails?.data?.discount;
+              const price = movieDetails?.data?.price;
 
-  if (!discount || !price) return null;
+              if (!discount || !price) return null;
 
-  const today = new Date();
-  const startDate = new Date(discount.startDate);
-  const endDate = new Date(discount.endDate);
+              const today = new Date();
+              const startDate = new Date(discount.startDate);
+              const endDate = new Date(discount.endDate);
 
-  // Normalize all dates to 00:00 so we can compare only the date
-  today.setHours(0, 0, 0, 0);
-  startDate.setHours(0, 0, 0, 0);
-  endDate.setHours(0, 0, 0, 0);
+              // Normalize all dates to 00:00 so we can compare only the date
+              today.setHours(0, 0, 0, 0);
+              startDate.setHours(0, 0, 0, 0);
+              endDate.setHours(0, 0, 0, 0);
 
-  const isDiscountActive =
-    today.getTime() === startDate.getTime() || // aaj start
-    today.getTime() === endDate.getTime() ||   // aaj end
-    today.getTime() < endDate.getTime();       // aaj end er age
+              const isDiscountActive =
+                today.getTime() === startDate.getTime() || // aaj start
+                today.getTime() === endDate.getTime() ||   // aaj end
+                today.getTime() < endDate.getTime();       // aaj end er age
 
-  return (
-    <>
-      {isDiscountActive && (
-        <p className="text-sm md:text-lg text-gray-400">
-          Discount Left:
-          <span className="text-white ml-1">
-            {discount.endDate?.slice(0, 10)}
-          </span>
-        </p>
-      )}
 
-      <p className="text-sm md:text-lg font-semibold text-gray-400">
-        One Time Purchase:
-        {discount.isActive && isDiscountActive ? (
-          <>
-            <span className="text-white font-bold ml-2 text-xl">
-              ${(
-                price -
-                (price * discount.percentage) / 100
-              ).toFixed(2)}
-            </span>
-            <del className="ml-2 text-red-400">${price}</del>
-          </>
-        ) : (
-          <span className="text-white font-bold ml-2 text-xl">
-            ${price}
-          </span>
-        )}
-      </p>
-    </>
-  );
-})()}
+
+
+
+              return (
+                <>
+                  {isDiscountActive && (
+                    <p className="text-sm md:text-lg text-gray-400">
+                      Discount Left:
+                      <span className="text-white ml-1">
+                        {discount.endDate?.slice(0, 10)}
+                      </span>
+                    </p>
+                  )}
+
+                  <p className="text-sm md:text-lg font-semibold text-gray-400">
+                    One Time Purchase:
+                    {discount.isActive && isDiscountActive ? (
+                      <>
+                        <span className="text-white font-bold ml-2 text-xl">
+                          ${(
+                            price -
+                            (price * discount.percentage) / 100
+                          ).toFixed(2)}
+                        </span>
+                        <del className="ml-2 text-red-400">${price}</del>
+                      </>
+                    ) : (
+                      <span className="text-white font-bold ml-2 text-xl">
+                        ${price}
+                      </span>
+                    )}
+                  </p>
+                </>
+              );
+            })()}
 
 
 
@@ -420,13 +425,13 @@ const MovieDetails = () => {
                     Buy On Time{" "}
                     <span>
                       {movieDetails?.data?.price &&
-                      movieDetails?.data?.discount
+                        movieDetails?.data?.discount
                         ? (
-                            movieDetails.data.price -
-                            (movieDetails.data.price *
-                              movieDetails.data.discount?.percentage) /
-                              100
-                          ).toFixed(2)
+                          movieDetails.data.price -
+                          (movieDetails.data.price *
+                            movieDetails.data.discount?.percentage) /
+                          100
+                        ).toFixed(2)
                         : movieDetails?.data?.price}
                     </span>{" "}
                     USD
@@ -500,42 +505,50 @@ const MovieDetails = () => {
             ))}
           </div>
 
-          <h2 className="mt-10 text-xl font-semibold">Add a review</h2>
-          <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
-            {/* Rating Component */}
-            <Rating
-              style={{ maxWidth: 180 }}
-              value={rating}
-              onChange={setRating}
-            />
+          {SingleUser?.data ? <>
+            <h2 className="mt-10 text-xl font-semibold">Add a review</h2>
+            <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
 
-            {/* Review Textarea */}
-            <textarea
-              className="w-full mt-4 p-2 outline-none focus:border-blue-500 transition-all duration-300  bg-gray-800 border border-gray-600 rounded"
-              rows={4}
-              placeholder="Your review *"
-              {...register("reviewText", { required: "Review is required" })}
-            />
-            <select
-              className="mt-4 p-2 text-white border border-gray-500 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
-              {...register("tags")}
-            >
-              <option className="bg-slate-900 text-white" value="CLASSIC">
-                CLASSIC
-              </option>
-              <option className="bg-slate-900 text-white" value="UNDERRATED">
-                UNDERRATED
-              </option>
-            </select>
-            {errors.reviewText && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.reviewText.message}
-              </p>
-            )}
 
-            {/* Checkbox for saving info */}
+              {/* Rating Component */}
+              <div className="flex items-center gap-1">
+                <Rating
+                  items={10}
+                  style={{ maxWidth: 200 }}
+                  value={rating}
+                  onChange={setRating}
+                  halfFillMode="box"
+                  transition="colors"
+                />
+                <span className="text-yellow-400">{rating}/10</span>
+              </div>
+              {/* Review Textarea */}
+              <textarea
+                className="w-full mt-4 p-2 outline-none focus:border-blue-500 transition-all duration-300  bg-gray-800 border border-gray-600 rounded"
+                rows={4}
+                placeholder="Your review *"
+                {...register("reviewText", { required: "Review is required" })}
+              />
+              <select
+                className="mt-4 p-2 text-white border border-gray-500 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
+                {...register("tags")}
+              >
+                <option className="bg-slate-900 text-white" value="CLASSIC">
+                  CLASSIC
+                </option>
+                <option className="bg-slate-900 text-white" value="UNDERRATED">
+                  UNDERRATED
+                </option>
+              </select>
+              {errors.reviewText && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.reviewText.message}
+                </p>
+              )}
 
-            {/* <div className="mt-4">
+              {/* Checkbox for saving info */}
+
+              {/* <div className="mt-4">
  
               <label className="text-sm">
                 <input
@@ -550,22 +563,26 @@ const MovieDetails = () => {
  
             </div> */}
 
-            {/* Submit Button */}
-            <br />
-            <button
-              type="submit"
-              disabled={!user?.id || !SingleUser?.data?.id || rating === 0}
-              className="mt-4 px-10 py-3 cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-lg shadow-lg hover:-translate-y-1 hover:shadow-blue-500/40 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {!SingleUser?.data?.id ? "Loading user data..." : "Submit"}
-            </button>
-          </form>
+              {/* Submit Button */}
+              <br />
+              <button
+                type="submit"
+                disabled={!user?.id || !SingleUser?.data?.id || rating === 0}
+                className="mt-4 px-10 py-3 cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-lg shadow-lg hover:-translate-y-1 hover:shadow-blue-500/40 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {!SingleUser?.data?.id ? "Loading user data..." : "Submit"}
+              </button>
+            </form>
+          </>: <></>}
 
           {/* Display Submitted Review */}
           <div className="mt-10">
             <h2 className="text-xl font-semibold mb-4">User Reviews</h2>
-
-            <ReviewCard ReviewData={allReview} UserData={SingleUser?.data} />
+            <ReviewCard 
+              ReviewData={movieDetails.data.reviews} 
+              UserData={user?.id ? SingleUser?.data : null}
+              onReviewUpdate={refetchMovieDetails}
+            />
           </div>
         </motion.div>
       </div>

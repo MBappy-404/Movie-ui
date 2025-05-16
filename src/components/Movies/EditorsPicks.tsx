@@ -10,7 +10,7 @@ const EditorsPicks = () => {
   const { data, isLoading } = useGetActiveDiscountQuery(undefined);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const moviesData = data?.data?.slice(0, 4);
+  const moviesData = data?.data
 
   const sectionVariants = {
     hidden: { opacity: 0, y: 40 },
@@ -81,7 +81,7 @@ const EditorsPicks = () => {
             ))}
 
           {moviesData?.map((movie: IDiscount) => (
-            <Link className="block -mt-10" href={`/movies/${movie?.content?.id}`} key={movie?.content?.id}>
+            <Link className="block" href={`/movies/${movie?.content?.id}`} key={movie?.content?.id}>
               <motion.div
                 className="relative group cursor-pointer"
                 variants={cardVariants}

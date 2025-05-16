@@ -144,31 +144,30 @@ const CommentItem = ({
 
   return (
     <div
-      className={`mb-4 ${
-        level > 0 ? "ml-8 border-l-2 border-gray-700 pl-4" : ""
-      }`}
+      className={`mb-4 ${level > 0 ? "ml-4 md:ml-8 border-l-2 border-gray-700 pl-4" : ""
+        }`}
     >
-      <div className="flex items-start gap-3">
+      <div className="flex flex-col sm:flex-row items-start gap-3">
         <div className="flex-shrink-0">
           {comment.user?.profilePhoto ? (
             <img
               src={comment.user.profilePhoto}
               alt={comment.user?.name || "User"}
-              className="w-10 h-10 rounded-full"
+              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full"
             />
           ) : (
-            <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">
-              <span className="text-white text-lg">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-700 flex items-center justify-center">
+              <span className="text-white text-sm sm:text-lg">
                 {comment.user?.name?.charAt(0) || "A"}
               </span>
             </div>
           )}
         </div>
-        <div className="flex-grow">
-          <div className="bg-gray-800 rounded-lg p-4">
-            <div className="flex items-center justify-between mb-2">
+        <div className="flex-1 w-full min-w-0">
+          <div className="bg-gray-800 rounded-lg p-3 sm:p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
               <div>
-                <p className="text-white font-medium">
+                <p className="text-white font-medium text-sm sm:text-base">
                   {comment.user?.name || "Anonymous"}
                 </p>
                 <p className="text-xs text-gray-400">
@@ -181,17 +180,17 @@ const CommentItem = ({
                 </p>
               </div>
             </div>
-            <p className="text-gray-300 mb-3">{comment.comment}</p>
+            <p className="text-gray-300 text-sm sm:text-base mb-3">{comment.comment}</p>
 
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-3">
               {UserData && (
                 <button
                   onClick={() => setShowReplyInput(!showReplyInput)}
-                  className="text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1"
+                  className="text-xs sm:text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4"
+                    className="h-3 w-3 sm:h-4 sm:w-4"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -206,11 +205,11 @@ const CommentItem = ({
               )}
               <button
                 onClick={toggleReplies}
-                className="text-sm text-gray-400 hover:text-white flex items-center gap-1"
+                className="text-xs sm:text-sm text-gray-400 hover:text-white flex items-center gap-1"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
+                  className="h-3 w-3 sm:h-4 sm:w-4"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -229,14 +228,14 @@ const CommentItem = ({
             <form onSubmit={handleSubmit(onSubmitReply)} className="mt-3">
               <textarea
                 {...register("comment", { required: true })}
-                className="w-full p-3 bg-gray-700 text-white border border-gray-600 rounded-md resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full p-2 sm:p-3 bg-gray-700 text-white border border-gray-600 rounded-md resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                 rows={2}
                 placeholder="Write your reply..."
               />
               <div className="flex justify-end mt-2">
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors"
+                  className="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors"
                 >
                   Post Reply
                 </button>
@@ -245,7 +244,7 @@ const CommentItem = ({
           )}
 
           {showReplies && (
-            <div className="mt-4">
+            <div className="mt-3 sm:mt-4">
               {isLoadingReplies ? (
                 <div className="flex items-center justify-center py-4">
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
@@ -263,20 +262,20 @@ const CommentItem = ({
                   ))}
 
                   {replyTotalPages > 1 && (
-                    <div className="flex justify-between items-center mt-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-center mt-3 sm:mt-4 gap-2">
                       <button
                         onClick={handlePrevReplyPage}
-                        className="px-3 py-1 text-sm bg-gray-700 hover:bg-gray-800 text-white rounded-md disabled:opacity-50 transition-colors"
+                        className="px-2 py-1 sm:px-3 sm:py-1 text-xs sm:text-sm bg-gray-700 hover:bg-gray-800 text-white rounded-md disabled:opacity-50 transition-colors"
                         disabled={replyPage === 1}
                       >
                         Previous
                       </button>
-                      <span className="text-sm text-gray-400">
+                      <span className="text-xs sm:text-sm text-gray-400">
                         Page {replyPage} of {replyTotalPages}
                       </span>
                       <button
                         onClick={handleNextReplyPage}
-                        className="px-3 py-1 text-sm bg-gray-700 hover:bg-gray-800 text-white rounded-md disabled:opacity-50 transition-colors"
+                        className="px-2 py-1 sm:px-3 sm:py-1 text-xs sm:text-sm bg-gray-700 hover:bg-gray-800 text-white rounded-md disabled:opacity-50 transition-colors"
                         disabled={replyPage >= replyTotalPages}
                       >
                         Next
@@ -285,7 +284,7 @@ const CommentItem = ({
                   )}
                 </>
               ) : (
-                <p className="text-gray-400 text-center py-4">No replies yet</p>
+                <p className="text-gray-400 text-center py-3 sm:py-4 text-xs sm:text-sm">No replies yet</p>
               )}
             </div>
           )}
@@ -440,11 +439,10 @@ const Comments = ({
             <button
               type="submit"
               disabled={!UserData}
-              className={`px-4 py-2 text-sm text-white rounded-md transition-colors ${
-                UserData
+              className={`px-4 py-2 text-sm text-white rounded-md transition-colors ${UserData
                   ? "bg-blue-600 hover:bg-blue-700"
                   : "bg-gray-600 cursor-not-allowed"
-              }`}
+                }`}
             >
               {!UserData ? "Please Log In to Comment" : "Post Comment"}
             </button>
@@ -472,7 +470,7 @@ const Comments = ({
               key={comment.id}
               comment={comment}
               UserData={UserData}
-              onReply={() => {}}
+              onReply={() => { }}
             />
           ))}
         </div>
