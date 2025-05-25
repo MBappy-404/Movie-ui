@@ -6,6 +6,7 @@ import HomeBanner from "./HomeBanner";
 import TopArtists from "./TopArtists";
 import TopNews from "./TopNews";
 import EditorsPicks from "../Movies/EditorsPicks";
+import FAQ from "./Faq";
 
 const HomePage = () => {
   return (
@@ -17,6 +18,7 @@ const HomePage = () => {
       <HomeBanner />
       <TopArtists />
       <TopNews />
+      <FAQ/>
     </div>
   );
 };

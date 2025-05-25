@@ -132,8 +132,8 @@ const ManagePlatform = () => {
     <div className="bg-[#00031b]">
       <div className="max-w-full mx-auto">
         {/* Header Section */}
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="lg:text-3xl text-xl font-bold  bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+        <div className="flex justify-between items-center mt-4 mb-8">
+          <h1 className="lg:text-3xl text-xl font-bold text-white">
             Platform
           </h1>
           <button
@@ -144,78 +144,73 @@ const ManagePlatform = () => {
           </button>
         </div>
 
+        <div className="flex  mb-4 justify-between items-center border border-[#1a2d6d] p-4 rounded-lg  bg-[#000a3a] transition-colors">
+          <h1 className=" text-xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+            Name
+          </h1>
+          <h1 className=" text-xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+            Action
+          </h1>
+        </div>
+
         {/* Movie Table */}
         {isLoading ? (
           <p className="text-white text-5xl font-bold text-center">
             <LoadingSpinner />
           </p>
         ) : (
-          <div className="rounded-xl border border-[#1a2d6d] overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-[#000a3a]">
-                  <tr>
-                    <th className="px-6 py-4 text-left">Platform Name</th>
-                    <th className="px-6 py-4 text-left">Platform Logo</th>
-                    <th className="px-6 py-4 text-left">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {platformsData?.map((platform: Platform) => (
-                    <motion.tr
-                      key={platform.id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="border-t border-[#1a2d6d] hover:bg-[#000a3a]/50 transition-colors"
-                    >
-                      <td className="px-6 py-4 font-medium text-gray-100">
-                        {platform.platformName}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="inline-flex">
-                          <Image
-                            src={
-                              platform.platformLogo ??
-                              "/default-platform-logo.png"
-                            }
-                            alt={`${platform.platformName} logo`}
-                            height={40}
-                            width={40}
-                            className="h-10 w-10 rounded-full object-contain"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src =
-                                "/default-platform-logo.png";
-                            }}
-                          />
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3 text-2xl">
-                          <button
-                            onClick={() => {
-                              setPlatformToDelete(platform);
-                              setIsDeleteModalOpen(true);
-                            }}
-                            className="hover:text-red-500 transition-colors cursor-pointer   "
-                          >
-                            <MdDeleteOutline className="w-6 h-6" />
-                          </button>
-                          <button
-                            onClick={() => {
-                              setUpdatePlatformModalOpen(true);
-                              setPlatform(platform);
-                            }}
-                            className="hover:text-blue-500 transition-colors  cursor-pointer   focus:ring-blue-500"
-                          >
-                            <FaPen className="w-5 h-5" />
-                          </button>
-                        </div>
-                      </td>
-                    </motion.tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          <div className="space-y-4">
+            {platformsData?.map((platform: Platform) => (
+              <motion.div
+                key={platform.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="flex justify-between items-center border border-[#1a2d6d] p-4 rounded-lg hover:bg-[#000a3a]/50 transition-colors "
+              >
+                {/* Platform Name + Logo */}
+                <div className="flex items-center gap-3 w-full sm:w-auto mb-2 sm:mb-0">
+                  <div className=" rounded-full overflow-hidden bg-[#000a3a] flex-shrink-0 flex items-center justify-center">
+                    <Image
+                      src={
+                        platform.platformLogo ?? "/default-platform-logo.png"
+                      }
+                      alt={`${platform.platformName} logo`}
+                      height={43}
+                      width={43}
+                      className="object-contain border border-gray-600 rounded-full"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src =
+                          "/default-platform-logo.png";
+                      }}
+                    />
+                  </div>
+                  <h2 className="text-base font-semibold text-gray-100 flex-1 flex items-center">
+                    {platform.platformName}
+                  </h2>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-4 text-xl">
+                  <MdDeleteOutline
+                    className="w-6 h-6 cursor-pointer hover:text-red-500 transition-colors"
+                    onClick={() => {
+                      setPlatformToDelete(platform);
+                      setIsDeleteModalOpen(true);
+                    }}
+                    aria-label={`Delete ${platform.platformName}`}
+                  />
+                  <FaPen
+                    className="w-5 h-5 cursor-pointer hover:text-blue-500 transition-colors"
+                    onClick={() => {
+                      setUpdatePlatformModalOpen(true);
+                      setPlatform(platform);
+                    }}
+                    aria-label={`Edit ${platform.platformName}`}
+                  />
+                </div>
+              </motion.div>
+            ))}
           </div>
         )}
 

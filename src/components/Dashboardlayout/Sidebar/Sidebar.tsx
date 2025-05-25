@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { X } from "lucide-react"; // Optional: use any icon library you prefer
 import { usePathname } from "next/navigation";
-import { MdCategory, MdDiscount, MdMovie, MdRateReview, MdSpaceDashboard } from "react-icons/md";
+import { MdCategory, MdDiscount, MdMovie, MdRateReview, MdSpaceDashboard, MdSubscriptions } from "react-icons/md";
 import { FaUsers } from "react-icons/fa";
 
 interface SidebarProps {
@@ -17,6 +17,7 @@ const menuItems = [
   { name: "Reviews", icon:<MdRateReview />,link: "/dashboard/reviews" },
   { name: "Platform & Genre", icon:<MdCategory />,link: "/dashboard/platformGenre" },
   { name: "Discount", icon:<MdDiscount />, link: "/dashboard/discount" },
+  { name: "Subscribers", icon:<MdSubscriptions />, link: "/dashboard/subscribers" },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {

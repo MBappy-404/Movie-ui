@@ -14,7 +14,7 @@ const topNews = [
     newsTitle: "Movies That Will Make Your Holidays The Best",
     newsDescription:
       "Discover heartwarming and exciting movies that will turn your holidays into a magical and memorable experience.",
-    newsDate: "April 26, 2024",
+    newsDate: "April 26, 2025",
     writer: "Jane Doe",
     category: "Drama",
   },
@@ -24,7 +24,7 @@ const topNews = [
     newsTitle: "Must Watch Web Series On CineVerse",
     newsDescription:
       "Explore the top trending web series on CineVerse that you simply can't miss — from thrillers to heartfelt dramas.",
-    newsDate: "April 26, 2024",
+    newsDate: "April 26, 2025",
     writer: "Jane Doe",
     category: "Entertainment",
   },
@@ -34,7 +34,7 @@ const topNews = [
     newsTitle: "Best Movies To Cheer Your Mood Up In 2022",
     newsDescription:
       "Feeling down? These uplifting movies from 2022 are guaranteed to boost your spirits and bring a smile to your face.",
-    newsDate: "April 26, 2024",
+    newsDate: "April 26, 2025",
     writer: "Jane Doe",
     category: "Entertainment",
   },
@@ -44,7 +44,7 @@ const topNews = [
     newsTitle: "Best Movies To Cheer Your Mood Up In 2022",
     newsDescription:
       "Feeling down? These uplifting movies from 2022 are guaranteed to boost your spirits and bring a smile to your face.",
-    newsDate: "April 26, 2024",
+    newsDate: "April 26, 2025",
     writer: "Jane Doe",
     category: "Entertainment",
   },

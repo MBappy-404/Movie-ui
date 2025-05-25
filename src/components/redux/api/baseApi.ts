@@ -29,7 +29,11 @@ export const baseApi = createApi({
     "likes",
     "admin",
     "discounts",
+ 
     "contactUs",
+ 
+    "subscribers",
+ 
   ],
   endpoints: () => ({}),
 });
