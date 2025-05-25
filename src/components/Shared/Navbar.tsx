@@ -16,7 +16,7 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LucideLayoutDashboard } from "lucide-react";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { selectCurrentToken, logout } from "../redux/features/auth/authSlice";
@@ -26,22 +26,18 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
- 
+
   const pathname = usePathname();
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const dispatch = useAppDispatch();
 
-
   const token = useAppSelector(selectCurrentToken);
-  let user
+  let user;
   if (token) {
-    user = verifyToken(token)
+    user = verifyToken(token);
   }
-
-
-
 
   const navLinks = [
     { name: "Home", path: "/", icon: HomeModernIcon },
@@ -50,10 +46,10 @@ const Navbar = () => {
   ];
 
   const handleLogout = () => {
-    dispatch(logout())
+    dispatch(logout());
     toast.success("Logged out successfully");
-    Cookies.remove('accessToken'); // Replace 'accessToken' with the actual cookie name(s) you're using
-    Cookies.remove('refreshToken'); // Replace 'refreshToken' with the actual cookie name(s) you're using
+    Cookies.remove("accessToken"); // Replace 'accessToken' with the actual cookie name(s) you're using
+    Cookies.remove("refreshToken"); // Replace 'refreshToken' with the actual cookie name(s) you're using
     router.push("/login");
     setDropdownOpen(false);
   };
@@ -149,7 +145,8 @@ const Navbar = () => {
 
           {/* Right Section */}
           <div className="flex items-center gap-6">
-              {user && (<div ref={dropdownRef} className="relative">
+            {user && (
+              <div ref={dropdownRef} className="relative">
                 <button
                   className="p-2 cursor-pointer text-gray-300 hover:text-indigo-400 transition-colors"
                   onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -178,15 +175,17 @@ const Navbar = () => {
                         <UserCircleIcon className="w-5 h-5" />
                         Profile
                       </Link>
-  
-                        {user.role === "ADMIN" && (<Link
+
+                      {user.role === "ADMIN" && (
+                        <Link
                           href="/dashboard"
                           className="flex text-sm md:text-base items-center gap-2 px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors"
                           onClick={() => setDropdownOpen(false)}
                         >
                           <LucideLayoutDashboard className="w-5 h-5" />
                           Dashboard
-                        </Link>) }
+                        </Link>
+                      )}
                       <button
                         onClick={handleLogout}
                         className="flex text-sm md:text-base cursor-pointer items-center gap-2 w-full px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors"
@@ -197,16 +196,16 @@ const Navbar = () => {
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </div>)}
+              </div>
+            )}
 
-              {!user && (<Link href="/login">
-                <motion.button
-                  className="px-4 py-2 cursor-pointer bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all"
-                   
-                >
+            {!user && (
+              <Link href="/login">
+                <motion.button className="px-4 py-2 cursor-pointer bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all">
                   Sign In
                 </motion.button>
-              </Link>)}
+              </Link>
+            )}
 
             <motion.button
               className="md:hidden p-2 text-gray-300 hover:text-indigo-400 transition-colors"
