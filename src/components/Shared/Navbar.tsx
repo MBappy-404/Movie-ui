@@ -18,6 +18,7 @@ import {
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+
 import {
   Boxes,
   ChevronRightIcon,
@@ -26,6 +27,7 @@ import {
   StarIcon,
   TrendingUpIcon,
 } from "lucide-react";
+
 import Cookies from "js-cookie";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
@@ -141,7 +143,9 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
+
   const pathname = usePathname();
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -192,8 +196,10 @@ const Navbar = () => {
   const handleLogout = () => {
     dispatch(logout());
     toast.success("Logged out successfully");
+ 
     Cookies.remove("accessToken");
     Cookies.remove("refreshToken");
+ 
     router.push("/login");
     setDropdownOpen(false);
   };
@@ -438,15 +444,17 @@ const Navbar = () => {
                         <UserCircleIcon className="w-5 h-5" />
                         Profile
                       </Link>
-  
-                        {user.role === "ADMIN" && (<Link
+
+                      {user.role === "ADMIN" && (
+                        <Link
                           href="/dashboard"
                           className="flex text-sm md:text-base items-center gap-2 px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors"
                           onClick={() => setDropdownOpen(false)}
                         >
                           <LucideLayoutDashboard className="w-5 h-5" />
                           Dashboard
-                        </Link>) }
+                        </Link>
+                      )}
                       <button
                         onClick={handleLogout}
                         className="flex text-sm md:text-base cursor-pointer items-center gap-2 w-full px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors"
