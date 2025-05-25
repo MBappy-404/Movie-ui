@@ -55,8 +55,6 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
     router.push("/login");
   };
 
-   
-
   return (
     <header className="sticky top-0 z-20 bg-[#000a3a]/95 backdrop-blur-sm border-b border-[#00175f]/50 p-4">
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
@@ -106,13 +104,13 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
                   <Home className="text-white w-5 h-5" />
                   Home
                 </Link>
-                <Link
+                {/* <Link
                     href={"/profile"}
                   className="w-full px-3 py-2 cursor-pointer   text-gray-300 hover:bg-[#00175f]/30 transition-colors flex items-center gap-2"
                 >
                   <User className=" w-5 h-5" />
                   Profile
-                </Link>
+                </Link> */}
                 <button
                   onClick={handleLogout}
                   className="w-full px-4 cursor-pointer  py-2 text-left text-gray-300 hover:bg-[#00175f]/30 transition-colors flex items-center gap-2"

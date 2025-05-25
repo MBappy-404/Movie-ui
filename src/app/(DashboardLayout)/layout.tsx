@@ -6,7 +6,6 @@ export const metadata: Metadata = {
   description: "this is admin dashboard.",
 };
 
-
 const Layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   return (
     <div>

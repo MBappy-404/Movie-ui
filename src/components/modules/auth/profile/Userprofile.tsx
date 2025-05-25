@@ -170,14 +170,12 @@ const UserProfile = () => {
     (item: any) => item?.purchaseStatus === "RENTED"
   );
 
-  if(isLoading){
-    return (
-      <LoadingPage/>
-    )
+  if (isLoading) {
+    return <LoadingPage />;
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br pt-28 from-[#00031b] to-[#0a0b2a] py-12  px-2 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br pt-12 from-[#00031b] to-[#0a0b2a] py-12  px-2 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Profile Header */}
         <div className="relative group">
@@ -297,7 +295,7 @@ const UserProfile = () => {
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-4 border-b border-white/10 pb-2 mb-8">
+            {/* <div className="flex gap-4 border-b border-white/10 pb-2 mb-8">
               <button
                 onClick={() => setActiveTab("profile")}
                 className={`px-6 py-3 rounded-t-xl text-sm md:text-base font-medium cursor-pointer flex items-center gap-2 transition-all ${
@@ -332,10 +330,84 @@ const UserProfile = () => {
                 <ShoppingBagIcon className="w-5 h-5" />
                 Purchase History
               </button>
-            </div>
+            </div> */}
 
             {/* Content */}
-            {activeTab === "profile" ? (
+            <form onSubmit={handleSave} className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <label className="block text-sm font-medium text-gray-300">
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    disabled={!isEditing}
+                    className="w-full px-4 py-3 text-white bg-white/10 border border-white/10 rounded-xl focus:border-gray-500 outline-none transition-all disabled:opacity-50"
+                  />
+                </div>
+
+                <div className="space-y-4">
+                  <label className="block text-sm font-medium text-gray-300">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    disabled={!isEditing}
+                    className="w-full px-4 py-3 text-white bg-white/10 border border-white/10 rounded-xl focus:ring-purple-400 focus:border-gray-500 outline-none transition-all disabled:opacity-50"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <label className="block text-sm font-medium text-gray-300">
+                    Contact Number
+                  </label>
+                  <input
+                    type="text"
+                    name="contactNumber"
+                    value={formData.contactNumber}
+                    onChange={handleChange}
+                    disabled={!isEditing}
+                    className="w-full px-4 py-3 text-white bg-white/10 border border-white/10 rounded-xl focus:border-gray-500 outline-none transition-all disabled:opacity-50"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-4 border-t border-white/10 pt-8">
+                {isEditing ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setIsEditing(false)}
+                      className="px-6 py-2.5  text-white bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-6 py-2.5 text-white  cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl hover:opacity-90 transition-opacity"
+                    >
+                      Save Changes
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setIsEditing(true)}
+                    className="px-6 py-2.5 text-white  bg-gradient-to-r cursor-pointer from-blue-500 to-purple-500 rounded-xl hover:opacity-90 transition-opacity"
+                  >
+                    Edit Profile
+                  </button>
+                )}
+              </div>
+            </form>
+            {/* {activeTab === "profile" ? (
               <form onSubmit={handleSave} className="space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
@@ -388,7 +460,7 @@ const UserProfile = () => {
                       <button
                         type="button"
                         onClick={() => setIsEditing(false)}
-                        className="px-6 py-2.5 text-white  text-white bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors"
+                        className="px-6 py-2.5  text-white bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors"
                       >
                         Cancel
                       </button>
@@ -411,74 +483,74 @@ const UserProfile = () => {
                 </div>
               </form>
             ) : (
-              <div className="overflow-x-auto mt-10">
-                <table className="min-w-full table-auto border-collapse border border-white/10 rounded-xl overflow-hidden">
-                  <thead className="bg-white/5">
-                    <tr>
-                      <th className="text-left px-6 py-4 text-white font-medium whitespace-nowrap">
-                        Thumbnail
-                      </th>
-                      <th className="text-left px-6 py-4 text-white font-medium whitespace-nowrap">
-                        Name
-                      </th>
-                      <th className="text-left px-6 py-4 text-white font-medium whitespace-nowrap">
-                        Price
-                      </th>
-                      <th className="text-left px-6 py-4 text-white font-medium whitespace-nowrap">
-                        Date
-                      </th>
-                      <th className="text-left px-6 py-4 text-white font-medium whitespace-nowrap">
-                        Type
-                      </th>
-                      <th className="text-left px-6 py-4 text-white font-medium whitespace-nowrap">
-                        Status
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/10 bg-[#060a2d] text-white">
-                    {purchaseHistory?.data?.map((movie: any) => (
-                      <tr key={movie.id} className="">
-                        <td className="px-6 py-4 w-[100px]">
-                          <Image
-                            src={movie?.content?.thumbnail}
-                            alt={movie?.content?.title}
-                            width={100}
-                            height={150}
-                            blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTUwIj48ZGVmcz48Y2lyY2xlIGN4PSI1MCIgY3k9Ijc1IiByPSI1MCIgZmlsbD0iI2ZmZmZmZiIvPjwvZGVmcz48Zz48Y2lyY2xlIGN4PSI1MCIgY3k9Ijc1IiByPSI1MCIgZmlsbD0iIzAwMDAwMCIvPjwvZz48L3N2Zz4K"
-                            className="w-16 h-24 object-cover rounded-md border border-white/10"
-                          />
-                        </td>
-                        <td className="px-6 py-4 font-semibold whitespace-nowrap">
-                          <Link
-                            href={`/movies/${movie?.content?.id}`}
-                            className="hover:text-blue-400 transition-colors"
-                          >
-                            {movie?.content?.title}
-                          </Link>
-                        </td>
+              // <div className="overflow-x-auto mt-10">
+              //   <table className="min-w-full table-auto border-collapse border border-white/10 rounded-xl overflow-hidden">
+              //     <thead className="bg-white/5">
+              //       <tr>
+              //         <th className="text-left px-6 py-4 text-white font-medium whitespace-nowrap">
+              //           Thumbnail
+              //         </th>
+              //         <th className="text-left px-6 py-4 text-white font-medium whitespace-nowrap">
+              //           Name
+              //         </th>
+              //         <th className="text-left px-6 py-4 text-white font-medium whitespace-nowrap">
+              //           Price
+              //         </th>
+              //         <th className="text-left px-6 py-4 text-white font-medium whitespace-nowrap">
+              //           Date
+              //         </th>
+              //         <th className="text-left px-6 py-4 text-white font-medium whitespace-nowrap">
+              //           Type
+              //         </th>
+              //         <th className="text-left px-6 py-4 text-white font-medium whitespace-nowrap">
+              //           Status
+              //         </th>
+              //       </tr>
+              //     </thead>
+              //     <tbody className="divide-y divide-white/10 bg-[#060a2d] text-white">
+              //       {purchaseHistory?.data?.map((movie: any) => (
+              //         <tr key={movie.id} className="">
+              //           <td className="px-6 py-4 w-[100px]">
+              //             <Image
+              //               src={movie?.content?.thumbnail}
+              //               alt={movie?.content?.title}
+              //               width={100}
+              //               height={150}
+              //               blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTUwIj48ZGVmcz48Y2lyY2xlIGN4PSI1MCIgY3k9Ijc1IiByPSI1MCIgZmlsbD0iI2ZmZmZmZiIvPjwvZGVmcz48Zz48Y2lyY2xlIGN4PSI1MCIgY3k9Ijc1IiByPSI1MCIgZmlsbD0iIzAwMDAwMCIvPjwvZz48L3N2Zz4K"
+              //               className="w-16 h-24 object-cover rounded-md border border-white/10"
+              //             />
+              //           </td>
+              //           <td className="px-6 py-4 font-semibold whitespace-nowrap">
+              //             <Link
+              //               href={`/movies/${movie?.content?.id}`}
+              //               className="hover:text-blue-400 transition-colors"
+              //             >
+              //               {movie?.content?.title}
+              //             </Link>
+              //           </td>
 
-                        <td className="px-6 py-4">${movie?.amount}</td>
-                        <td className="px-6 py-4">
-                          {movie?.createdAt?.slice(0, 10)}
-                        </td>
-                        <td className="px-6 py-4">{movie?.purchaseStatus}</td>
-                        <td className="px-6 py-4 capitalize">
-                          <span
-                            className={`px-3 py-1 rounded-full text-sm font-medium ${
-                              movie?.status === "PAID"
-                                ? "bg-green-600/20 text-green-400"
-                                : "bg-red-600/20 text-red-400"
-                            }`}
-                          >
-                            {movie?.status || "Pending"}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+              //           <td className="px-6 py-4">${movie?.amount}</td>
+              //           <td className="px-6 py-4">
+              //             {movie?.createdAt?.slice(0, 10)}
+              //           </td>
+              //           <td className="px-6 py-4">{movie?.purchaseStatus}</td>
+              //           <td className="px-6 py-4 capitalize">
+              //             <span
+              //               className={`px-3 py-1 rounded-full text-sm font-medium ${
+              //                 movie?.status === "PAID"
+              //                   ? "bg-green-600/20 text-green-400"
+              //                   : "bg-red-600/20 text-red-400"
+              //               }`}
+              //             >
+              //               {movie?.status || "Pending"}
+              //             </span>
+              //           </td>
+              //         </tr>
+              //       ))}
+              //     </tbody>
+              //   </table>
+              // </div>
+            )} */}
           </div>
         </div>
       </div>
