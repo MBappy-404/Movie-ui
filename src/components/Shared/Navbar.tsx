@@ -56,6 +56,7 @@ const collection = [
         icon: TrendingUpIcon,
         color: "text-pink-500",
         description: "Most popular movies this week"
+ 
       },
       {
         name: "Award Winners",
@@ -173,10 +174,10 @@ const Navbar = () => {
   const handleLogout = () => {
     dispatch(logout());
     toast.success("Logged out successfully");
- 
+
     Cookies.remove("accessToken");
     Cookies.remove("refreshToken");
- 
+
     router.push("/login");
     setDropdownOpen(false);
   };
@@ -234,13 +235,13 @@ const Navbar = () => {
     open: {
       opacity: 1,
       x: 0,
-      transition: { type: "spring", stiffness: 300, damping: 30 }
+      transition: { type: "spring", stiffness: 300, damping: 30 },
     },
     closed: {
       opacity: 0,
       x: -20,
-      transition: { duration: 0.2 }
-    }
+      transition: { duration: 0.2 },
+    },
   };
 
   return (
@@ -335,6 +336,7 @@ const Navbar = () => {
                         
                         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
                           {/* Left Side - Categories */}
+ 
                           <div className="md:col-span-8">
                             <div className="flex items-center gap-2 mb-3 md:mb-4 border-b border-gray-700 pb-2">
                               <h3 className="text-lg md:text-xl font-bold text-indigo-400">
@@ -383,6 +385,7 @@ const Navbar = () => {
                                   whileHover={{ scale: 1.02 }}
                                   className="group cursor-pointer"
                                 >
+ 
                                   <Link href={`/`}>
                                     <div className="flex items-center gap-3 p-2 md:p-3 rounded-lg hover:bg-gray-800/50 transition-colors">
                                       <div className={`p-2 md:p-3 rounded-full bg-${item.color}-500/10`}>
@@ -429,23 +432,24 @@ const Navbar = () => {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
                     >
-                                           <div className="px-4 py-2 border-b border-gray-700">
+                      <div className="px-4 py-2 border-b border-gray-700">
                         <p className="text-sm md:text-base  text-gray-200 truncate">
                           {user?.email}
                         </p>
                       </div>
-                      <Link
-                        href="/profile"
-                        className="flex text-sm md:text-base items-center gap-2 px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors"
-                        onClick={() => setDropdownOpen(false)}
-                      >
-                        <UserCircleIcon className="w-5 h-5" />
-                        Profile
-                      </Link>
 
-                      {user.role === "ADMIN" && (
+                      {user.role === "ADMIN" ? (
                         <Link
                           href="/dashboard"
+                          className="flex text-sm md:text-base items-center gap-2 px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors"
+                          onClick={() => setDropdownOpen(false)}
+                        >
+                          <LucideLayoutDashboard className="w-5 h-5" />
+                          Dashboard
+                        </Link>
+                      ) : (
+                        <Link
+                          href="/dashboard/profile"
                           className="flex text-sm md:text-base items-center gap-2 px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors"
                           onClick={() => setDropdownOpen(false)}
                         >
@@ -460,7 +464,6 @@ const Navbar = () => {
                         <ArrowRightEndOnRectangleIcon className="w-5 h-5" />
                         Logout
                       </button>
-
                     </motion.div>
                   )}
                 </AnimatePresence>

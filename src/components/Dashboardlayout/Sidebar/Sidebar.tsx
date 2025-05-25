@@ -2,8 +2,18 @@ import React from "react";
 import Link from "next/link";
 import { X } from "lucide-react"; // Optional: use any icon library you prefer
 import { usePathname } from "next/navigation";
-import { MdCategory, MdDiscount, MdMovie, MdRateReview, MdSpaceDashboard, MdSubscriptions } from "react-icons/md";
+import {
+  MdCategory,
+  MdDiscount,
+  MdMovie,
+  MdRateReview,
+  MdSpaceDashboard,
+  MdSubscriptions,
+} from "react-icons/md";
 import { FaUsers } from "react-icons/fa";
+import { useAppSelector } from "@/components/redux/hooks";
+import { selectCurrentToken } from "@/components/redux/features/auth/authSlice";
+import { verifyToken } from "@/utils/verifyToken";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -11,17 +21,48 @@ interface SidebarProps {
 }
 
 const menuItems = [
-  { name: "Overview", icon:<MdSpaceDashboard />, link: "/dashboard" },
-  { name: "Content", icon: <MdMovie />,link: "/dashboard/content" },
-  { name: "Users", icon:<FaUsers />,link: "/dashboard/users" },
-  { name: "Reviews", icon:<MdRateReview />,link: "/dashboard/reviews" },
-  { name: "Platform & Genre", icon:<MdCategory />,link: "/dashboard/platformGenre" },
-  { name: "Discount", icon:<MdDiscount />, link: "/dashboard/discount" },
-  { name: "Subscribers", icon:<MdSubscriptions />, link: "/dashboard/subscribers" },
+  { name: "Overview", icon: <MdSpaceDashboard />, link: "/dashboard" },
+  { name: "Content", icon: <MdMovie />, link: "/dashboard/content" },
+  { name: "Users", icon: <FaUsers />, link: "/dashboard/users" },
+  { name: "Reviews", icon: <MdRateReview />, link: "/dashboard/reviews" },
+  {
+    name: "Platform & Genre",
+    icon: <MdCategory />,
+    link: "/dashboard/platformGenre",
+  },
+  { name: "Discount", icon: <MdDiscount />, link: "/dashboard/discount" },
+  {
+    name: "Subscribers",
+    icon: <MdSubscriptions />,
+    link: "/dashboard/subscribers",
+  },
+];
+
+const userRoutes = [
+  { name: "Profile", icon: <MdSpaceDashboard />, link: "/dashboard/profile" },
+  { name: "Watch History", icon: <MdMovie />, link: "/dashboard/watchlist" },
+  {
+    name: "Purchase History",
+    icon: <MdMovie />,
+    link: "/dashboard/purchasehistory",
+  },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
   const pathname = usePathname();
+  const token = useAppSelector(selectCurrentToken);
+  let user;
+  if (token) {
+    user = verifyToken(token);
+  }
+
+  const routes =
+    user?.role === "ADMIN"
+      ? menuItems
+      : user?.role === "USER"
+      ? userRoutes
+      : [];
+
   return (
     <aside
       className={`fixed z-40 top-0 left-0 h-full w-64 bg-[#010527]   border-r border-[#010e65] transform transition-transform duration-300 
@@ -40,21 +81,22 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
 
         {/* Logo Section */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold  ">Admin Dashboard</h1>
-   
+          <h1 className="text-2xl font-bold  ">
+            {user?.role === "ADMIN" ? "Admin Dashboard" : "User Dashboard"}
+          </h1>
         </div>
 
         {/* Navigation */}
         <nav className="flex-1 space-y-2 border-t pt-2 border-[#00175f]/50">
-          {menuItems?.map((item) => (
+          {routes?.map((item) => (
             <Link
               key={item?.name}
               href={`${item.link}`}
-              className={`flex items-center gap-3 p-3 rounded-lg ${pathname === item.link ? "bg-[#00175f]/60":""} hover:bg-[#00175f]/60 transition-colors text-gray-300 hover:text-white`}
+              className={`flex items-center gap-3 p-3 rounded-lg ${
+                pathname === item.link ? "bg-[#00175f]/60" : ""
+              } hover:bg-[#00175f]/60 transition-colors text-gray-300 hover:text-white`}
             >
-              <span className="material-icons-outlined ">
-              {item?.icon}
-              </span>
+              <span className="material-icons-outlined ">{item?.icon}</span>
               {item?.name}
             </Link>
           ))}

@@ -18,7 +18,7 @@ const HomePage = () => {
       <HomeBanner />
       <TopArtists />
       <TopNews />
-      <FAQ/>
+      <FAQ />
     </div>
   );
 };

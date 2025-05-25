@@ -7,7 +7,7 @@ type Role = keyof typeof roleBasedPrivateRoutes;
 const authRoutes = ["/login", "/register"];
 
 const roleBasedPrivateRoutes = {
-  USER: [/^\/user/, /^\/profile/],
+  USER: [/^\/dashboard/, /^\/profile/],
   ADMIN: [/^\/dashboard/, /^\/profile/],
 };
 
@@ -25,10 +25,7 @@ export const middleware = async (request: NextRequest) => {
       return NextResponse.next();
     } else {
       return NextResponse.redirect(
-        new URL(
-          `https://cineverse-liart.vercel.app/login?redirectPath=${pathname}`,
-          request.url
-        )
+        new URL(`/login?redirectPath=${pathname}`, request.url)
       );
     }
   }
@@ -45,9 +42,9 @@ export const middleware = async (request: NextRequest) => {
 };
 
 export const config = {
-  matcher: [
-    '/profile',
-    '/dashboard',
-    "/dashboard/:page*"
-  ],
+  matcher: ["/profile", "/profile/:path*", "/dashboard", "/dashboard/:path*"],
 };
+
+// export const config = {
+//   matcher: ["/profile", "/dashboard", "/dashboard/:page*"],
+// };
