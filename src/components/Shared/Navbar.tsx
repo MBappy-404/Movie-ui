@@ -12,57 +12,195 @@ import {
   ArrowRightEndOnRectangleIcon,
   QuestionMarkCircleIcon,
   Square2StackIcon,
+  SparklesIcon,
+  TrophyIcon,
+  ClockIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LucideLayoutDashboard } from "lucide-react";
-import Cookies from 'js-cookie';
+import {
+  Boxes,
+  ChevronRightIcon,
+  LucideLayoutDashboard,
+  NewspaperIcon,
+  StarIcon,
+  TrendingUpIcon,
+} from "lucide-react";
+import Cookies from "js-cookie";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { selectCurrentToken, logout } from "../redux/features/auth/authSlice";
 import { verifyToken } from "@/utils/verifyToken";
+import { cn } from "@/lib/utils";
+
+interface MenuItem {
+  name: string;
+  icon: any;
+  color: string;
+  description?: string;
+}
+
+interface CategorySection {
+  title: string;
+  items: MenuItem[];
+}
+
+const movieCategories: CategorySection[] = [
+  {
+    title: "Movie Categories",
+    items: [
+      {
+        name: "Action",
+        icon: FilmIcon,
+        color: "red",
+      },
+      {
+        name: "Sci-Fi",
+        icon: Square2StackIcon,
+        color: "purple",
+      },
+      {
+        name: "Thriller",
+        icon: QuestionMarkCircleIcon,
+        color: "indigo",
+      },
+      {
+        name: "Anime",
+        icon: SparklesIcon,
+        color: "pink",
+      },
+      {
+        name: "Horror",
+        icon: QuestionMarkCircleIcon,
+        color: "gray",
+      },
+      {
+        name: "Adventure",
+        icon: FilmIcon,
+        color: "yellow",
+      },
+      {
+        name: "Comedy",
+        icon: SparklesIcon,
+        color: "green",
+      },
+      {
+        name: "Family",
+        icon: BookmarkIcon,
+        color: "blue",
+      },
+      {
+        name: "Drama",
+        icon: TvIcon,
+        color: "blue",
+      },
+      {
+        name: "Romance",
+        icon: StarIcon,
+        color: "pink",
+      },
+      {
+        name: "History",
+        icon: NewspaperIcon,
+        color: "amber",
+      },
+    ],
+  },
+  {
+    title: "Collections",
+    items: [
+      {
+        name: "Trending Now",
+        icon: TrendingUpIcon,
+        color: "pink",
+        description: "Most popular movies this week"
+      },
+      {
+        name: "Award Winners",
+        icon: TrophyIcon,
+        color: "amber",
+        description: "Critically acclaimed masterpieces"
+      },
+      {
+        name: "New Releases",
+        icon: ClockIcon,
+        color: "cyan",
+        description: "Fresh content just added"
+      },
+      {
+        name: "Classics",
+        icon: StarIcon,
+        color: "yellow",
+        description: "Timeless cinematic treasures"
+      },
+    ],
+  },
+];
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
- 
+  const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
-
+  const megaMenuRef = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const dispatch = useAppDispatch();
 
-
   const token = useAppSelector(selectCurrentToken);
-  let user
+  let user;
   if (token) {
-    user = verifyToken(token)
+    user = verifyToken(token);
   }
-
-
-
 
   const navLinks = [
     { name: "Home", path: "/", icon: HomeModernIcon },
+    {
+      name: "Categories",
+      path: "#",
+      icon: Square2StackIcon,
+      megaMenu: true,
+    },
     { name: "Movies", path: "/movies", icon: FilmIcon },
     { name: "Watchlist", path: "/watchlist", icon: BookmarkIcon },
+    { name: "About", path: "/about", icon: HomeModernIcon },
   ];
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        megaMenuRef.current &&
+        !megaMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsMegaMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
+
   const handleLogout = () => {
-    dispatch(logout())
+    dispatch(logout());
     toast.success("Logged out successfully");
-    Cookies.remove('accessToken'); // Replace 'accessToken' with the actual cookie name(s) you're using
-    Cookies.remove('refreshToken'); // Replace 'refreshToken' with the actual cookie name(s) you're using
+    Cookies.remove("accessToken");
+    Cookies.remove("refreshToken");
     router.push("/login");
     setDropdownOpen(false);
   };
 
-  // Desktop scroll handler
   useEffect(() => {
     const handleScroll = () => {
       if (window.innerWidth >= 768) {
-        // Only for desktop
         setIsScrolled(window.scrollY > 10);
       }
     };
@@ -70,7 +208,6 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Mobile menu body lock
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -91,15 +228,49 @@ const Navbar = () => {
     rest: { scale: 1, color: "#e5e7eb" },
   };
 
+  const megaMenuVariants = {
+    open: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 200,
+        damping: 25,
+        staggerChildren: 0.05,
+        delayChildren: 0.1,
+      },
+    },
+    closed: {
+      opacity: 0,
+      y: -10,
+      transition: { duration: 0.2 },
+    },
+  };
+
+  const categoryVariants = {
+    open: {
+      opacity: 1,
+      x: 0,
+      transition: { type: "spring", stiffness: 300, damping: 30 }
+    },
+    closed: {
+      opacity: 0,
+      x: -20,
+      transition: { duration: 0.2 }
+    }
+  };
+
   return (
     <nav
-      className={`fixed w-full z-[990] ${
+      className={cn(
+        "fixed w-full z-[990]",
         isScrolled
-          ? "backdrop-blur-md bg-[#101828]"
-          : "bg-[#101828] md:bg-transparent"
-      } transition-all duration-500`}
+          ? "backdrop-blur-md bg-[#101828]/90"
+          : "bg-[#101828] md:bg-transparent",
+        "transition-all duration-500"
+      )}
     >
-      <div className="container mx-auto px-4 xl:px-12">
+      <div className="container mx-auto px-4 ">
         <div className="flex items-center justify-between h-16 xl:h-20">
           <Link
             href="/"
@@ -108,48 +279,137 @@ const Navbar = () => {
             CineVerse
           </Link>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            {navLinks.map(({ name, path, icon: Icon }) => (
-              <Link key={name} href={path}>
-                <motion.div
-                  className="relative group"
-                  initial="rest"
-                  whileHover="hover"
-                  animate="rest"
-                >
+            {navLinks.map(({ name, path, icon: Icon, megaMenu }) => (
+              <div
+                key={name}
+                className="relative group"
+                onMouseEnter={() => megaMenu && setIsMegaMenuOpen(true)}
+                onMouseLeave={() => megaMenu && setIsMegaMenuOpen(false)}
+                ref={megaMenu ? megaMenuRef : null}
+              >
+                <Link href={path}>
                   <motion.div
-                    className="flex items-center gap-2"
-                    variants={navItemVariants}
+                    className="relative group"
+                    initial="rest"
+                    whileHover="hover"
+                    animate="rest"
                   >
-                    <Icon
-                      className={`w-5 h-5 ${
-                        pathname === path ? "text-indigo-400" : "text-gray-200"
-                      }`}
-                    />
-                    <span
-                      className={`font-bold text-lg ${
-                        pathname === path ? "text-indigo-400" : "text-gray-200"
-                      }`}
+                    <motion.div
+                      className="flex items-center gap-2"
+                      variants={navItemVariants}
                     >
-                      {name}
-                    </span>
+                      <Icon
+                        className={cn(
+                          "w-5 h-5",
+                          pathname === path
+                            ? "text-indigo-400"
+                            : "text-gray-200"
+                        )}
+                      />
+                      <span
+                        className={cn(
+                          "font-bold text-lg",
+                          pathname === path
+                            ? "text-indigo-400"
+                            : "text-gray-200",
+                          megaMenu && "hover:text-indigo-400"
+                        )}
+                      >
+                        {name}
+                      </span>
+                    </motion.div>
+                    <motion.div
+                      className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-400"
+                      initial={{ scaleX: pathname === path ? 1 : 0 }}
+                      animate={{ scaleX: pathname === path ? 1 : 0 }}
+                      whileHover={{ scaleX: 1 }}
+                      transition={{ type: "spring", stiffness: 300 }}
+                    />
                   </motion.div>
-                  <motion.div
-                    className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-400"
-                    initial={{ scaleX: pathname === path ? 1 : 0 }}
-                    animate={{ scaleX: pathname === path ? 1 : 0 }}
-                    whileHover={{ scaleX: 1 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  />
-                </motion.div>
-              </Link>
+                </Link>
+
+                {megaMenu && (
+                  <AnimatePresence>
+                    {isMegaMenuOpen && (
+                      <motion.div
+                        initial="closed"
+                        animate="open"
+                        exit="closed"
+                        variants={megaMenuVariants}
+                        className="absolute top-full left-1/2 -translate-x-1/2 w-screen max-w-6xl bg-[#1a1f2e]/95 backdrop-blur-xl border border-gray-800 rounded-xl shadow-2xl p-6 mt-2"
+                      >
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                          {/* Left Side - Categories */}
+                          <div className="md:col-span-2">
+                            <h3 className="text-xl font-bold text-indigo-400 mb-4 border-b border-gray-700 pb-2">
+                              Browse Categories
+                            </h3>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                              {movieCategories[0].items.map((item) => (
+                                <motion.div
+                                  key={item.name}
+                                  whileHover={{ scale: 1.05 }}
+                                  className="group cursor-pointer"
+                                >
+                                  <Link href={`/category/${item.name.toLowerCase()}`}>
+                                    <div className="flex flex-col items-center p-3 rounded-lg hover:bg-gray-800/50 transition-colors">
+                                      <div className={`p-3 rounded-full bg-${item.color}-500/10`}>
+                                        <item.icon className={`w-6 h-6 text-white`} />
+                                      </div>
+                                      <h4 className="font-medium text-gray-200 group-hover:text-indigo-400 transition-colors text-center">
+                                        {item.name}
+                                      </h4>
+                                    </div>
+                                  </Link>
+                                </motion.div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Right Side - Collections */}
+                          <div className="space-y-4">
+                            <h3 className="text-xl font-bold text-indigo-400 mb-4 border-b border-gray-700 pb-2">
+                              Collections
+                            </h3>
+                            <div className="grid grid-cols-1 gap-3">
+                              {movieCategories[1].items.map((item) => (
+                                <motion.div
+                                  key={item.name}
+                                  whileHover={{ scale: 1.02 }}
+                                  className="group cursor-pointer"
+                                >
+                                  <Link href={`/collection/${item.name.toLowerCase().replace(/\s+/g, '-')}`}>
+                                    <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800/50 transition-colors">
+                                      <div className={`p-3 rounded-full bg-${item.color}-500/10`}>
+                                        <item.icon className="w-6 h-6 text-white" />
+                                      </div>
+                                      <div>
+                                        <h4 className="font-medium text-gray-200 group-hover:text-indigo-400 transition-colors">
+                                          {item.name}
+                                        </h4>
+                                        <p className="text-sm text-gray-400 mt-1">
+                                          {item.description}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </Link>
+                                </motion.div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                )}
+              </div>
             ))}
           </div>
 
-          {/* Right Section */}
           <div className="flex items-center gap-6">
-              {user && (<div ref={dropdownRef} className="relative">
+            {user && (
+              <div ref={dropdownRef} className="relative">
                 <button
                   className="p-2 cursor-pointer text-gray-300 hover:text-indigo-400 transition-colors"
                   onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -165,7 +425,7 @@ const Navbar = () => {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
                     >
-                      <div className="px-4 py-2 border-b border-gray-700">
+                                           <div className="px-4 py-2 border-b border-gray-700">
                         <p className="text-sm md:text-base  text-gray-200 truncate">
                           {user?.email}
                         </p>
@@ -194,19 +454,20 @@ const Navbar = () => {
                         <ArrowRightEndOnRectangleIcon className="w-5 h-5" />
                         Logout
                       </button>
+
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </div>)}
+              </div>
+            )}
 
-              {!user && (<Link href="/login">
-                <motion.button
-                  className="px-4 py-2 cursor-pointer bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all"
-                   
-                >
+            {!user && (
+              <Link href="/login">
+                <motion.button className="px-4 py-2 cursor-pointer bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all">
                   Sign In
                 </motion.button>
-              </Link>)}
+              </Link>
+            )}
 
             <motion.button
               className="md:hidden p-2 text-gray-300 hover:text-indigo-400 transition-colors"
@@ -223,7 +484,6 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Mobile Sidebar - Always has solid background */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
@@ -232,72 +492,83 @@ const Navbar = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              <div
-                className="absolute inset-0 bg-black/30 backdrop-blur-sm"
-                onClick={() => setIsOpen(false)}
-              />
-
-              <motion.div
-                className="absolute right-0 top-0 h-full w-[75%] bg-gray-900 shadow-2xl border-l border-gray-800 overflow-y-auto"
-                variants={mobileMenuVariants}
-                initial="closed"
-                animate="open"
-                exit="closed"
-              >
-                <div className="h-full flex flex-col p-6">
-                  <div className="flex justify-between items-center mb-8">
-                    <span className="text-xl font-bold text-indigo-400">
-                      CineVerse
-                    </span>
-                    <button
-                      className="p-2 text-gray-400 hover:text-indigo-400 transition-colors"
+              <AnimatePresence>
+                {isOpen && (
+                  <motion.div
+                    className="fixed inset-0 z-[1000]"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <div
+                      className="absolute inset-0 bg-black/30 backdrop-blur-sm"
                       onClick={() => setIsOpen(false)}
+                    />
+
+                    <motion.div
+                      className="absolute right-0 top-0 h-full w-[75%] bg-gray-900 shadow-2xl border-l border-gray-800 overflow-y-auto"
+                      variants={mobileMenuVariants}
+                      initial="closed"
+                      animate="open"
+                      exit="closed"
                     >
-                      <XMarkIcon className="w-6 h-6" />
-                    </button>
-                  </div>
+                      <div className="h-full flex flex-col p-6">
+                        <div className="flex justify-between items-center mb-8">
+                          <span className="text-xl font-bold text-indigo-400">
+                            CineVerse
+                          </span>
+                          <button
+                            className="p-2 text-gray-400 hover:text-indigo-400 transition-colors"
+                            onClick={() => setIsOpen(false)}
+                          >
+                            <XMarkIcon className="w-6 h-6" />
+                          </button>
+                        </div>
 
-                  <div className="flex flex-col gap-4">
-                    {navLinks.map(({ name, path, icon: Icon }) => (
-                      <Link
-                        key={name}
-                        href={path}
-                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        <Icon
-                          className={`w-6 h-6 ${
-                            pathname === path
-                              ? "text-indigo-400"
-                              : "text-gray-200"
-                          }`}
-                        />
-                        <span
-                          className={`${
-                            pathname === path
-                              ? "text-indigo-400"
-                              : "text-gray-200"
-                          } font-medium`}
-                        >
-                          {name}
-                        </span>
-                      </Link>
-                    ))}
-                  </div>
+                        <div className="flex flex-col gap-4">
+                          {navLinks.map(({ name, path, icon: Icon }) => (
+                            <Link
+                              key={name}
+                              href={path}
+                              className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors"
+                              onClick={() => setIsOpen(false)}
+                            >
+                              <Icon
+                                className={`w-6 h-6 ${
+                                  pathname === path
+                                    ? "text-indigo-400"
+                                    : "text-gray-200"
+                                }`}
+                              />
+                              <span
+                                className={`${
+                                  pathname === path
+                                    ? "text-indigo-400"
+                                    : "text-gray-200"
+                                } font-medium`}
+                              >
+                                {name}
+                              </span>
+                            </Link>
+                          ))}
+                        </div>
 
-                  <div className="mt-8 pt-6 border-t border-gray-800">
-                    <div className="flex flex-col gap-4">
-                      <Link
-                        href="/support"
-                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors"
-                      >
-                        <QuestionMarkCircleIcon className="w-6 h-6 text-indigo-400" />
-                        <span className="text-gray-200">Support</span>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
+                        <div className="mt-8 pt-6 border-t border-gray-800">
+                          <div className="flex flex-col gap-4">
+                            <Link
+                              href="/support"
+                              className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors"
+                            >
+                              <QuestionMarkCircleIcon className="w-6 h-6 text-indigo-400" />
+                              <span className="text-gray-200">Support</span>
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
           )}
         </AnimatePresence>

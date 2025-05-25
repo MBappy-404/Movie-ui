@@ -9,7 +9,7 @@ import { verifyToken } from "@/utils/verifyToken";
 import { useGetUserQuery } from "@/components/redux/features/user/userApi";
 import Cookies from "js-cookie";
 import Link from "next/link";
-import { Home } from "lucide-react";
+import { Home, User } from "lucide-react";
 
 interface HeaderProps {
   toggleSidebar: () => void;
@@ -55,10 +55,7 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
     router.push("/login");
   };
 
-  const handleProfileClick = () => {
-    router.push("/profile");
-    setIsDropdownOpen(false);
-  };
+   
 
   return (
     <header className="sticky top-0 z-20 bg-[#000a3a]/95 backdrop-blur-sm border-b border-[#00175f]/50 p-4">
@@ -81,9 +78,9 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center gap-2 hover:bg-[#00175f]/30 p-2 rounded-lg transition-colors"
+              className="flex items-center gap-2  cursor-pointer hover:bg-[#00175f]/30 p-2 rounded-lg transition-colors"
             >
-              <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full  bg-purple-500/20 flex items-center justify-center">
                 {UserData?.data?.profilePhoto ? (
                   <img
                     src={UserData?.data?.profilePhoto}
@@ -101,24 +98,24 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
 
             {/* Dropdown Menu */}
             {isDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-[#000a3a] border border-[#00175f] rounded-lg shadow-lg py-2">
+              <div className="absolute right-0  mt-2 w-48 bg-[#000a3a] border border-[#00175f] rounded-lg shadow-lg py-2">
                 <Link
                   href={"/"}
                   className="w-full px-3 py-2 text-left text-gray-300 hover:bg-[#00175f]/30 transition-colors flex items-center gap-2"
                 >
-                  <Home className="text-white" />
+                  <Home className="text-white w-5 h-5" />
                   Home
                 </Link>
-                <button
-                  onClick={handleProfileClick}
-                  className="w-full px-4 py-2 text-left text-gray-300 hover:bg-[#00175f]/30 transition-colors flex items-center gap-2"
+                <Link
+                    href={"/profile"}
+                  className="w-full px-3 py-2 cursor-pointer   text-gray-300 hover:bg-[#00175f]/30 transition-colors flex items-center gap-2"
                 >
-                  <FaUser className="text-purple-400" />
+                  <User className=" w-5 h-5" />
                   Profile
-                </button>
+                </Link>
                 <button
                   onClick={handleLogout}
-                  className="w-full px-4 py-2 text-left text-gray-300 hover:bg-[#00175f]/30 transition-colors flex items-center gap-2"
+                  className="w-full px-4 cursor-pointer  py-2 text-left text-gray-300 hover:bg-[#00175f]/30 transition-colors flex items-center gap-2"
                 >
                   <FaSignOutAlt className="text-red-400" />
                   Logout
