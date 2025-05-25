@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 const WatchListPage = () => {
   return (
-    <div className="container mx-auto p-2  md:p-6 pt-20 bg-[#00031b]">
+    <div className="container mx-auto p-2  md:p-6  bg-[#00031b]">
       <WatchList/>
     </div>
   );

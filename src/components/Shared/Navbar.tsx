@@ -15,13 +15,15 @@ import {
   SparklesIcon,
   TrophyIcon,
   ClockIcon,
+  ChevronDownIcon,
+  ChevronRightIcon,
+  ChevronLeftIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
 import {
   Boxes,
-  ChevronRightIcon,
   LucideLayoutDashboard,
   NewspaperIcon,
   StarIcon,
@@ -34,6 +36,7 @@ import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { selectCurrentToken, logout } from "../redux/features/auth/authSlice";
 import { verifyToken } from "@/utils/verifyToken";
 import { cn } from "@/lib/utils";
+import { useGetAllGenresQuery } from "../redux/features/genre/genreApi";
 
 interface MenuItem {
   name: string;
@@ -41,103 +44,70 @@ interface MenuItem {
   color: string;
   description?: string;
 }
+ 
 
-interface CategorySection {
-  title: string;
-  items: MenuItem[];
-}
-
-const movieCategories: CategorySection[] = [
-  {
-    title: "Movie Categories",
-    items: [
-      {
-        name: "Action",
-        icon: FilmIcon,
-        color: "red",
-      },
-      {
-        name: "Sci-Fi",
-        icon: Square2StackIcon,
-        color: "purple",
-      },
-      {
-        name: "Thriller",
-        icon: QuestionMarkCircleIcon,
-        color: "indigo",
-      },
-      {
-        name: "Anime",
-        icon: SparklesIcon,
-        color: "pink",
-      },
-      {
-        name: "Horror",
-        icon: QuestionMarkCircleIcon,
-        color: "gray",
-      },
-      {
-        name: "Adventure",
-        icon: FilmIcon,
-        color: "yellow",
-      },
-      {
-        name: "Comedy",
-        icon: SparklesIcon,
-        color: "green",
-      },
-      {
-        name: "Family",
-        icon: BookmarkIcon,
-        color: "blue",
-      },
-      {
-        name: "Drama",
-        icon: TvIcon,
-        color: "blue",
-      },
-      {
-        name: "Romance",
-        icon: StarIcon,
-        color: "pink",
-      },
-      {
-        name: "History",
-        icon: NewspaperIcon,
-        color: "amber",
-      },
-    ],
-  },
+const collection = [
+ 
   {
     title: "Collections",
     items: [
       {
         name: "Trending Now",
         icon: TrendingUpIcon,
-        color: "pink",
+        color: "text-pink-500",
         description: "Most popular movies this week"
       },
       {
         name: "Award Winners",
         icon: TrophyIcon,
-        color: "amber",
+        color: "text-amber-500",
         description: "Critically acclaimed masterpieces"
       },
       {
         name: "New Releases",
         icon: ClockIcon,
-        color: "cyan",
+        color: "text-cyan-500",
         description: "Fresh content just added"
       },
       {
-        name: "Classics",
+        name: "Editor's Picks",
         icon: StarIcon,
-        color: "yellow",
+        color: "text-yellow-500",
         description: "Timeless cinematic treasures"
       },
     ],
   },
 ];
+
+// Add genre icon mapping
+const genreIconMap: { [key: string]: any } = {
+  Action: FilmIcon,
+  "Sci-Fi": FilmIcon,
+  Thriller: FilmIcon,
+  Anime: FilmIcon,
+  Horror: FilmIcon,
+  Adventure: FilmIcon,
+  Comedy: FilmIcon,
+  Family: FilmIcon,
+  Drama: FilmIcon,
+  Romance: FilmIcon,
+  History: FilmIcon,
+};
+
+// Add genre color mapping
+const genreColorMap: { [key: string]: string } = {
+  Action: "red",
+  "Sci-Fi": "purple",
+  Thriller: "indigo",
+  Anime: "pink",
+  Horror: "gray",
+  Adventure: "yellow",
+  Comedy: "green",
+  Family: "blue",
+  Drama: "blue",
+  Romance: "pink",
+  History: "amber",
+};
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -159,8 +129,14 @@ const Navbar = () => {
     user = verifyToken(token);
   }
 
+  const { data: categories } = useGetAllGenresQuery([]);
+  console.log(categories);
+  const movieCategories = categories?.data
+  
+
   const navLinks = [
     { name: "Home", path: "/", icon: HomeModernIcon },
+    { name: "About", path: "/about", icon: HomeModernIcon },
     {
       name: "Categories",
       path: "#",
@@ -169,7 +145,8 @@ const Navbar = () => {
     },
     { name: "Movies", path: "/movies", icon: FilmIcon },
     { name: "Watchlist", path: "/watchlist", icon: BookmarkIcon },
-    { name: "About", path: "/about", icon: HomeModernIcon },
+    { name: "Upcoming", path: "/comingSoon", icon: HomeModernIcon },
+    { name: "Contact", path: "/contactUs", icon: HomeModernIcon },
   ];
 
   useEffect(() => {
@@ -302,7 +279,7 @@ const Navbar = () => {
                     animate="rest"
                   >
                     <motion.div
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 pb-2"
                       variants={navItemVariants}
                     >
                       <Icon
@@ -324,6 +301,9 @@ const Navbar = () => {
                       >
                         {name}
                       </span>
+                      {megaMenu && (
+                        <ChevronDownIcon className="w-4 h-4 text-gray-200 group-hover:text-indigo-400 transition-colors" />
+                      )}
                     </motion.div>
                     <motion.div
                       className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-400"
@@ -343,58 +323,76 @@ const Navbar = () => {
                         animate="open"
                         exit="closed"
                         variants={megaMenuVariants}
-                        className="absolute top-full left-1/2 -translate-x-1/2 w-screen max-w-6xl bg-[#1a1f2e]/95 backdrop-blur-xl border border-gray-800 rounded-xl shadow-2xl p-6 mt-2"
+                        className="absolute top-[calc(100%+0.5rem)] left-1/2 -translate-x-1/2 w-screen max-w-5xl bg-[#1e2433] backdrop-blur-xl border border-gray-700 rounded-xl shadow-2xl p-4 md:p-6"
                       >
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {/* Invisible padding to prevent gap */}
+                        <div className="absolute -top-4 left-0 w-full h-4" />
+                        
+                        {/* Arrow pointing to Categories */}
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                          <div className="w-6 h-6 bg-[#1e2433] border-t border-l border-gray-700 transform rotate-45"></div>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
                           {/* Left Side - Categories */}
-                          <div className="md:col-span-2">
-                            <h3 className="text-xl font-bold text-indigo-400 mb-4 border-b border-gray-700 pb-2">
-                              Browse Categories
-                            </h3>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                              {movieCategories[0].items.map((item) => (
-                                <motion.div
-                                  key={item.name}
-                                  whileHover={{ scale: 1.05 }}
-                                  className="group cursor-pointer"
-                                >
-                                  <Link href={`/category/${item.name.toLowerCase()}`}>
-                                    <div className="flex flex-col items-center p-3 rounded-lg hover:bg-gray-800/50 transition-colors">
-                                      <div className={`p-3 rounded-full bg-${item.color}-500/10`}>
-                                        <item.icon className={`w-6 h-6 text-white`} />
+                          <div className="md:col-span-8">
+                            <div className="flex items-center gap-2 mb-3 md:mb-4 border-b border-gray-700 pb-2">
+                              <h3 className="text-lg md:text-xl font-bold text-indigo-400">
+                                Browse Categories
+                              </h3>
+                              <ChevronRightIcon className="w-5 h-5 text-indigo-400" />
+                            </div>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-3">
+                              {movieCategories?.map((item: any) => {
+                                const Icon = genreIconMap[item.genreName] || FilmIcon;
+                                const color = genreColorMap[item.genreName] || "gray";
+                                return (
+                                  <motion.div
+                                    key={item.id}
+                                    whileHover={{ scale: 1.05 }}
+                                    className="group cursor-pointer"
+                                  >
+                                    <Link href={`/movies`}>
+                                      <div className="flex flex-col items-center p-2 md:p-3 rounded-lg hover:bg-gray-800/50 transition-colors">
+                                        <div className={`p-2 md:p-3 rounded-full bg-${color}-500/10`}>
+                                          <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                                        </div>
+                                        <h4 className="font-medium text-gray-200 group-hover:text-indigo-400 transition-colors text-center text-sm md:text-base mt-1">
+                                          {item.genreName}
+                                        </h4>
                                       </div>
-                                      <h4 className="font-medium text-gray-200 group-hover:text-indigo-400 transition-colors text-center">
-                                        {item.name}
-                                      </h4>
-                                    </div>
-                                  </Link>
-                                </motion.div>
-                              ))}
+                                    </Link>
+                                  </motion.div>
+                                );
+                              })}
                             </div>
                           </div>
 
                           {/* Right Side - Collections */}
-                          <div className="space-y-4">
-                            <h3 className="text-xl font-bold text-indigo-400 mb-4 border-b border-gray-700 pb-2">
-                              Collections
-                            </h3>
-                            <div className="grid grid-cols-1 gap-3">
-                              {movieCategories[1].items.map((item) => (
+                          <div className="md:col-span-4">
+                            <div className="flex items-center gap-2 mb-3 md:mb-4 border-b border-gray-700 pb-2">
+                              <h3 className="text-lg md:text-xl font-bold text-indigo-400">
+                                Collections
+                              </h3>
+                              <ChevronRightIcon className="w-5 h-5 text-indigo-400" />
+                            </div>
+                            <div className="grid grid-cols-1 gap-2 md:gap-3">
+                              {collection[0].items.map((item) => (
                                 <motion.div
                                   key={item.name}
                                   whileHover={{ scale: 1.02 }}
                                   className="group cursor-pointer"
                                 >
-                                  <Link href={`/collection/${item.name.toLowerCase().replace(/\s+/g, '-')}`}>
-                                    <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800/50 transition-colors">
-                                      <div className={`p-3 rounded-full bg-${item.color}-500/10`}>
-                                        <item.icon className="w-6 h-6 text-white" />
+                                  <Link href={`/`}>
+                                    <div className="flex items-center gap-3 p-2 md:p-3 rounded-lg hover:bg-gray-800/50 transition-colors">
+                                      <div className={`p-2 md:p-3 rounded-full bg-${item.color}-500/10`}>
+                                        <item.icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
                                       </div>
                                       <div>
-                                        <h4 className="font-medium text-gray-200 group-hover:text-indigo-400 transition-colors">
+                                        <h4 className="font-medium text-gray-200 group-hover:text-indigo-400 transition-colors text-sm md:text-base">
                                           {item.name}
                                         </h4>
-                                        <p className="text-sm text-gray-400 mt-1">
+                                        <p className="text-xs md:text-sm text-gray-400 mt-0.5">
                                           {item.description}
                                         </p>
                                       </div>

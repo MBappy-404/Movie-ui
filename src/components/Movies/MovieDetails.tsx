@@ -37,6 +37,7 @@ import { TMovie } from "../types/movie";
 import WatchlistButton from "../Shared/WatchlistButton";
 import { RatioIcon, Star, StarIcon } from "lucide-react";
 import { Md18UpRating } from "react-icons/md";
+import { useValidateCuponMutation } from "../redux/features/cupon/cuponApi";
 
 interface ReviewFormData {
   rating: number;
@@ -47,24 +48,10 @@ interface ReviewFormData {
 const MovieDetails = () => {
   const [createPayment] = useCreatePaymentMutation();
   const [showModal, setShowModal] = useState(false);
-
+  const [cupon, setCoupon] = useState('');
+  const [validateCupon, {isLoading: isCuponLoading}] = useValidateCuponMutation();
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
   const movieList = useAppSelector(watchListSelector);
-
-  // const dispatch = useAppDispatch();
-
-  // const handleWatchlist = (data: Movie) => {
-  //   const isExistInWatchList = movieList.some((item) => item.id === data.id);
-
-  //   if (isExistInWatchList) {
-  //     toast.warning("Already Added to Watchlist");
-  //     return;
-  //   }
-
-  //   dispatch(addToWatchList(data));
-  //   toast.success("Added to Watchlist", {
-  //     icon: "⭐",
-  //   });
-  // };
 
   const router = useRouter();
   const { id } = useParams();
@@ -92,6 +79,38 @@ const MovieDetails = () => {
   const contentId = movieDetails?.data.id;
 
   // const { data: allReview } = useGetAllReviewByContentIdQuery(contentId);
+
+  const handleCouponValidation = async () => {
+    if (!cupon.trim()) {
+      toast.error("Please enter a coupon code");
+      return;
+    }
+
+    try {
+      const result = await validateCupon({
+        code: cupon,
+      }).unwrap();
+
+      if (result?.success) {
+        setAppliedCoupon(result.data?.coupon);
+        toast.success(result?.message || "Coupon applied successfully!");
+        setCoupon('');
+      } else {
+        toast.error(result?.message || "Invalid coupon code");
+      }
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to validate coupon");
+    }
+  };
+
+  // Calculate discounted price
+  const calculateDiscountedPrice = (originalPrice: number) => {
+    if (appliedCoupon?.discount) {
+      const discountAmount = (originalPrice * appliedCoupon.discount) / 100;
+      return (originalPrice - discountAmount).toFixed(2);
+    }
+    return originalPrice.toFixed(2);
+  };
 
   useEffect(() => {
     if (allMovies?.data && movieDetails?.data) {
@@ -191,6 +210,7 @@ const MovieDetails = () => {
       const toastId = toast.loading("Loading Payment Page...");
       // console.log(data)
       const paymentData = {
+        couponCode: appliedCoupon?.code,
         contentId: data?.id,
         status: option,
       };
@@ -324,64 +344,21 @@ const MovieDetails = () => {
               </p>
             )}
 
-            {(() => {
-              const discount = movieDetails?.data?.discount;
-              const price = movieDetails?.data?.price;
-
-              if (!discount || !price) return null;
-
-              const today = new Date();
-              const startDate = new Date(discount.startDate);
-              const endDate = new Date(discount.endDate);
-
-              // Normalize all dates to 00:00 so we can compare only the date
-              today.setHours(0, 0, 0, 0);
-              startDate.setHours(0, 0, 0, 0);
-              endDate.setHours(0, 0, 0, 0);
-
-              const isDiscountActive =
-                today.getTime() === startDate.getTime() || // aaj start
-                today.getTime() === endDate.getTime() ||   // aaj end
-                today.getTime() < endDate.getTime();       // aaj end er age
-
-
-
-
-
-              return (
+            <p className="text-sm md:text-lg font-semibold text-gray-400">
+              One Time Purchase:
+              {movieDetails?.data?.discount?.isActive ? (
                 <>
-                  {isDiscountActive && (
-                    <p className="text-sm md:text-lg text-gray-400">
-                      Discount Left:
-                      <span className="text-white ml-1">
-                        {discount.endDate?.slice(0, 10)}
-                      </span>
-                    </p>
-                  )}
-
-                  <p className="text-sm md:text-lg font-semibold text-gray-400">
-                    One Time Purchase:
-                    {discount.isActive && isDiscountActive ? (
-                      <>
-                        <span className="text-white font-bold ml-2 text-xl">
-                          ${(
-                            price -
-                            (price * discount.percentage) / 100
-                          ).toFixed(2)}
-                        </span>
-                        <del className="ml-2 text-red-400">${price}</del>
-                      </>
-                    ) : (
-                      <span className="text-white font-bold ml-2 text-xl">
-                        ${price}
-                      </span>
-                    )}
-                  </p>
+                  <span className="text-white font-bold ml-2 text-xl">
+                    ${(movieDetails.data.price - (movieDetails.data.price * movieDetails.data.discount.percentage) / 100).toFixed(2)}
+                  </span>
+                  <del className="ml-2 text-red-400">${movieDetails.data.price}</del>
                 </>
-              );
-            })()}
-
-
+              ) : (
+                <span className="text-white font-bold ml-2 text-xl">
+                  ${movieDetails?.data?.price}
+                </span>
+              )}
+            </p>
 
             <p className="text-sm md:text-lg font-semibold text-gray-400">
               Rental Price:
@@ -401,58 +378,181 @@ const MovieDetails = () => {
             </button>
           </div>
 
+          {/*****************Purchase Modal************ */}
           {showModal && (
-            <div className="fixed inset-0 z-50 bg-black/20  backdrop-blur-xl flex items-center justify-center">
-              <div className="bg-gray-800 rounded-xl shadow-lg p-6 w-80 text-center">
-                {movieDetails?.data?.discount?.isActive && (
-                  <div className="bg-red-500 absolute  -translate-y-9  text-white px-3 rounded-full">
-                    <span className=" ml-2">
-                      {movieDetails?.data?.discount?.percentage}% Off For On
-                      Time Purchase
-                    </span>
-                  </div>
-                )}
-                <h2 className="text-lg md:text-2xl font-semibold mb-4">
-                  Choose an option
-                </h2>
-                <div className="flex flex-col gap-4">
-                  <button
-                    onClick={() =>
-                      handleOptionSelect(movieDetails?.data, "BOUGHT")
-                    }
-                    className="py-2 px-4 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-                  >
-                    Buy On Time{" "}
-                    <span>
-                      {movieDetails?.data?.price &&
-                        movieDetails?.data?.discount
-                        ? (
-                          movieDetails.data.price -
-                          (movieDetails.data.price *
-                            movieDetails.data.discount?.percentage) /
-                          100
-                        ).toFixed(2)
-                        : movieDetails?.data?.price}
-                    </span>{" "}
-                    USD
-                  </button>
-                  <button
-                    onClick={() =>
-                      handleOptionSelect(movieDetails?.data, "RENTED")
-                    }
-                    className="py-2 px-4 bg-purple-600 cursor-pointer text-white rounded-lg hover:bg-purple-700 transition"
-                  >
-                    Rent {movieDetails?.data?.rentprice} USD
-                  </button>
-                </div>
-                <button
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 z-[999] bg-black/40 backdrop-blur-xl flex items-center justify-center p-4 cursor-pointer"
+            >
+              <motion.div 
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                transition={{ 
+                  type: "spring",
+                  duration: 0.5,
+                  bounce: 0.2,
+                  damping: 20,
+                  stiffness: 100
+                }}
+                className="bg-gradient-to-b from-[#1e2433] to-[#151b2b] rounded-2xl shadow-2xl p-8 w-[90%] max-w-[800px] text-center relative border border-gray-700/50"
+              >
+                <motion.button
+                  whileHover={{ scale: 1.1, rotate: 90 }}
+                  whileTap={{ scale: 0.9 }}
+                  transition={{ duration: 0.2 }}
                   onClick={() => setShowModal(false)}
-                  className="mt-4 text-lg cursor-pointer text-gray-500 hover:underline"
+                  className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-gray-800/30 cursor-pointer"
                 >
-                  Not Now
-                </button>
-              </div>
-            </div>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </motion.button>
+
+                {movieDetails?.data?.discount?.isActive && (
+                  <motion.div 
+                    initial={{ y: -40, opacity: 0, scale: 0.9 }}
+                    animate={{ y: 0, opacity: 1, scale: 1 }}
+                    transition={{ 
+                      delay: 0.2,
+                      duration: 0.5,
+                      type: "spring",
+                      bounce: 0.3,
+                      damping: 15
+                    }}
+                    className="bg-gradient-to-r from-red-500 to-pink-500 absolute -translate-y-14 text-white px-8 py-3 rounded-full text-sm font-medium shadow-lg border border-red-400/20"
+                  >
+                    <span className="ml-2">
+                      {movieDetails?.data?.discount?.percentage}% Off For One Time Purchase
+                    </span>
+                  </motion.div>
+                )}
+                <motion.h2 
+                   
+                  className="text-2xl font-bold mb-8 text-white bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
+                >
+                  Choose Your Purchase Option
+                </motion.h2>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <motion.div 
+                    className="bg-gray-800/30 rounded-xl p-8 border border-gray-700/50 hover:border-blue-500/30 transition-all duration-300"
+                  >
+                    <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-3">
+                      <span className="p-3 rounded-lg bg-blue-500/10">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
+                        </svg>
+                      </span>
+                      One Time Purchase
+                    </h3>
+                    <div className="flex items-center justify-between mb-6">
+                      <span className="text-gray-400">Price:</span>
+                      <div className="text-right">
+                        {appliedCoupon ? (
+                          <>
+                            <div className="flex items-center gap-2">
+                              <span className="text-green-400 text-sm font-medium">
+                                {appliedCoupon.discount}% OFF
+                              </span>
+                              <span className="text-white font-bold text-2xl">
+                                ${calculateDiscountedPrice(movieDetails.data.price)}
+                              </span>
+                              <del className="ml-2 text-red-400">${movieDetails.data.price}</del>
+                            </div>
+                          </>
+                        ) : movieDetails?.data?.discount?.isActive ? (
+                          <>
+                            <div className="flex items-center gap-2">
+                              <span className="text-green-400 text-sm font-medium">
+                                {movieDetails.data.discount.percentage}% OFF
+                              </span>
+                              <span className="text-white font-bold text-2xl">
+                                ${(movieDetails.data.price - (movieDetails.data.price * movieDetails.data.discount.percentage) / 100).toFixed(2)}
+                              </span>
+                              <del className="ml-2 text-red-400">${movieDetails.data.price}</del>
+                            </div>
+                          </>
+                        ) : (
+                          <span className="text-white font-bold text-2xl">${movieDetails.data.price}</span>
+                        )}
+                      </div>
+                    </div>
+                    <motion.button
+                      onClick={() => handleOptionSelect(movieDetails?.data, "BOUGHT")}
+                      className="w-full py-4 px-4 cursor-pointer bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-medium shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 hover:-translate-y-0.5"
+                    >
+                      Buy Now
+                    </motion.button>
+                  </motion.div>
+
+                  <motion.div 
+                     
+                    className="bg-gray-800/30 rounded-xl p-8 border border-gray-700/50 hover:border-purple-500/30 transition-all duration-300"
+                  >
+                    <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-3">
+                      <span className="p-3 rounded-lg bg-purple-500/10">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-purple-400" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+                          <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" />
+                        </svg>
+                      </span>
+                      Rent Movie
+                    </h3>
+                    <div className="flex items-center justify-between mb-6">
+                      <span className="text-gray-400">Price:</span>
+                      <span className="text-white font-bold text-2xl">${movieDetails?.data?.rentprice}</span>
+                    </div>
+                    <motion.button
+                       
+                      
+                      onClick={() => handleOptionSelect(movieDetails?.data, "RENTED")}
+                      className="w-full py-4 px-4 cursor-pointer bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 font-medium shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 hover:-translate-y-0.5"
+                    >
+                      Rent Now
+                    </motion.button>
+                  </motion.div>
+                </div>
+
+                {!movieDetails?.data?.discount?.isActive && (
+                  <motion.div 
+                    className="mt-8 bg-gray-800/30 rounded-xl p-8 border border-gray-700/50"
+                  >
+                    <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-3">
+                      <span className="p-3 rounded-lg bg-green-500/10">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                        </svg>
+                      </span>
+                      Apply Coupon
+                    </h3>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Enter coupon code"
+                        value={cupon}
+                        onChange={(e) => setCoupon(e.target.value)}
+                        className="w-full px-4 py-3 bg-gray-700/30 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all duration-300"
+                      />
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        transition={{ duration: 0.2 }}
+                        onClick={handleCouponValidation}
+                        disabled={isCuponLoading}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 bg-green-500/10 text-green-400 rounded-lg text-sm font-medium hover:bg-green-500/20 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isCuponLoading ? "Applying..." : "Apply"}
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                )}
+              </motion.div>
+            </motion.div>
           )}
 
           <h2 className="mt-8 text-xl font-semibold text-white">
