@@ -112,7 +112,7 @@ const ManageReview = () => {
       <div className="max-w-full mx-auto">
         {/* Header Section */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="lg:text-3xl text-xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+          <h1 className="lg:text-3xl text-xl font-bold text-white">
             Review Management
           </h1>
         </div>

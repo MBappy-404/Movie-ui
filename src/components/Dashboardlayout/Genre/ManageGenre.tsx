@@ -27,7 +27,7 @@ const ManageGenre = () => {
   const [isUpdateGenreModalOpen, setUpdateGenreModalOpen] = useState(false);
   const [genre, setGenre] = useState<{} | null>(null);
   const { data: genres, isLoading } = useGetAllGenresQuery(undefined);
-  const [addGenres, { data, error }] = useCreateGenreMutation();
+  const [addGenres] = useCreateGenreMutation();
   const [deleteGenre] = useDeleteGenreMutation();
 
   const genresData = genres?.data;
@@ -35,29 +35,21 @@ const ManageGenre = () => {
   const onSubmit: SubmitHandler<GenreName> = async (data) => {
     const toastId = toast.loading("Adding Genre....", { duration: 2000 });
 
-    const newGenre = {
-      genreName: data.genreName,
-    };
-
     try {
-      const res = await addGenres(newGenre);
-      //console.log(res);
+      const res = await addGenres({ genreName: data.genreName });
       if ("error" in res && res.error) {
         const errorMessage =
           (res.error as any)?.data?.message || "An error occurred";
         toast.error(errorMessage, { id: toastId });
-        setIsModalOpen(false);
-        reset();
       } else {
         toast.success(res?.data?.message, { id: toastId });
-        setIsModalOpen(false);
-        reset();
       }
     } catch (error: any) {
-      toast.error(error.data.message, { id: toastId, duration: 2000 });
-      setIsModalOpen(false);
-      reset();
+      toast.error(error.data.message, { id: toastId });
     }
+
+    setIsModalOpen(false);
+    reset();
   };
 
   const handleGenreDelete = async (genreId: string) => {
@@ -65,7 +57,6 @@ const ManageGenre = () => {
 
     try {
       const res = await deleteGenre(genreId);
-      //console.log(res);
       if ("error" in res && res.error) {
         const errorMessage =
           (res.error as any)?.data?.message || "An error occurred";
@@ -76,71 +67,70 @@ const ManageGenre = () => {
       setIsDeleteModalOpen(false);
       setGenreToDelete(null);
     } catch (error: any) {
-      toast.error(error.data.message, { id: toastId, duration: 2000 });
+      toast.error(error.data.message, { id: toastId });
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#00031b]">
-      <div className="max-w-full mx-auto">
+    <div className="min-h-screen bg-[#00031b] p-4">
+      <div className="max-w-4xl mx-auto">
         {/* Header Section */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="lg:text-3xl text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+          <h1 className="lg:text-3xl text-2xl font-bold  text-white">
             Genre
           </h1>
           <button
             onClick={() => setIsModalOpen(true)}
-            className=" cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white px-2 py-1 lg:px-6 lg:py-2 rounded-lg transition-all"
+            className="cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-lg transition-all"
           >
             Add Genre
           </button>
         </div>
 
-        {/* Movie Table */}
+        <div className="flex  mb-4 justify-between items-center border border-[#1a2d6d] p-4 rounded-lg  bg-[#000a3a] transition-colors">
+          <h1 className=" text-xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+            Name
+          </h1>
+          <h1 className=" text-xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+            Action
+          </h1>
+        </div>
+        {/* Genres List */}
         {isLoading ? (
-          <p className="text-white text-5xl font-bold text-center">
+          <div className="text-center text-white">
             <LoadingSpinner />
-          </p>
+          </div>
         ) : (
-          <div className="rounded-xl border border-[#1a2d6d] overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-[#000a3a]">
-                  <tr>
-                    <th className="px-6 py-4 text-left">Genre Name</th>
-                    <th className="px-6 py-4 text-left">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {genresData?.map((genre: TGenre, index: number) => (
-                    <motion.tr
-                      key={index + 1}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="border-t border-[#1a2d6d] hover:bg-[#000a3a]/50 transition-colors"
-                    >
-                      <td className="px-6 py-4">{genre.genreName}</td>
-                      <td className="px-6 py-4 text-2xl flex gap-3">
-                        <MdDeleteOutline
-                          className="cursor-pointer hover:text-red-500 transition-colors"
-                          onClick={() => {
-                            setGenreToDelete(genre);
-                            setIsDeleteModalOpen(true);
-                          }}
-                        />
-                        <FaPen
-                          className="cursor-pointer hover:text-blue-500  text-xl transition-colors"
-                          onClick={() => {
-                            setUpdateGenreModalOpen(true);
-                            setGenre(genre);
-                          }}
-                        />
-                      </td>
-                    </motion.tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          <div className="space-y-4">
+            {genresData?.map((genre: TGenre) => (
+              <motion.div
+                key={genre.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="flex  justify-between items-center border border-[#1a2d6d] p-6 rounded-lg hover:bg-[#000a3a]/50 transition-colors"
+              >
+                <div>
+                  <h2 className="text-lg font-semibold">{genre.genreName}</h2>
+                </div>
+                <div className="flex gap-4 mt-2 sm:mt-0">
+                  <MdDeleteOutline
+                    className="cursor-pointer w-6 h-6 hover:text-red-500 transition-colors"
+                    onClick={() => {
+                      setGenreToDelete(genre);
+                      setIsDeleteModalOpen(true);
+                    }}
+                  />
+                  <FaPen
+                    className="cursor-pointer w-5 h-5 hover:text-blue-500 transition-colors"
+                    onClick={() => {
+                      setUpdateGenreModalOpen(true);
+                      setGenre(genre);
+                    }}
+                  />
+                </div>
+              </motion.div>
+            ))}
           </div>
         )}
 
@@ -156,30 +146,21 @@ const ManageGenre = () => {
               <motion.div
                 initial={{ scale: 0.95, y: 20 }}
                 animate={{ scale: 1, y: 0 }}
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-fit bg-[#000a3a] border border-[#1a2d6d] rounded-xl overflow-hidden"
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-xl bg-[#000a3a] border border-[#1a2d6d] rounded-xl overflow-hidden"
               >
                 <form
                   onSubmit={handleSubmit(onSubmit)}
                   className="p-8 max-h-[90vh] overflow-y-auto"
                 >
-                  <h2 className="lg:text-2xl text-xl font-bold mb-6  bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+                  <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
                     Add New Genre
                   </h2>
-
-                  {/* Form Grid */}
-                  <div className="">
-                    {/* Left Column */}
-                    <div className="space-y-4">
-                      <input
-                        {...register("genreName", { required: true })}
-                        placeholder="Platform Name"
-                        className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Form Buttons */}
-                  <div className="mt-8 flex justify-end gap-4">
+                  <input
+                    {...register("genreName", { required: true })}
+                    placeholder="Genre Name"
+                    className="w-full bg-[#00031b] px-4 py-2 rounded-lg focus:ring-2 focus:ring-purple-500"
+                  />
+                  <div className="mt-6 flex justify-end gap-4">
                     <button
                       type="button"
                       onClick={() => {
@@ -192,7 +173,7 @@ const ManageGenre = () => {
                     </button>
                     <button
                       type="submit"
-                      className=" bg-gradient-to-r from-blue-500 to-purple-500 cursor-pointer px-4 text-sm lg:text-base lg:px-6 lg:py-2 rounded-lg transition-colors"
+                      className="bg-gradient-to-r from-blue-500 to-purple-500 px-6 py-2 rounded-lg transition-colors cursor-pointer"
                     >
                       Add Genre
                     </button>
@@ -222,47 +203,32 @@ const ManageGenre = () => {
               <motion.div
                 initial={{ scale: 0.95, y: 20 }}
                 animate={{ scale: 1, y: 0 }}
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-[#000a3a] border border-[#1a2d6d] rounded-xl overflow-hidden p-6"
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-xl bg-[#000a3a] border border-[#1a2d6d] rounded-xl overflow-hidden p-6"
               >
-                <motion.h2
-                  initial={{ y: -20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.1 }}
-                  className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent"
-                >
+                <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
                   Delete Genre
-                </motion.h2>
-                <motion.p
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="text-gray-300 mb-6"
-                >
+                </h2>
+                <p className="text-gray-300 mb-6">
                   Are you sure you want to delete the genre "
                   {genreToDelete.genreName}"? This action cannot be undone.
-                </motion.p>
-                <motion.div
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                  className="flex justify-end gap-4"
-                >
-                  <motion.button
+                </p>
+                <div className="flex justify-end gap-4">
+                  <button
                     onClick={() => {
                       setIsDeleteModalOpen(false);
                       setGenreToDelete(null);
                     }}
-                    className="px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer"
+                    className="px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
                   >
                     Cancel
-                  </motion.button>
-                  <motion.button
+                  </button>
+                  <button
                     onClick={() => handleGenreDelete(genreToDelete.id)}
-                    className="hover:bg-red-600 px-4 py-2 rounded-lg transition-colors cursor-pointer"
+                    className="hover:bg-red-600 px-4 py-2 rounded-lg transition-colors"
                   >
                     Delete
-                  </motion.button>
-                </motion.div>
+                  </button>
+                </div>
               </motion.div>
             </motion.div>
           )}
