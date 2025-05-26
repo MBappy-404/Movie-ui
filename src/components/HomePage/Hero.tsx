@@ -78,7 +78,7 @@ const HeroSection = () => {
         <div className="absolute top-0 left-0 h-full w-[80%] md:w-[80%] bg-gradient-to-r from-[#000317] to-transparent" />
       </div>
 
-      <div className="relative z-10 flex items-center pl-2 md:pl-10 pt-0 md:pt-16 justify-start h-full">
+      <div className="relative z-10 flex items-center container mx-auto  justify-start h-full">
         <motion.div
           className="text-left px-4 max-w-4xl"
           initial={{ opacity: 0, y: 20 }}
@@ -92,9 +92,9 @@ const HeroSection = () => {
             className="text-4xl md:text-7xl font-bold text-white mb-3 md:mb-6 tracking-wide"
           >
             Welcome to{" "}
-            <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent font-bold">
+            <h2 className="bg-gradient-to-r inline from-blue-500 to-purple-500 bg-clip-text text-transparent font-bold">
               CineVerse
-            </span>
+            </h2>
           </motion.h1>
 
           <motion.p
