@@ -31,7 +31,7 @@ export const baseApi = createApi({
     "discounts",
  
     "contactUs",
- 
+    "coupon",
     "subscribers",
  
   ],
