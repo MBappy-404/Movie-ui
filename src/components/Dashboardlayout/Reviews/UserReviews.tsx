@@ -26,7 +26,7 @@ const UserReviews = () => {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3  gap-6">
         {[1, 2, 3, 4].map((i) => (
           <div key={i} className="bg-gradient-to-br from-gray-0 to-gray-0 rounded-2xl shadow-lg border border-white/20 p-6 text-white animate-pulse">
             <div className="flex items-center gap-4 mb-4">
