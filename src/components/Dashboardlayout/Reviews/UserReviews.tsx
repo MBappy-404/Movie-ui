@@ -7,8 +7,8 @@ import { verifyToken } from '@/utils/verifyToken';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Star } from 'lucide-react';
-import { format } from 'date-fns';
 import { useGetAllReviewQuery } from '@/components/redux/features/review/reviewApi';
+import { formatDate } from '@/utils/FormateDate';
 
 const UserReviews = () => {
   const token = useAppSelector(selectCurrentToken);
@@ -83,7 +83,7 @@ const UserReviews = () => {
                 <span className="text-sm text-gray-300">{review?.rating}/10</span>
               </div>
               <p className="text-sm text-gray-400 mt-1">
-                {format(new Date(review?.createdAt), 'MMM d, yyyy')}
+                {formatDate(review?.createdAt)}
               </p>
             </div>
           </div>

@@ -12,6 +12,7 @@ import LoadingSpinner from "@/components/ui/loading-spinner";
 import { toast } from "sonner";
 import { IDiscount } from "@/components/types/discount";
 import UpdateDiscountModal from "@/components/modals/UpdateDiscountModal";
+import { formatDate } from "@/utils/FormateDate";
 
 const DiscountManagement = () => {
   const { data: discounts, isLoading } = useGetAllDiscountsQuery(undefined);
@@ -25,13 +26,6 @@ const DiscountManagement = () => {
     null
   );
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = date.toLocaleString("en-US", { month: "long" });
-    const year = date.getFullYear();
-    return `${day} ${month} ${year}`;
-  };
 
   const handleDelete = async (discount: IDiscount) => {
     try {
