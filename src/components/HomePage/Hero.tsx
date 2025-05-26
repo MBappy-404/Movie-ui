@@ -11,8 +11,10 @@ const HeroSection = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const [videoError, setVideoError] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
     const video = videoRef.current;
     if (video) {
       video.currentTime = 20;
@@ -35,7 +37,7 @@ const HeroSection = () => {
     <section className="relative h-screen overflow-hidden">
       {/* Video Background with Overlays */}
       <div className="absolute inset-0 z-0">
-        {!videoError ? (
+        {isClient && !videoError ? (
           <video
             ref={videoRef}
             autoPlay
@@ -64,7 +66,7 @@ const HeroSection = () => {
         )}
 
         {/* Loading Overlay */}
-        {!isVideoLoaded && !videoError && (
+        {isClient && !isVideoLoaded && !videoError && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/50">
             <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
           </div>
@@ -87,12 +89,12 @@ const HeroSection = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 1 }}
-            className="text-4xl md:text-7xl font-bold text-white mb-3 md:mb-6   tracking-wide"
+            className="text-4xl md:text-7xl font-bold text-white mb-3 md:mb-6 tracking-wide"
           >
             Welcome to{" "}
-            <h4 className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent font-bold">
+            <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent font-bold">
               CineVerse
-            </h4>
+            </span>
           </motion.h1>
 
           <motion.p

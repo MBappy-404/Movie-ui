@@ -27,7 +27,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body className="antialiased">
+      <body className="antialiased min-h-screen bg-background font-sans text-foreground">
         <div>
           <ProvidersWrapper>{children}</ProvidersWrapper>
         </div>

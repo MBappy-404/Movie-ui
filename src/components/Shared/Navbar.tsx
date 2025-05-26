@@ -145,7 +145,6 @@ const Navbar = () => {
       megaMenu: true,
     },
     { name: "Movies", path: "/movies", icon: FilmIcon },
-    { name: "Watchlist", path: "/watchlist", icon: BookmarkIcon },
     { name: "Upcoming", path: "/comingSoon", icon: HomeModernIcon },
     { name: "Contact", path: "/contactUs", icon: HomeModernIcon },
   ];
