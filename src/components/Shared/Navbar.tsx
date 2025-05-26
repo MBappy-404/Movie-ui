@@ -128,7 +128,7 @@ const Navbar = () => {
     user = verifyToken(token);
   }
 
-  const { data: categories } = useGetAllGenresQuery([]);
+  const { data: categories, isLoading } = useGetAllGenresQuery([]);
   console.log(categories);
   const movieCategories = categories?.data;
 
@@ -332,7 +332,6 @@ const Navbar = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
                           {/* Left Side - Categories */}
-
                           <div className="md:col-span-8">
                             <div className="flex items-center gap-2 mb-3 md:mb-4 border-b border-gray-700 pb-2">
                               <h3 className="text-lg md:text-xl font-bold text-indigo-400">
@@ -341,32 +340,44 @@ const Navbar = () => {
                               <ChevronRightIcon className="w-5 h-5 text-indigo-400" />
                             </div>
                             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-3">
-                              {movieCategories?.map((item: any) => {
-                                const Icon =
-                                  genreIconMap[item.genreName] || FilmIcon;
-                                const color =
-                                  genreColorMap[item.genreName] || "gray";
-                                return (
-                                  <motion.div
-                                    key={item.id}
-                                    whileHover={{ scale: 1.05 }}
-                                    className="group cursor-pointer"
+                              {isLoading ? (
+                                // Skeleton loading for genres
+                                Array.from({ length: 10 }).map((_, index) => (
+                                  <div
+                                    key={index}
+                                    className="flex flex-col items-center p-2 md:p-3 rounded-lg"
                                   >
-                                    <Link href={`/movies`}>
-                                      <div className="flex flex-col items-center p-2 md:p-3 rounded-lg hover:bg-gray-800/50 transition-colors">
-                                        <div
-                                          className={`p-2 md:p-3 rounded-full bg-${color}-500/10`}
-                                        >
-                                          <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                                    <div className="w-12 h-12 rounded-full bg-gray-700/50 animate-pulse mb-2" />
+                                    <div className="h-4 w-20 bg-gray-700/50 rounded animate-pulse" />
+                                  </div>
+                                ))
+                              ) : (
+                                movieCategories?.map((item: any) => {
+                                  const Icon = genreIconMap[item.genreName] || FilmIcon;
+                                  const color = genreColorMap[item.genreName] || "gray";
+                                  return (
+                                    <motion.div
+                                      key={item.id}
+                                      whileHover={{ scale: 1.05 }}
+                                      className="group cursor-pointer"
+                                    >
+                                      <Link 
+                                        href={`/movies?genre=${encodeURIComponent(item.genreName)}`}
+                                        onClick={() => setIsMegaMenuOpen(false)}
+                                      >
+                                        <div className="flex flex-col items-center p-2 md:p-3 rounded-lg hover:bg-gray-800/50 transition-colors">
+                                          <div className={`p-2 md:p-3 rounded-full bg-${color}-500/10`}>
+                                            <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                                          </div>
+                                          <h4 className="font-medium text-gray-200 group-hover:text-indigo-400 transition-colors text-center text-sm md:text-base mt-1">
+                                            {item.genreName}
+                                          </h4>
                                         </div>
-                                        <h4 className="font-medium text-gray-200 group-hover:text-indigo-400 transition-colors text-center text-sm md:text-base mt-1">
-                                          {item.genreName}
-                                        </h4>
-                                      </div>
-                                    </Link>
-                                  </motion.div>
-                                );
-                              })}
+                                      </Link>
+                                    </motion.div>
+                                  );
+                                })
+                              )}
                             </div>
                           </div>
 
@@ -536,7 +547,7 @@ const Navbar = () => {
                         </div>
 
                         <div className="flex flex-col gap-4">
-                          {navLinks.map(({ name, path, icon: Icon }) => (
+                          {navLinks.filter(link => !link.megaMenu).map(({ name, path, icon: Icon }) => (
                             <Link
                               key={name}
                               href={path}

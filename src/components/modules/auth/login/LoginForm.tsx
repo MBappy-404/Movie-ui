@@ -33,39 +33,44 @@ const LoginForm = () => {
   const dispatch = useAppDispatch();
   const form = useForm({
     resolver: zodResolver(loginValidation),
-  })
+  });
 
   const [login] = useLoginMutation();
 
   const {
-    formState: { isSubmitting },
+    formState: { isSubmitting, isValid },
+    watch
   } = form;
 
+  // Watch email and password fields
+  const email = watch('email');
+  const password = watch('password');
+
+  const handleFillCredentials = (email: string, password: string) => {
+    form.setValue('email', email);
+    form.setValue('password', password);
+  };
+
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-
     const toastId = toast.loading('Logging in');
-
     try {
       const userInfo = {
         email: data?.email,
         password: data?.password
-      }
+      };
       const res = await login(userInfo).unwrap();
       const user = verifyToken(res?.data?.accessToken) as TUser;
 
-      // ✅ Set tokens as cookies
       Cookies.set('accessToken', res?.data?.accessToken, { expires: 7, secure: true });
 
       dispatch(setUser({
         user: user,
         token: res?.data?.accessToken
-      }))
+      }));
       router.push(redirect || "/");
-      // console.log(res)
       toast.success(res.message, { id: toastId });
     } catch (error: any) {
       toast.error(error.data.message, { id: toastId });
-
     }
   };
 
@@ -82,7 +87,7 @@ const LoginForm = () => {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.3 }}
       >
-        <motion.h1 className="text-center text-3xl font-bold  bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent   mb-4 tracking-widest">
+        <motion.h1 className="text-center text-3xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent mb-4 tracking-widest">
           LOGIN FORM
         </motion.h1>
 
@@ -142,7 +147,8 @@ const LoginForm = () => {
             <motion.div>
               <Button
                 type="submit"
-                className="w-full cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500    mt-6 shadow-lg"
+                disabled={!email || !password || isSubmitting}
+                className="w-full cursor-pointer bg-gradient-to-r from-blue-500 to-purple-500 mt-6 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? "LOGGING IN..." : "LOGIN"}
               </Button>
@@ -150,11 +156,28 @@ const LoginForm = () => {
           </form>
         </Form>
 
+        <div className="mt-4 space-y-2">
+          <Button
+            type="button"
+            onClick={() => handleFillCredentials("admin@gmail.com", "123456")}
+            className="w-full cursor-pointer bg-gray-800 text-white hover:bg-gray-700 transition-colors border border-gray-700"
+          >
+            Fill Admin Credentials
+          </Button>
+          <Button
+            type="button"
+            onClick={() => handleFillCredentials("user@gmail.com", "123456")}
+            className="w-full cursor-pointer bg-gray-800 text-white hover:bg-gray-700 transition-colors border border-gray-700"
+          >
+            Fill User Credentials
+          </Button>
+        </div>
+
         <p className="text-center mt-4 text-white">
           You have no account?{" "}
           <Link
             href="/register"
-            className=" bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent font-semibold hover:underline"
+            className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent font-semibold hover:underline"
           >
             REGISTER HERE
           </Link>

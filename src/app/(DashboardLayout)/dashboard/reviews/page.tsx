@@ -1,12 +1,13 @@
-import ManageReview from '@/components/Dashboardlayout/Review/ManageReview'
-import React from 'react'
+import React from 'react';
+import UserReviews from '@/components/Dashboardlayout/Reviews/UserReviews';
 
-const ReviewManagePage = () => {
+const ReviewsPage = () => {
   return (
-    <div>
-      <ManageReview/>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold text-white mb-6">My Movie Reviews</h1>
+      <UserReviews />
     </div>
-  )
-}
+  );
+};
 
-export default ReviewManagePage
+export default ReviewsPage;

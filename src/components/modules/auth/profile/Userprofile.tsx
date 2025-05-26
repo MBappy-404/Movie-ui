@@ -175,7 +175,7 @@ const UserProfile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br pt-12 from-[#00031b] to-[#0a0b2a] py-12  px-2 lg:px-8">
+    <div className="min-h-screen pt-12  ">
       <div className="max-w-7xl mx-auto">
         {/* Profile Header */}
         <div className="relative group">

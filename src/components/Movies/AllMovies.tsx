@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { FaChevronDown, FaSearch } from "react-icons/fa";
-import { useRouter } from "next/navigation";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useGetAllContentQuery } from "../redux/features/content/contentApi";
 import { useGetAllGenresQuery } from "../redux/features/genre/genreApi";
 import Link from "next/link";
@@ -23,6 +24,7 @@ interface Genre {
 
 export const AllMovies = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchType, setSearchType] = useState<string>("title");
   const [selectedGenre, setSelectedGenre] = useState<string>("All");
@@ -34,10 +36,19 @@ export const AllMovies = () => {
   const itemsPerPage = 12;
   const dispatch = useAppDispatch();
 
+  // Set initial genre from URL parameter
+  useEffect(() => {
+    const genreFromUrl = searchParams.get('genre');
+    if (genreFromUrl) {
+      setSelectedGenre(genreFromUrl);
+    }
+  }, [searchParams]);
+
   // Create filter params
   const filterParams = [
     { name: 'page', value: currentPage.toString() },
-    { name: 'limit', value: itemsPerPage.toString() }
+    { name: 'limit', value: itemsPerPage.toString() },
+    { name: 'isAvailable', value: "true" }
   ];
 
   // Add search filter if query exists
@@ -109,9 +120,10 @@ export const AllMovies = () => {
       break;
   }
 
+  
   // Fetch data
-  const { data: genresData } = useGetAllGenresQuery(undefined);
-  const { data: contentData, isLoading } = useGetAllContentQuery(filterParams);
+  const { data: genresData, isLoading: genresLoading } = useGetAllGenresQuery(undefined);
+  const { data: contentData, isLoading: contentLoading } = useGetAllContentQuery(filterParams);
   const movies = contentData?.data || [];
 
   // Format genres data
@@ -122,6 +134,9 @@ export const AllMovies = () => {
     }
     return allGenres;
   }, [genresData]);
+
+  // Loading states
+  const isLoading = genresLoading || contentLoading;
 
   // Get unique release years from content data
   const getYears = () => {
@@ -182,9 +197,19 @@ export const AllMovies = () => {
         {/* Mobile Sidebar Toggle */}
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="lg:hidden mb-4 text-gray-400 hover:text-white transition-colors"
+          className="lg:hidden mb-4 flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
         >
-          {isSidebarOpen ? "Filter" : "Filter"}
+          {isSidebarOpen ? (
+            <>
+              <XMarkIcon className="w-5 h-5" />
+              <span>Close Filters</span>
+            </>
+          ) : (
+            <>
+              <Bars3Icon className="w-5 h-5" />
+              <span>Open Filters</span>
+            </>
+          )}
         </button>
 
         {/* Breadcrumb */}
@@ -211,9 +236,9 @@ export const AllMovies = () => {
             {/* Close button for mobile */}
             <button
               onClick={() => setIsSidebarOpen(false)}
-              className="lg:hidden absolute top-4 right-4 text-gray-400 hover:text-white"
+              className="lg:hidden absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
             >
-              Close
+              <XMarkIcon className="w-6 h-6" />
             </button>
 
             {/* Rest of the sidebar content remains the same */}
@@ -223,17 +248,27 @@ export const AllMovies = () => {
                 Genres
               </h2>
               <div className="space-y-2 lg:space-y-3">
-                {genres.map((genre: Genre) => (
-                  <div
-                    key={genre?.genreName}
-                    onClick={() => handleGenreClick(genre?.genreName)}
-                    className={`cursor-pointer ${
-                      selectedGenre === genre.genreName ? "text-purple-500" : "text-gray-400"
-                    } hover:text-purple-500 transition-colors`}
-                  >
-                    {genre?.genreName}
-                  </div>
-                ))}
+                {isLoading ? (
+                  // Loading state for genres
+                  Array.from({ length: 12 }).map((_, index) => (
+                    <div
+                      key={index}
+                      className="h-5 w-3/4 bg-gray-700/50 rounded animate-pulse"
+                    />
+                  ))
+                ) : (
+                  genres.map((genre: Genre) => (
+                    <div
+                      key={genre?.genreName}
+                      onClick={() => handleGenreClick(genre?.genreName)}
+                      className={`cursor-pointer ${
+                        selectedGenre === genre.genreName ? "text-purple-500" : "text-gray-400"
+                      } hover:text-purple-500 transition-colors`}
+                    >
+                      {genre?.genreName}
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 
@@ -243,19 +278,29 @@ export const AllMovies = () => {
                 Release Year
               </h2>
               <div className="grid grid-cols-3 gap-2">
-                {(getYears() as string[]).map((year: string) => (
-                  <div
-                    key={year}
-                    onClick={() => setSelectedYear(year)}
-                    className={`px-2 sm:px-3 py-1 border ${
-                      selectedYear === year
-                        ? "border-purple-500 text-purple-500"
-                        : "border-gray-700 text-gray-400"
-                    } rounded text-center text-sm cursor-pointer hover:border-purple-500 hover:text-purple-500 transition-colors`}
-                  >
-                    {year}
-                  </div>
-                ))}
+                {isLoading ? (
+                  // Loading state for years
+                  Array.from({ length: 6 }).map((_, index) => (
+                    <div
+                      key={index}
+                      className="h-8 bg-gray-700/50 rounded animate-pulse"
+                    />
+                  ))
+                ) : (
+                  (getYears() as string[]).map((year: string) => (
+                    <div
+                      key={year}
+                      onClick={() => setSelectedYear(year)}
+                      className={`px-2 sm:px-3 py-1 border ${
+                        selectedYear === year
+                          ? "border-purple-500 text-purple-500"
+                          : "border-gray-700 text-gray-400"
+                      } rounded text-center text-sm cursor-pointer hover:border-purple-500 hover:text-purple-500 transition-colors`}
+                    >
+                      {year}
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 
@@ -265,25 +310,41 @@ export const AllMovies = () => {
                 Top 5 Movies
               </h2>
               <div className="space-y-4">
-                {filteredMovies.slice(0, 5).map((movie: TMovie) => (
-                  <Link
-                    href={`/movies/${movie.id}`}
-                    key={movie.id}
-                    className="flex items-center space-x-3 cursor-pointer hover:bg-white/5 rounded-lg p-2 transition-colors"
-                  >
-                    <img
-                      src={movie.thumbnail}
-                      alt={movie.title}
-                      className="w-16 h-24 object-cover rounded"
-                    />
-                    <div>
-                      <h3 className="font-semibold">{movie.title}</h3>
-                      <p className="text-sm text-gray-400">
-                        {movie?.genre?.genreName}
-                      </p>
+                {isLoading ? (
+                  // Loading state for desktop Top 5 Movies
+                  Array.from({ length: 5 }).map((_, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center space-x-3 cursor-pointer hover:bg-white/5 rounded-lg p-2 transition-colors"
+                    >
+                      <div className="w-16 h-24 bg-gray-700/50 rounded animate-pulse" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 w-3/4 bg-gray-700/50 rounded animate-pulse" />
+                        <div className="h-3 w-1/2 bg-gray-700/50 rounded animate-pulse" />
+                      </div>
                     </div>
-                  </Link>
-                ))}
+                  ))
+                ) : (
+                  filteredMovies.slice(0, 5).map((movie: TMovie) => (
+                    <Link
+                      href={`/movies/${movie.id}`}
+                      key={movie.id}
+                      className="flex items-center space-x-3 cursor-pointer hover:bg-white/5 rounded-lg p-2 transition-colors"
+                    >
+                      <img
+                        src={movie.thumbnail}
+                        alt={movie.title}
+                        className="w-16 h-24 object-cover rounded"
+                      />
+                      <div>
+                        <h3 className="font-semibold">{movie.title}</h3>
+                        <p className="text-sm text-gray-400">
+                          {movie?.genre?.genreName}
+                        </p>
+                      </div>
+                    </Link>
+                  ))
+                )}
               </div>
             </div>
           </div>
@@ -293,73 +354,61 @@ export const AllMovies = () => {
             <div className="mb-6 lg:mb-8 mt-8">
               {/* Compact Search and Filters */}
               <div className="flex flex-col sm:flex-row gap-4">
-                {/* Left side filters */}
-                <div className="flex gap-2 sm:w-[340px]">
-                  <div className="relative flex-1 min-w-[100px]">
-                    <select
-                      className="w-full bg-[#1C1C3A] text-white text-sm border border-gray-700 rounded-lg px-3 py-2 pr-8 appearance-none focus:outline-none focus:ring-1 focus:ring-purple-500"
-                      value={selectedGenre}
-                      onChange={(e) => handleGenreClick(e.target.value)}
-                    >
-                      {genres.map((genre: Genre) => (
-                        <option key={genre?.genreName} value={genre?.genreName}>
-                          {genre?.genreName}
-                        </option>
-                      ))}
-                    </select>
-                    <FaChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs" />
+                {/* Mobile Layout */}
+                <div className="flex flex-col gap-3 sm:hidden">
+                  {/* First row: Genre and Year */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="relative">
+                      <select
+                        className="w-full bg-[#1C1C3A] text-white text-sm border border-gray-700 rounded-lg px-3 py-2.5 pr-8 appearance-none focus:outline-none focus:ring-1 focus:ring-purple-500"
+                        value={selectedGenre}
+                        onChange={(e) => handleGenreClick(e.target.value)}
+                      >
+                        {genres.map((genre: Genre) => (
+                          <option key={genre?.genreName} value={genre?.genreName}>
+                            {genre?.genreName}
+                          </option>
+                        ))}
+                      </select>
+                      <FaChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs" />
+                    </div>
+                    <div className="relative">
+                      <select
+                        className="w-full bg-[#1C1C3A] text-white text-sm border border-gray-700 rounded-lg px-3 py-2.5 pr-8 appearance-none focus:outline-none focus:ring-1 focus:ring-purple-500"
+                        value={selectedYear}
+                        onChange={(e) => setSelectedYear(e.target.value)}
+                      >
+                        {getYears().map((year) => (
+                          <option key={year} value={year}>
+                            {year}
+                          </option>
+                        ))}
+                      </select>
+                      <FaChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs" />
+                    </div>
                   </div>
-                  <div className="relative flex-1 min-w-[100px]">
-                    <select
-                      className="w-full bg-[#1C1C3A] text-white text-sm border border-gray-700 rounded-lg px-3 py-2 pr-8 appearance-none focus:outline-none focus:ring-1 focus:ring-purple-500"
-                      value={selectedYear}
-                      onChange={(e) => setSelectedYear(e.target.value)}
-                    >
-                      {getYears().map((year) => (
-                        <option key={year} value={year}>
-                          {year}
-                        </option>
-                      ))}
-                    </select>
-                    <FaChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs" />
-                  </div>
-                  <div className="relative flex-1 min-w-[100px]">
-                    <select
-                      className="w-full bg-[#1C1C3A] text-white text-sm border border-gray-700 rounded-lg px-3 py-2 pr-8 appearance-none focus:outline-none focus:ring-1 focus:ring-purple-500"
-                      value={sortBy}
-                      onChange={(e) => setSortBy(e.target.value)}
-                    >
-                      {sortOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                    <FaChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs" />
-                  </div>
-                </div>
 
-                {/* Search bar and results count */}
-                <div className="flex-1 flex items-center gap-4">
-                  <div className="relative flex-1">
-                    <input
-                      type="text"
-                      placeholder={`Search by ${searchType}...`}
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full bg-[#1C1C3A] text-white text-sm placeholder-gray-400 rounded-lg py-2 px-4 pl-9 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                    />
-                    <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm" />
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <p className="text-gray-400 text-sm whitespace-nowrap">
-                      {filteredMovies.length} results
-                    </p>
-                    <div className="relative min-w-[120px]">
+                  {/* Second row: Latest and Title */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="relative">
+                      <select
+                        className="w-full bg-[#1C1C3A] text-white text-sm border border-gray-700 rounded-lg px-3 py-2.5 pr-8 appearance-none focus:outline-none focus:ring-1 focus:ring-purple-500"
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                      >
+                        {sortOptions.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                      <FaChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs" />
+                    </div>
+                    <div className="relative">
                       <select
                         value={searchType}
                         onChange={(e) => setSearchType(e.target.value)}
-                        className="w-full bg-[#1C1C3A] text-white text-sm border border-gray-700 rounded-lg px-3 py-2 pr-8 appearance-none focus:outline-none focus:ring-1 focus:ring-purple-500"
+                        className="w-full bg-[#1C1C3A] text-white text-sm border border-gray-700 rounded-lg px-3 py-2.5 pr-8 appearance-none focus:outline-none focus:ring-1 focus:ring-purple-500"
                       >
                         <option value="title">Title</option>
                         <option value="genre">Genre</option>
@@ -369,6 +418,110 @@ export const AllMovies = () => {
                         <option value="platform">Platform</option>
                       </select>
                       <FaChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs" />
+                    </div>
+                  </div>
+
+                  {/* Third row: Search bar */}
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder={`Search by ${searchType}...`}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full bg-[#1C1C3A] border border-gray-700 text-white text-sm placeholder-gray-400 rounded-lg py-2.5 px-4 pl-9 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                    />
+                    <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm" />
+                  </div>
+
+                  {/* Fourth row: Results */}
+                  <div>
+                    <p className="text-gray-400 text-sm">
+                      {filteredMovies.length} results
+                    </p>
+                  </div>
+                </div>
+
+                {/* Desktop Layout */}
+                <div className="hidden sm:flex flex-row gap-4">
+                  {/* Left side filters */}
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="grid grid-cols-2 sm:flex gap-2 sm:w-[340px]">
+                      <div className="relative flex-1 min-w-[100px]">
+                        <select
+                          className="w-full bg-[#1C1C3A] text-white text-sm border border-gray-700 rounded-lg px-3 py-2.5 pr-8 appearance-none focus:outline-none focus:ring-1 focus:ring-purple-500"
+                          value={selectedGenre}
+                          onChange={(e) => handleGenreClick(e.target.value)}
+                        >
+                          {genres.map((genre: Genre) => (
+                            <option key={genre?.genreName} value={genre?.genreName}>
+                              {genre?.genreName}
+                            </option>
+                          ))}
+                        </select>
+                        <FaChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs" />
+                      </div>
+                      <div className="relative flex-1 min-w-[100px]">
+                        <select
+                          className="w-full bg-[#1C1C3A] text-white text-sm border border-gray-700 rounded-lg px-3 py-2.5 pr-8 appearance-none focus:outline-none focus:ring-1 focus:ring-purple-500"
+                          value={selectedYear}
+                          onChange={(e) => setSelectedYear(e.target.value)}
+                        >
+                          {getYears().map((year) => (
+                            <option key={year} value={year}>
+                              {year}
+                            </option>
+                          ))}
+                        </select>
+                        <FaChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs" />
+                      </div>
+                    </div>
+                    <div className="relative flex-1 min-w-[100px]">
+                      <select
+                        className="w-full bg-[#1C1C3A] text-white text-sm border border-gray-700 rounded-lg px-3 py-2.5 pr-8 appearance-none focus:outline-none focus:ring-1 focus:ring-purple-500"
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                      >
+                        {sortOptions.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                      <FaChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs" />
+                    </div>
+                  </div>
+
+                  {/* Search bar and results count */}
+                  <div className="flex-1 flex flex-col sm:flex-row items-center gap-3">
+                    <div className="relative flex-1 w-full">
+                      <input
+                        type="text"
+                        placeholder={`Search by ${searchType}...`}
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full bg-[#1C1C3A] border border-gray-700border border-gray-700 text-white text-sm placeholder-gray-400 rounded-lg py-2.5 px-4 pl-9 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                      />
+                      <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm" />
+                    </div>
+                    <div className="flex items-center gap-3 w-full sm:w-auto">
+                      <p className="text-gray-400 text-sm whitespace-nowrap">
+                        {filteredMovies.length} results
+                      </p>
+                      <div className="relative min-w-[120px]">
+                        <select
+                          value={searchType}
+                          onChange={(e) => setSearchType(e.target.value)}
+                          className="w-full bg-[#1C1C3A] text-white text-sm border border-gray-700 rounded-lg px-3 py-2.5 pr-8 appearance-none focus:outline-none focus:ring-1 focus:ring-purple-500"
+                        >
+                          <option value="title">Title</option>
+                          <option value="genre">Genre</option>
+                          <option value="director">Director</option>
+                          <option value="actor">Actor</option>
+                          <option value="actress">Actress</option>
+                          <option value="platform">Platform</option>
+                        </select>
+                        <FaChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs" />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -463,7 +616,7 @@ export const AllMovies = () => {
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="px-4 py-2 bg-[#1C1C3A] text-white rounded-lg border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#2C2C4A] transition-colors"
+                  className="px-4 py-2 bg-[#1C1C3A]  cursor-pointer text-white rounded-lg border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#2C2C4A] transition-colors"
                 >
                   Previous
                 </button>
@@ -473,7 +626,7 @@ export const AllMovies = () => {
                     <button
                       key={page}
                       onClick={() => handlePageChange(page)}
-                      className={`px-4 py-2 rounded-lg border transition-colors ${
+                      className={`px-4 py-2 rounded-lg border cursor-pointer  transition-colors ${
                         currentPage === page
                           ? "bg-purple-600 text-white border-purple-600"
                           : "bg-[#1C1C3A] text-white border-gray-700 hover:bg-[#2C2C4A]"
@@ -487,7 +640,7 @@ export const AllMovies = () => {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="px-4 py-2 bg-[#1C1C3A] text-white rounded-lg border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#2C2C4A] transition-colors"
+                  className="px-4 py-2 bg-[#1C1C3A] cursor-pointer  text-white rounded-lg border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#2C2C4A] transition-colors"
                 >
                   Next
                 </button>
@@ -498,70 +651,67 @@ export const AllMovies = () => {
             <div className="mt-12 lg:hidden mb-5">
               <h2 className="text-2xl font-bold mb-6">Top 5 Movies</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {!isLoading && (
-                  <div className="flex items-center gap-4 p-3 cursor-pointer hover:bg-white/5 rounded-lg transition-colors">
-                    {/* Image placeholder */}
-                    <div className="w-24 h-32 flex-shrink-0 bg-gray-200 animate-pulse rounded-lg"></div>
-
-                    <div className="flex-1 min-w-0 space-y-3">
-                      {/* Title placeholder */}
-                      <div className="h-6 bg-gray-200 animate-pulse rounded-md w-3/4"></div>
-
-                      {/* Genre placeholder */}
-                      <div className="h-4 bg-gray-200 animate-pulse rounded-md w-1/2"></div>
-
-                      {/* Bottom row placeholders */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          {/* Platform logo placeholder */}
-                          <div className="h-4 w-4 bg-gray-200 animate-pulse rounded-full"></div>
-                          {/* Duration placeholder */}
-                          <div className="h-4 bg-gray-200 animate-pulse rounded-md w-12"></div>
+                {isLoading ? (
+                  // Loading state for mobile Top 5 Movies
+                  Array.from({ length: 5 }).map((_, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center gap-4 p-3 cursor-pointer hover:bg-white/5 rounded-lg transition-colors"
+                    >
+                      <div className="w-24 h-32 flex-shrink-0 bg-gray-700/50 rounded-lg animate-pulse" />
+                      <div className="flex-1 min-w-0 space-y-3">
+                        <div className="h-6 bg-gray-700/50 rounded-md w-3/4 animate-pulse" />
+                        <div className="h-4 bg-gray-700/50 rounded-md w-1/2 animate-pulse" />
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="h-4 w-4 bg-gray-700/50 rounded-full animate-pulse" />
+                            <div className="h-4 bg-gray-700/50 rounded-md w-12 animate-pulse" />
+                          </div>
+                          <div className="h-4 bg-gray-700/50 rounded-md w-8 animate-pulse" />
                         </div>
-                        {/* Price placeholder */}
-                        <div className="h-4 bg-gray-200 animate-pulse rounded-md w-8"></div>
                       </div>
                     </div>
-                  </div>
-                )}
-                {filteredMovies.slice(0, 5).map((movie: TMovie) => (
-                  <Link
-                    href={`/movies/${movie.id}`}
-                    key={movie.id}
-                    className="flex items-center gap-4 p-3 cursor-pointer hover:bg-white/5 rounded-lg transition-colors"
-                  >
-                    <div className="w-24 h-32 flex-shrink-0">
-                      <img
-                        src={movie.thumbnail}
-                        alt={movie.title}
-                        className="w-full h-full object-cover rounded-lg"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-lg mb-2 line-clamp-2">
-                        {movie.title}
-                      </h3>
-                      <p className="text-gray-400 text-sm mb-2">
-                        {movie?.genre?.genreName}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={movie.platform.platformLogo}
-                            alt={movie.platform.platformName}
-                            className="h-4 w-auto"
-                          />
-                          <span className="text-sm text-gray-400">
-                            {movie.duration}
+                  ))
+                ) : (
+                  filteredMovies.slice(0, 5).map((movie: TMovie) => (
+                    <Link
+                      href={`/movies/${movie.id}`}
+                      key={movie.id}
+                      className="flex items-center gap-4 p-3 cursor-pointer hover:bg-white/5 rounded-lg transition-colors"
+                    >
+                      <div className="w-24 h-32 flex-shrink-0">
+                        <img
+                          src={movie.thumbnail}
+                          alt={movie.title}
+                          className="w-full h-full object-cover rounded-lg"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-lg mb-2 line-clamp-2">
+                          {movie.title}
+                        </h3>
+                        <p className="text-gray-400 text-sm mb-2">
+                          {movie?.genre?.genreName}
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <img
+                              src={movie.platform.platformLogo}
+                              alt={movie.platform.platformName}
+                              className="h-4 w-auto"
+                            />
+                            <span className="text-sm text-gray-400">
+                              {movie.duration}
+                            </span>
+                          </div>
+                          <span className="text-sm font-semibold">
+                            ${movie.price}
                           </span>
                         </div>
-                        <span className="text-sm font-semibold">
-                          ${movie.price}
-                        </span>
                       </div>
-                    </div>
-                  </Link>
-                ))}
+                    </Link>
+                  ))
+                )}
               </div>
             </div>
           </div>
