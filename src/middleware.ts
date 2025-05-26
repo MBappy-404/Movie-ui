@@ -7,9 +7,28 @@ type Role = keyof typeof roleBasedPrivateRoutes;
 const authRoutes = ["/login", "/register"];
 
 const roleBasedPrivateRoutes = {
-  USER: [/^\/dashboard/, /^\/profile/],
-  ADMIN: [/^\/dashboard/, /^\/profile/],
+  USER: [
+    /^\/dashboard$/,
+    /^\/dashboard\/profile/,
+    /^\/dashboard\/watchlist/,
+    /^\/dashboard\/purchasehistory/,
+  ],
+  ADMIN: [
+    /^\/dashboard$/,
+    /^\/dashboard\/profile/,
+    /^\/dashboard\/content/,
+    /^\/dashboard\/users/,
+    /^\/dashboard\/reviews/,
+    /^\/dashboard\/platformGenre/,
+    /^\/dashboard\/discount/,
+    /^\/dashboard\/subscribers/,
+  ],
 };
+
+// const roleBasedPrivateRoutes = {
+//   USER: [/^\/dashboard/, /^\/profile/],
+//   ADMIN: [/^\/dashboard/, /^\/profile/],
+// };
 
 export const middleware = async (request: NextRequest) => {
   const { pathname } = request.nextUrl;
@@ -42,7 +61,13 @@ export const middleware = async (request: NextRequest) => {
 };
 
 export const config = {
-  matcher: ["/profile", "/profile/:path*", "/dashboard", "/dashboard/:path*"],
+  matcher: [
+    "/login",
+    "/register",
+    "/dashboard/:path*",
+    "/profile",
+    "/profile/:path*",
+  ],
 };
 
 // export const config = {
