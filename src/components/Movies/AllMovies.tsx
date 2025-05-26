@@ -37,7 +37,8 @@ export const AllMovies = () => {
   // Create filter params
   const filterParams = [
     { name: 'page', value: currentPage.toString() },
-    { name: 'limit', value: itemsPerPage.toString() }
+    { name: 'limit', value: itemsPerPage.toString() },
+    { name: 'isAvailable', value: "true" }
   ];
 
   // Add search filter if query exists
@@ -109,6 +110,7 @@ export const AllMovies = () => {
       break;
   }
 
+  
   // Fetch data
   const { data: genresData } = useGetAllGenresQuery(undefined);
   const { data: contentData, isLoading } = useGetAllContentQuery(filterParams);
@@ -463,7 +465,7 @@ export const AllMovies = () => {
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="px-4 py-2 bg-[#1C1C3A] text-white rounded-lg border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#2C2C4A] transition-colors"
+                  className="px-4 py-2 bg-[#1C1C3A]  cursor-pointer text-white rounded-lg border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#2C2C4A] transition-colors"
                 >
                   Previous
                 </button>
@@ -473,7 +475,7 @@ export const AllMovies = () => {
                     <button
                       key={page}
                       onClick={() => handlePageChange(page)}
-                      className={`px-4 py-2 rounded-lg border transition-colors ${
+                      className={`px-4 py-2 rounded-lg border cursor-pointer  transition-colors ${
                         currentPage === page
                           ? "bg-purple-600 text-white border-purple-600"
                           : "bg-[#1C1C3A] text-white border-gray-700 hover:bg-[#2C2C4A]"
@@ -487,7 +489,7 @@ export const AllMovies = () => {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="px-4 py-2 bg-[#1C1C3A] text-white rounded-lg border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#2C2C4A] transition-colors"
+                  className="px-4 py-2 bg-[#1C1C3A] cursor-pointer  text-white rounded-lg border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#2C2C4A] transition-colors"
                 >
                   Next
                 </button>
