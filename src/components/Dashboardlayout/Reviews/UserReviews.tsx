@@ -18,11 +18,11 @@ const UserReviews = () => {
   }
 
   const { data: reviews, isLoading } = useGetAllReviewQuery(undefined);
-  console.log(reviews);
+  // console.log(reviews);
 
   // Filter reviews by current user ID
   const userReviews = reviews?.data?.filter((review: any) => review.userId === user?.id);
-  console.log(userReviews);
+  // console.log(userReviews);
 
   if (isLoading) {
     return (
@@ -97,7 +97,7 @@ const UserReviews = () => {
               </div>
             </div>
           </div>
-          <p className="text-white/90 text-base leading-relaxed ">{review?.reviewText}</p>
+          <p className="text-white/90 text-base leading-relaxed truncate">{review?.reviewText}</p>
           <div className="flex items-center justify-between border-t border-white/20 pt-4 mt-4 text-xs text-indigo-100/80">
             <span>Email: {review?.user?.email || 'N/A'}</span>
             <span>Status: {review?.status || 'N/A'}</span>
