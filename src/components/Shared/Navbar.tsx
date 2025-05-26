@@ -37,6 +37,7 @@ import { selectCurrentToken, logout } from "../redux/features/auth/authSlice";
 import { verifyToken } from "@/utils/verifyToken";
 import { cn } from "@/lib/utils";
 import { useGetAllGenresQuery } from "../redux/features/genre/genreApi";
+import Image from "next/image";
 
 interface MenuItem {
   name: string;
@@ -44,10 +45,8 @@ interface MenuItem {
   color: string;
   description?: string;
 }
- 
 
 const collection = [
- 
   {
     title: "Collections",
     items: [
@@ -55,26 +54,25 @@ const collection = [
         name: "Trending Now",
         icon: TrendingUpIcon,
         color: "text-pink-500",
-        description: "Most popular movies this week"
- 
+        description: "Most popular movies this week",
       },
       {
         name: "Award Winners",
         icon: TrophyIcon,
         color: "text-amber-500",
-        description: "Critically acclaimed masterpieces"
+        description: "Critically acclaimed masterpieces",
       },
       {
         name: "New Releases",
         icon: ClockIcon,
         color: "text-cyan-500",
-        description: "Fresh content just added"
+        description: "Fresh content just added",
       },
       {
         name: "Editor's Picks",
         icon: StarIcon,
         color: "text-yellow-500",
-        description: "Timeless cinematic treasures"
+        description: "Timeless cinematic treasures",
       },
     ],
   },
@@ -133,7 +131,6 @@ const Navbar = () => {
   const { data: categories, isLoading } = useGetAllGenresQuery([]);
   console.log(categories);
   const movieCategories = categories?.data;
-  
 
   const navLinks = [
     { name: "Home", path: "/", icon: HomeModernIcon },
@@ -259,7 +256,7 @@ const Navbar = () => {
             href="/"
             className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent"
           >
-            CineVerse
+            <Image src="/logo (2).png" alt="logo" width={150} height={150} />
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
@@ -327,12 +324,12 @@ const Navbar = () => {
                       >
                         {/* Invisible padding to prevent gap */}
                         <div className="absolute -top-4 left-0 w-full h-4" />
-                        
+
                         {/* Arrow pointing to Categories */}
                         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                           <div className="w-6 h-6 bg-[#1e2433] border-t border-l border-gray-700 transform rotate-45"></div>
                         </div>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
                           {/* Left Side - Categories */}
                           <div className="md:col-span-8">
@@ -399,10 +396,11 @@ const Navbar = () => {
                                   whileHover={{ scale: 1.02 }}
                                   className="group cursor-pointer"
                                 >
- 
                                   <Link href={`/`}>
                                     <div className="flex items-center gap-3 p-2 md:p-3 rounded-lg hover:bg-gray-800/50 transition-colors">
-                                      <div className={`p-2 md:p-3 rounded-full bg-${item.color}-500/10`}>
+                                      <div
+                                        className={`p-2 md:p-3 rounded-full bg-${item.color}-500/10`}
+                                      >
                                         <item.icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
                                       </div>
                                       <div>
