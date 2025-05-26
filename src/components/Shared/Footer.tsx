@@ -6,6 +6,7 @@ import {
   PhoneIcon,
   MapPinIcon
 } from '@heroicons/react/24/outline';
+import Link from 'next/link';
 
 const Footer = () => {
   const footerVariants = {
@@ -59,12 +60,12 @@ const Footer = () => {
             <ul className="space-y-2">
               {['Movies', 'Upcoming', 'About', 'Contact'].map((item, i) => (
                 <li key={item}>
-                  <a 
+                  <Link 
                     href={item === 'Movies' ? '/movies' : item === 'Upcoming' ? '/comingSoon' : item === 'About' ? '/about' : '/contactUs'} 
                     className="text-gray-400 hover:text-indigo-400 transition-colors"
                   >
                     {item}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -80,12 +81,12 @@ const Footer = () => {
             <ul className="space-y-2">
               {['Privacy Policy', 'Terms of Service', 'Cookie Policy'].map((item) => (
                 <li key={item}>
-                  <a 
+                  <Link 
                     href={item === 'Privacy Policy' ? '/privacy-policy' : item === 'Terms of Service' ? '/terms-of-service' : '/cookie-policy'} 
                     className="text-gray-400 hover:text-indigo-400 transition-colors"
                   >
                     {item}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
