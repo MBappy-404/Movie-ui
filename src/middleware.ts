@@ -12,6 +12,7 @@ const roleBasedPrivateRoutes = {
     /^\/dashboard\/profile/,
     /^\/dashboard\/watchlist/,
     /^\/dashboard\/purchasehistory/,
+    /^\/dashboard\/reviews/,
   ],
   ADMIN: [
     /^\/dashboard$/,

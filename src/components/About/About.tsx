@@ -73,7 +73,7 @@ const AboutUs = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-5xl text-center font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-purple-400 mb-6 leading-tight"
+              className="text-3xl sm:text-4xl md:text-5xl text-center font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-purple-400 mb-4 md:mb-6 leading-tight"
             >
               Redefining Movie
               <br />
@@ -84,7 +84,7 @@ const AboutUs = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 1.5, delay: 0.8 }}
-              className="text-base md:text-xl max-w-4xl text-center   text-gray-300  font-light tracking-wide leading-relaxed"
+              className="text-sm sm:text-base md:text-xl max-w-4xl text-center text-gray-300 font-light tracking-wide leading-relaxed px-4 sm:px-6"
             >
               At CineVerse, we combine cutting-edge technology with cinematic
               passion to deliver unparalleled movie discovery experiences. Our
@@ -96,12 +96,12 @@ const AboutUs = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 1, delay: 1.2 }}
-              className="mt-12 flex gap-6 justify-center"
+              className="mt-8 md:mt-12 flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center px-4"
             >
-              <button className="px-8 py-4 cursor-pointer bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl font-bold text-white hover:opacity-90 transition-opacity duration-300">
+              <button className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 cursor-pointer bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl font-bold text-white hover:opacity-90 transition-opacity duration-300">
                 Explore Library
               </button>
-              <button className="px-8 py-4 cursor-pointer border border-white/20 rounded-xl font-bold text-white hover:bg-white/10 transition-colors duration-300">
+              <button className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 cursor-pointer border border-white/20 rounded-xl font-bold text-white hover:bg-white/10 transition-colors duration-300">
                 Our Mission
               </button>
             </motion.div>
@@ -135,21 +135,21 @@ const AboutUs = () => {
       </section>
 
       {/* Features Section */}
-      <section className="relative py-32 bg-gradient-to-b from-[#00051f] to-[#0a0a0a]">
-        <div className="container mx-auto px-4">
+      <section className="relative py-16 sm:py-24 md:py-32 bg-gradient-to-b from-[#00051f] to-[#0a0a0a]">
+        <div className="container mx-auto px-4 sm:px-6">
           <motion.div
-            className="text-center mb-24"
+            className="text-center mb-16 sm:mb-24"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8 }}
           >
-            <h3 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-300 to-purple-400 bg-clip-text text-transparent mb-6">
+            <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-300 to-purple-400 bg-clip-text text-transparent mb-4 sm:mb-6">
               Why CineVerse?
             </h3>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
@@ -179,7 +179,7 @@ const AboutUs = () => {
 
           {/* Stats Grid */}
           <motion.div
-            className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto mt-32"
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 max-w-4xl mx-auto mt-16 sm:mt-24 md:mt-32"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
@@ -195,12 +195,12 @@ const AboutUs = () => {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.2 }}
-                className="text-center p-8 bg-[#ffffff]/05 backdrop-blur-lg rounded-2xl border border-white/10"
+                className="text-center p-6 sm:p-8 bg-[#ffffff]/05 backdrop-blur-lg rounded-2xl border border-white/10"
               >
-                <div className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-purple-400 mb-4">
+                <div className="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-purple-400 mb-2 sm:mb-4">
                   {stat.value}
                 </div>
-                <div className="text-gray-400 text-lg font-light">
+                <div className="text-base sm:text-lg text-gray-400 font-light">
                   {stat.label}
                 </div>
               </motion.div>

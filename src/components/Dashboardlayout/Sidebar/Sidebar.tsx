@@ -9,6 +9,8 @@ import {
   MdRateReview,
   MdSpaceDashboard,
   MdSubscriptions,
+  MdPerson,
+  MdReceipt,
 } from "react-icons/md";
 import { FaUsers } from "react-icons/fa";
 import { useAppSelector } from "@/components/redux/hooks";
@@ -39,12 +41,25 @@ const menuItems = [
 ];
 
 const userRoutes = [
-  { name: "Profile", icon: <MdSpaceDashboard />, link: "/dashboard/profile" },
-  { name: "Watch History", icon: <MdMovie />, link: "/dashboard/watchlist" },
+  {
+    name: "Profile",
+    link: "/dashboard/profile",
+    icon: <MdPerson />,
+  },
   {
     name: "Purchase History",
+    link: "/dashboard/purchase-history",
+    icon: <MdReceipt />,
+  },
+  {
+    name: "Watchlist",
+    link: "/dashboard/watchlist",
     icon: <MdMovie />,
-    link: "/dashboard/purchasehistory",
+  },
+  {
+    name: "My Reviews",
+    link: "/dashboard/reviews",
+    icon: <MdRateReview />,
   },
 ];
 
