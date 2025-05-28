@@ -1,36 +1,28 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Movie Streaming Website – Dashboard Features
 
-## Getting Started
+# User Management
+Feature: View, search, filter, and manage users.
+Description: Admins can manage all registered users, assign roles (admin, moderator, viewer), ban users, and see user activity stats.
 
-First, run the development server:
+# Movie Management
+Feature: Add, update, delete movies.
+Description: Admins can upload movie details (title, description, genre, cast, release date, trailer, video file, poster image) with support for rich content. Status can be set as Published/Draft.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+# Category & Genre Management
+Feature: Manage movie categories and genres.
+Description: Create and assign categories (e.g. Action, Drama, Comedy) to organize movies efficiently.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+# Watch History & Analytics
+Feature: Track user watch history.
+Description: See what each user has watched and generate overall analytics for most-watched movies, retention rate, etc.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# Comments & Reviews Moderation
+Feature: View and moderate user reviews.
+Description: Admins can enable/disable comments on movies, delete inappropriate reviews, or pin top reviews.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Newsletter
+Feature: Send emails or notifications to users.
+Description: Send system-wide updates, promo alerts, or movie recommendations via email or in-app push.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Dark Mode
+Description: Only dark mode support for the dashboard for better accessibility and user experience.
