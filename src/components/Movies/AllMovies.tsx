@@ -30,7 +30,7 @@ export const AllMovies = () => {
   const [selectedGenre, setSelectedGenre] = useState<string>("All");
   const [selectedYear, setSelectedYear] = useState<string>("All");
   const [selectedPlatform, setSelectedPlatform] = useState<string>("All");
-  const [sortBy, setSortBy] = useState<string>("Latest");
+  const [sortBy, setSortBy] = useState<string>("All");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
@@ -153,9 +153,10 @@ export const AllMovies = () => {
   };
 
   const sortOptions = [
+    "All",
+    "Name",
     "Latest",
     "Oldest",
-    "Name",
     "Price Low to High",
     "Price High to Low",
   ];
@@ -396,8 +397,8 @@ export const AllMovies = () => {
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value)}
                       >
-                        {sortOptions.map((option) => (
-                          <option key={option} value={option}>
+                        {sortOptions.map((option, idx) => (
+                          <option key={idx} value={option}>
                             {option}
                           </option>
                         ))}
