@@ -103,7 +103,7 @@ export const AllMovies = () => {
       filterParams.push({ name: 'sortOrder', value: 'desc' });
       break;
     case "Oldest":
-      filterParams.push({ name: 'sortBy', value: 'latest' });
+      filterParams.push({ name: 'sortBy', value: 'releaseYear' });
       filterParams.push({ name: 'sortOrder', value: 'asc' });
       break;
     case "Name":
