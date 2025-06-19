@@ -15,15 +15,24 @@ const HeroSection = () => {
 
   useEffect(() => {
     setIsClient(true);
-    const video = videoRef.current;
-    if (video) {
-      video.currentTime = 20;
-      video.play().catch((error) => {
-        // console.error("Video autoplay failed:", error);
-        setVideoError(true);
-      });
-    }
   }, []);
+
+  useEffect(() => {
+    if (isClient && videoRef.current && !videoError) {
+      // When video loads, set currentTime to 20 and play
+      const handleLoadedMetadata = () => {
+        if (videoRef.current) {
+          videoRef.current.currentTime = 20;
+          videoRef.current.play().catch(() => setVideoError(true));
+        }
+      };
+      const video = videoRef.current;
+      video?.addEventListener("loadedmetadata", handleLoadedMetadata);
+      return () => {
+        video?.removeEventListener("loadedmetadata", handleLoadedMetadata);
+      };
+    }
+  }, [isClient, videoError]);
 
   const handleVideoLoad = () => {
     setIsVideoLoaded(true);
@@ -40,8 +49,8 @@ const HeroSection = () => {
         {isClient && !videoError ? (
           <video
             ref={videoRef}
-            autoPlay
             loop
+            autoPlay
             muted
             playsInline
             onLoadedData={handleVideoLoad}
@@ -92,7 +101,7 @@ const HeroSection = () => {
             className="text-4xl md:text-7xl font-bold text-white mb-3 md:mb-6 tracking-wide"
           >
             Welcome to{" "}
-            <h2 className="bg-gradient-to-r inline from-blue-500 to-purple-500 bg-clip-text text-transparent font-bold">
+            <h2 className=" bg-gradient-to-r inline from-blue-500 to-purple-500 bg-clip-text text-transparent font-bold">
               CineVerse
             </h2>
           </motion.h1>

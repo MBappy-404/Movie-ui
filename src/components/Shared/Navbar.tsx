@@ -487,7 +487,7 @@ const Navbar = () => {
 
             {!user && (
               <Link href="/login">
-                <motion.button className="px-4 py-2 cursor-pointer bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all">
+                <motion.button className=" px-4  md:px-4 md:py-2 py-1.5 cursor-pointer bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all">
                   Sign In
                 </motion.button>
               </Link>
