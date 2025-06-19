@@ -18,7 +18,7 @@ CineVerse is a movie streaming web application for viewers and administrators. U
  
 
 ### Tech Stack
-- Next.js, React, Tailwind CSS, Framer Motion, Redux Toolkit, and more
+- Next.js, Tailwind CSS, Framer Motion, Redux, Express Js, Prisma, PostgreSQL, vercel
 
 ---
 
