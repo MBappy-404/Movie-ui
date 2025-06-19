@@ -1,28 +1,49 @@
-# Movie Streaming Plateform
+# CineVerse – Movie Streaming Platform
 
-# User Management
-Feature: View, search, filter, and manage users.
-Description: Admins can manage all registered users, assign roles (admin, moderator, viewer), ban users, and see user activity stats.
+Live Demo: [https://cineverse-liart.vercel.app/](https://cineverse-liart.vercel.app/)
 
-# Movie Management
-Feature: Add, update, delete movies.
-Description: Admins can upload movie details (title, description, genre, cast, release date, trailer, video file, poster image) with support for rich content. Status can be set as Published/Draft.
+CineVerse is a modern movie streaming web application featuring a robust admin dashboard for managing users, movies, categories, analytics, and more. Built with a focus on usability, accessibility, and a beautiful dark mode interface.
 
-# Category & Genre Management
-Feature: Manage movie categories and genres.
-Description: Create and assign categories (e.g. Action, Drama, Comedy) to organize movies efficiently.
+---
 
-# Watch History & Analytics
-Feature: Track user watch history.
-Description: See what each user has watched and generate overall analytics for most-watched movies, retention rate, etc.
+## 🚀 Features
 
-# Comments & Reviews Moderation
-Feature: View and moderate user reviews.
-Description: Admins can enable/disable comments on movies, delete inappropriate reviews, or pin top reviews.
+### 👤 User Management
+- View, search, filter, and manage all registered users
+- Assign roles: Admin, Moderator, Viewer
+- Ban/unban users
+- View user activity stats
 
-# Newsletter
-Feature: Send emails or notifications to users.
-Description: Send system-wide updates, promo alerts, or movie recommendations via email or in-app push.
+### 🎬 Movie Management
+- Add, update, and delete movies
+- Upload movie details: title, description, genre, cast, release date, trailer, video file, poster image
+- Rich content support for movie descriptions
+- Set movie status: Published or Draft
 
-# Dark Mode
-Description: Only dark mode support for the dashboard for better accessibility and user experience.
+### 🗂️ Category & Genre Management
+- Create, update, and assign categories/genres (e.g., Action, Drama, Comedy)
+- Organize movies efficiently for better discovery
+
+### 📊 Watch History & Analytics
+- Track what each user has watched
+- Generate analytics: most-watched movies, retention rates, and more
+
+### 💬 Comments & Reviews Moderation
+- View and moderate user reviews
+- Enable/disable comments on movies
+- Delete inappropriate reviews or pin top reviews
+
+### 📰 Newsletter
+- Send system-wide updates, promo alerts, or movie recommendations
+- Email and in-app push notification support
+
+### 🌙 Dark Mode
+- Dashboard supports only dark mode for better accessibility and user experience
+
+---
+
+## 📦 Tech Stack
+- Next.js, React, Tailwind CSS, Framer Motion, and more
+
+## 📄 License
+This project is for educational/demo purposes.
