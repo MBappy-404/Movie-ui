@@ -4,22 +4,27 @@ Live Demo: [https://cineverse-liart.vercel.app/](https://cineverse-liart.vercel.
 
 ## What is this project?
 
-CineVerse is a full-featured movie streaming web application designed for both viewers and administrators. It allows users to discover, watch, and review movies, while providing admins with a powerful dashboard to manage content, users, analytics, and more. The platform is built with modern web technologies and offers a seamless, dark-mode-first experience.
+CineVerse is a movie streaming web application for viewers and administrators. Users can discover, watch, review, and add movies to a personal watchlist for later viewing. Admins have a dashboard to manage content, users, and more. The platform is built with modern web technologies and offers a seamless, dark-mode-first experience.
 
 ### Key Capabilities
-- **User Management:** Admins can view, search, filter, and manage users, assign roles (admin, moderator, viewer), ban/unban users, and view user activity stats.
+- **User Management:** Admins can view and manage users, ban/unban users, and view user activity stats. (Note: Role assignment and advanced filtering are not currently implemented.)
 - **Movie Management:** Add, update, and delete movies with rich details (title, description, genre, cast, release date, trailer, video, poster). Movies can be set as Published or Draft.
 - **Category & Genre Management:** Create and assign categories/genres (e.g., Action, Drama, Comedy) for efficient movie organization.
-- **Watch History & Analytics:** Track what each user has watched and generate analytics for most-watched movies, retention rates, and more.
+- **Watchlist:** Users can add movies to a personal watchlist for later viewing.
 - **Comments & Reviews Moderation:** View and moderate user reviews, enable/disable comments, delete inappropriate reviews, or pin top reviews.
 - **Newsletter:** Send system-wide updates, promo alerts, or movie recommendations via email or in-app push notifications.
 - **Purchase & Payment:** Users can buy or rent movies, and admins can view purchase history and payment analytics.
-- **Platform Management:** Manage streaming platforms and assign movies to different platforms.
 - **Dark Mode:** The dashboard and user interface are optimized for dark mode for better accessibility and user experience.
+
+### Not Yet Implemented
+- Assigning user roles (admin, moderator, viewer)
+- Filtering users
+- Watch history & analytics (track what each user has watched, generate analytics for most-watched movies, retention rates, etc.)
+- Platform management (manage streaming platforms and assign movies to different platforms)
 
 ### Tech Stack
 - Next.js, React, Tailwind CSS, Framer Motion, Redux Toolkit, and more
 
 ---
 
-CineVerse is ideal for anyone looking to launch a modern movie streaming service with advanced admin controls, analytics, and a beautiful user experience.
+CineVerse is ideal for anyone looking to launch a modern movie streaming service with a beautiful user experience. Some advanced admin features are planned for future releases.
