@@ -7,7 +7,7 @@ Live Demo: [https://cineverse-liart.vercel.app/](https://cineverse-liart.vercel.
 CineVerse is a movie streaming web application for viewers and administrators. Users can discover, watch, review, and add movies to a personal watchlist for later viewing. Admins have a dashboard to manage content, users, and more. The platform is built with modern web technologies and offers a seamless, dark-mode-first experience.
 
 ### Key Capabilities
-- **User Management:** Admins can view and manage users, ban/unban users, and view user activity stats. (Note: Role assignment and advanced filtering are not currently implemented.)
+- **User Management:** Admins can view and manage users, ban/unban users, and view user activity stats.
 - **Movie Management:** Add, update, and delete movies with rich details (title, description, genre, cast, release date, trailer, video, poster). Movies can be set as Published or Draft.
 - **Category & Genre Management:** Create and assign categories/genres (e.g., Action, Drama, Comedy) for efficient movie organization.
 - **Watchlist:** Users can add movies to a personal watchlist for later viewing.
