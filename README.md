@@ -15,12 +15,7 @@ CineVerse is a movie streaming web application for viewers and administrators. U
 - **Newsletter:** Send system-wide updates, promo alerts, or movie recommendations via email or in-app push notifications.
 - **Purchase & Payment:** Users can buy or rent movies, and admins can view purchase history and payment analytics.
 - **Dark Mode:** The dashboard and user interface are optimized for dark mode for better accessibility and user experience.
-
-### Not Yet Implemented
-- Assigning user roles (admin, moderator, viewer)
-- Filtering users
-- Watch history & analytics (track what each user has watched, generate analytics for most-watched movies, retention rates, etc.)
-- Platform management (manage streaming platforms and assign movies to different platforms)
+ 
 
 ### Tech Stack
 - Next.js, React, Tailwind CSS, Framer Motion, Redux Toolkit, and more
