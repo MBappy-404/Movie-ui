@@ -1,4 +1,4 @@
-# Movie Streaming Website – Dashboard Features
+# Movie Streaming Plateform
 
 # User Management
 Feature: View, search, filter, and manage users.
