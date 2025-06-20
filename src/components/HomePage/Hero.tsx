@@ -98,12 +98,12 @@ const HeroSection = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 1 }}
-            className="text-4xl md:text-7xl font-bold text-white mb-3 md:mb-6 tracking-wide"
+            className="text-4xl md:text-7xl  font-bold text-white mb-3 md:mb-6 tracking-wide"
           >
             Welcome to{" "}
-            <h2 className=" bg-gradient-to-r inline from-blue-500 to-purple-500 bg-clip-text text-transparent font-bold">
+            <div className=" bg-gradient-to-r inline from-blue-500 to-purple-500 bg-clip-text font-bold text-transparent">
               CineVerse
-            </h2>
+            </div>
           </motion.h1>
 
           <motion.p
